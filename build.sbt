@@ -1,7 +1,8 @@
 import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 
 lazy val microservice = Project("ioss-registration", file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
+  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
+  .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
     majorVersion        := 0,
     scalaVersion        := "2.13.8",
@@ -13,5 +14,19 @@ lazy val microservice = Project("ioss-registration", file("."))
   .settings(PlayKeys.playDefaultPort := 10191)
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
+  .configs(Test)
+  .settings(inConfig(Test)(testSettings): _*)
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
+
+lazy val testSettings = Defaults.testSettings ++ Seq(
+  unmanagedSourceDirectories := Seq(
+    baseDirectory.value / "test",
+    baseDirectory.value / "test" / "testutils"
+  ),
+  parallelExecution := false,
+  fork := true,
+  javaOptions ++= Seq(
+    "-Dlogger.resource=logback-test.xml"
+  )
+)
