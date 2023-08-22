@@ -1,6 +1,7 @@
 package uk.gov.hmrc.iossregistration.controllers
 
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Gen
 import play.api.http.Status.OK
 import play.api.inject.bind
 import play.api.libs.json.Json
@@ -9,6 +10,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.GetVatInfoConnector
 import uk.gov.hmrc.iossregistration.models.DesAddress
+import uk.gov.hmrc.iossregistration.models.core._
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 
@@ -30,6 +32,7 @@ class VatInfoControllerSpec extends BaseSpec {
       )
 
       val mockConnector = mock[GetVatInfoConnector]
+
       when(mockConnector.getVatCustomerDetails(any())(any())) thenReturn Right(vatInfo).toFuture
 
       val app = applicationBuilder
@@ -45,6 +48,41 @@ class VatInfoControllerSpec extends BaseSpec {
         contentAsJson(result) mustEqual Json.toJson(vatInfo)
       }
     }
-  }
 
+    "must return NotFound when the connector returns Not Found" in {
+
+      val mockConnector = mock[GetVatInfoConnector]
+
+      when(mockConnector.getVatCustomerDetails(any())(any())) thenReturn Left(NotFound).toFuture
+
+      val app = applicationBuilder.overrides(bind[GetVatInfoConnector].toInstance(mockConnector)).build()
+
+      running(app) {
+
+        val request = FakeRequest(GET, routes.VatInfoController.get().url)
+        val result = route(app, request).value
+
+        status(result) mustEqual NOT_FOUND
+      }
+    }
+
+    "must return INTERNAL_SERVER_ERROR when the connector returns a failure other than Not Found" in {
+
+      val response = Gen.oneOf(InvalidJson, ServerError, ServiceUnavailable, InvalidVrn).sample.value
+      val mockConnector = mock[GetVatInfoConnector]
+
+      when(mockConnector.getVatCustomerDetails(any())(any())) thenReturn Left(response).toFuture
+
+      val app = applicationBuilder.overrides(bind[GetVatInfoConnector].toInstance(mockConnector)).build()
+
+      running(app) {
+
+        val request = FakeRequest(GET, routes.VatInfoController.get().url)
+        val result = route(app, request).value
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
+      }
+    }
+  }
 }
+

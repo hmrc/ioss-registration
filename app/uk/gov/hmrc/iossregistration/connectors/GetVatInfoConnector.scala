@@ -39,7 +39,7 @@ class GetVatInfoConnector @Inject()(
 
   private val XCorrelationId = "X-Correlation-Id"
 
-  private def headers(correlationId: String) = Seq(
+  private def headers(correlationId: String): Seq[(String, String)] = Seq(
     HeaderNames.AUTHORIZATION -> s"Bearer ${getVatInfoConfig.authorizationToken}",
     "Environment" -> getVatInfoConfig.environment,
     XCorrelationId -> correlationId

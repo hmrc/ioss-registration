@@ -17,22 +17,29 @@
 package uk.gov.hmrc.iossregistration.controllers
 
 import play.api.Logging
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.iossregistration.connectors.GetVatInfoConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
-import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
+import uk.gov.hmrc.iossregistration.models.core.{NotFound => DesNotFound}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class VatInfoController @Inject()(
-                                 cc: AuthenticatedControllerComponents
+                                   cc: AuthenticatedControllerComponents,
+                                   getVatInfoConnector: GetVatInfoConnector
                                  )(implicit ec: ExecutionContext)
-extends BackendController(cc) with Logging {
+  extends BackendController(cc) with Logging {
 
 
   def get(): Action[AnyContent] = cc.authAndRequireVat().async {
     implicit request =>
-      Ok.toFuture
+      getVatInfoConnector.getVatCustomerDetails(request.vrn).map {
+        case Right(response) => Ok(Json.toJson(response))
+        case Left(DesNotFound) => NotFound
+        case _ => InternalServerError
+      }
   }
 }
