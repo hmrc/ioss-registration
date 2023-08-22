@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.metrics
+package uk.gov.hmrc.iossregistration.models.des
 
-object MetricsEnum extends Enumeration {
+import play.api.libs.json.{JsResult, JsString, JsSuccess, JsValue, Reads}
 
-  type MetricsEnum = Value
+sealed trait PartyType
 
-  val ValidateCoreRegistration: MetricsEnum = Value
+object PartyType {
 
-  val GetVatCustomerDetails: MetricsEnum = Value
+  case object VatGroup extends PartyType
+  case object OtherPartyType extends PartyType
+
+  implicit val reads: Reads[PartyType] = new Reads[PartyType] {
+
+    override def reads(json: JsValue): JsResult[PartyType] =
+      json match {
+        case JsString("Z2") => JsSuccess(VatGroup)
+        case _              => JsSuccess(OtherPartyType)
+      }
+  }
 }
