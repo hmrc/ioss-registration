@@ -45,8 +45,8 @@ class VatInfoControllerSpec extends BaseSpec {
         val request = FakeRequest(GET, routes.VatInfoController.get().url)
         val result = route(app, request).value
 
-        status(result) mustEqual OK
-        contentAsJson(result) mustEqual Json.toJson(vatInfo)
+        status(result) mustBe OK
+        contentAsJson(result) mustBe Json.toJson(vatInfo)
       }
     }
 
@@ -63,7 +63,7 @@ class VatInfoControllerSpec extends BaseSpec {
         val request = FakeRequest(GET, routes.VatInfoController.get().url)
         val result = route(app, request).value
 
-        status(result) mustEqual NOT_FOUND
+        status(result) mustBe NOT_FOUND
       }
     }
 
@@ -81,7 +81,7 @@ class VatInfoControllerSpec extends BaseSpec {
         val request = FakeRequest(GET, routes.VatInfoController.get().url)
         val result = route(app, request).value
 
-        status(result) mustEqual INTERNAL_SERVER_ERROR
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

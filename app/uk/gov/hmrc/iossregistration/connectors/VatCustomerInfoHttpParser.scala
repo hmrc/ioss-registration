@@ -30,5 +30,5 @@ object VatCustomerInfoHttpParser extends BaseHttpParser {
     override def read(method: String, url: String, response: HttpResponse): VatCustomerInfoResponse =
       parseResponse[VatCustomerInfo](response)
   }
-
 }
+
