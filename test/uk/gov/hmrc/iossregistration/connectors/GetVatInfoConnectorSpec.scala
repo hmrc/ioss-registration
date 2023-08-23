@@ -74,7 +74,8 @@ class GetVatInfoConnectorSpec extends BaseSpec with WireMockHelper {
           partOfVatGroup = true,
           organisationName = Some("Foo"),
           singleMarketIndicator = Some(false),
-          individualName = None
+          individualName = None,
+          deregistrationDecisionDate = None
         )
 
         result mustBe Right(expectedResult)

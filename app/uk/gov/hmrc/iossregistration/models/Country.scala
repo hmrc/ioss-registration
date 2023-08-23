@@ -17,7 +17,6 @@
 package uk.gov.hmrc.iossregistration.models
 
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.iossregistration.crypto.EncryptedValue
 import uk.gov.hmrc.iossregistration.logging.Logging
 
 case class Country(code: String, name: String)
@@ -56,14 +55,6 @@ object Country {
     Country("ES", "Spain"),
     Country("SE", "Sweden")
   )
-
-}
-
-case class EncryptedCountry(code: EncryptedValue, name: EncryptedValue)
-
-object EncryptedCountry {
-
-  implicit val format: OFormat[EncryptedCountry] = Json.format[EncryptedCountry]
 }
 
 case class CountryWithValidationDetails(country: Country, vrnRegex: String, messageInput: String, exampleVrn: String, additionalMessage: Option[String] = None)

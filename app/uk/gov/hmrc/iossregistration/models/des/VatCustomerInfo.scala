@@ -29,7 +29,8 @@ case class VatCustomerInfo(
                             partOfVatGroup: Boolean,
                             organisationName: Option[String],
                             individualName: Option[String],
-                            singleMarketIndicator: Option[Boolean]
+                            singleMarketIndicator: Option[Boolean],
+                            deregistrationDecisionDate: Option[LocalDate]
                           )
 
 object VatCustomerInfo {
@@ -42,7 +43,8 @@ object VatCustomerInfo {
                               individualFirstName: Option[String],
                               individualMiddleName: Option[String],
                               individualLastName: Option[String],
-                              singleMarketIndicator: Option[Boolean]
+                              singleMarketIndicator: Option[Boolean],
+                              deregistrationDecisionDate: Option[LocalDate]
                             ): VatCustomerInfo = {
 
     val firstName = individualFirstName.fold("")(fn => s"$fn ")
@@ -62,7 +64,8 @@ object VatCustomerInfo {
       } else {
         Some(s"$firstName$middleName$lastName")
       },
-      singleMarketIndicator = singleMarketIndicator
+      singleMarketIndicator = singleMarketIndicator,
+      deregistrationDecisionDate = deregistrationDecisionDate
     )
   }
 
@@ -75,7 +78,8 @@ object VatCustomerInfo {
         (__ \ "approvedInformation" \ "customerDetails" \ "individual" \ "firstName").readNullable[String] and
         (__ \ "approvedInformation" \ "customerDetails" \ "individual" \ "middleName").readNullable[String] and
         (__ \ "approvedInformation" \ "customerDetails" \ "individual" \ "lastName").readNullable[String] and
-        (__ \ "approvedInformation" \ "customerDetails" \ "singleMarketIndicator").readNullable[Boolean]
+        (__ \ "approvedInformation" \ "customerDetails" \ "singleMarketIndicator").readNullable[Boolean] and
+        (__ \ "approvedInformation" \ "deregistration" \ "effectDateOfCancellation").readNullable[LocalDate]
       ) (VatCustomerInfo.fromDesPayload _)
 
   implicit val writes: OWrites[VatCustomerInfo] =
