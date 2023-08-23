@@ -75,22 +75,24 @@ class ValidateCoreRegistrationControllerSpec extends BaseSpec {
         status(result) mustEqual OK
       }
     }
-/*
-    "must return 400 when the JSON request payload is not a registration" in {
+
+    "must return 400 when the JSON request payload is not valid" in {
+
+      val invalidJson = "{}"
 
       val app = applicationBuilder.build()
 
       running(app) {
 
         val request =
-          FakeRequest(POST, routes.RegistrationController.create().url)
-            .withJsonBody(Json.toJson(RegistrationData.invalidRegistration))
+          FakeRequest(POST, routes.ValidateCoreRegistrationController.post().url)
+            .withJsonBody(Json.toJson(invalidJson))
 
         val result = route(app, request).value
 
         status(result) mustEqual BAD_REQUEST
       }
-    }*/
+    }
 
   }
 }
