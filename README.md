@@ -50,7 +50,7 @@ You then should be running 4.4 with a replica set. You may have to re-run the rs
 ### Using the application
 To log in using the Authority Wizard provide "continue url", "affinity group" and "enrolments" as follows:
 
-![image](https://user-images.githubusercontent.com/48218839/145985763-ffb28570-7679-46a9-96fa-e93996f03c23.png)
+![image](https://github.com/hmrc/ioss-registration/assets/36073378/81b753d0-05e5-4f2c-b4ec-a3d834b4c299)
 
 ![image](https://user-images.githubusercontent.com/48218839/145842926-c318cb10-70c3-4186-a839-b1928c8e2625.png)
 
