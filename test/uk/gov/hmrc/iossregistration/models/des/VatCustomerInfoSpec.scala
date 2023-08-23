@@ -46,7 +46,7 @@ class VatCustomerInfoSpec extends BaseSpec {
         )
 
         val expectedResult = VatCustomerInfo(
-          address = DesAddress("line 1", Some("line 2"), Some("line 3"), Some("line 4"), Some("line 5"), Some("postcode"), "CC"),
+          desAddress = DesAddress("line 1", Some("line 2"), Some("line 3"), Some("line 4"), Some("line 5"), Some("postcode"), "CC"),
           registrationDate = Some(LocalDate.of(2020, 1, 2)),
           partOfVatGroup = true,
           organisationName = Some("Foo"),
@@ -91,7 +91,7 @@ class VatCustomerInfoSpec extends BaseSpec {
         )
 
         val expectedResult = VatCustomerInfo(
-          address = DesAddress("line 1", Some("line 2"), Some("line 3"), Some("line 4"), Some("line 5"), Some("postcode"), "CC"),
+          desAddress = DesAddress("line 1", Some("line 2"), Some("line 3"), Some("line 4"), Some("line 5"), Some("postcode"), "CC"),
           registrationDate = Some(LocalDate.of(2020, 1, 2)),
           partOfVatGroup = false,
           organisationName = Some("Foo"),
@@ -118,7 +118,7 @@ class VatCustomerInfoSpec extends BaseSpec {
         )
 
         val expectedResult = VatCustomerInfo(
-          address = DesAddress("line 1", None, None, None, None, None, "CC"),
+          desAddress = DesAddress("line 1", None, None, None, None, None, "CC"),
           registrationDate = None,
           partOfVatGroup = false,
           organisationName = None,

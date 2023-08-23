@@ -24,7 +24,7 @@ import uk.gov.hmrc.iossregistration.models.des.PartyType.VatGroup
 import java.time.LocalDate
 
 case class VatCustomerInfo(
-                            address: DesAddress,
+                            desAddress: DesAddress,
                             registrationDate: Option[LocalDate],
                             partOfVatGroup: Boolean,
                             organisationName: Option[String],
@@ -52,7 +52,7 @@ object VatCustomerInfo {
     val lastName = individualLastName.fold("")(ln => s"$ln")
 
     VatCustomerInfo(
-      address = address,
+      desAddress = address,
       registrationDate = registrationDate,
       partOfVatGroup = partyType match {
         case Some(VatGroup) => true

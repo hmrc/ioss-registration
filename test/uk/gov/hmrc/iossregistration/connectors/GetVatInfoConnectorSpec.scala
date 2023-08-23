@@ -29,7 +29,7 @@ class GetVatInfoConnectorSpec extends BaseSpec with WireMockHelper {
       )
       .build()
 
-  private val desUrl = s"/one-stop-shop-registration-stub/vat/customer/vrn/${vrn.value}/information"
+  private val desUrl = s"/ioss-registration-stub/vat/customer/vrn/${vrn.value}/information"
 
   "getVatCustomerInfo" - {
 
@@ -70,7 +70,7 @@ class GetVatInfoConnectorSpec extends BaseSpec with WireMockHelper {
 
         val expectedResult = VatCustomerInfo(
           registrationDate = Some(LocalDate.of(2000, 1, 1)),
-          address = DesAddress("line 1", Some("line 2"), None, None, None, Some("AA11 1AA"), "GB"),
+          desAddress = DesAddress("line 1", Some("line 2"), None, None, None, Some("AA11 1AA"), "GB"),
           partOfVatGroup = true,
           organisationName = Some("Foo"),
           singleMarketIndicator = Some(false),
