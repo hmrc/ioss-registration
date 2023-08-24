@@ -73,8 +73,7 @@ class ValidateCoreRegistrationConnector @Inject()(
         )
         Left(EisError(
           EisErrorResponse(Instant.now(), s"UNEXPECTED_${e.responseCode.toString}", e.message)
-        )
-        )
+        ))
     }
   }
 

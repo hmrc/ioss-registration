@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.iossregistration.metrics
 
-import com.codahale.metrics.MetricRegistry
+import com.codahale.metrics.{MetricRegistry, Timer}
 import com.codahale.metrics.Timer.Context
 import com.kenshoo.play.metrics.Metrics
 import uk.gov.hmrc.iossregistration.metrics.MetricsEnum.MetricsEnum
@@ -31,8 +31,8 @@ trait ServiceMetrics {
   def startTimer(api: MetricsEnum): Context = timers(api).time()
 
   val registry: MetricRegistry = metrics.defaultRegistry
-  val timers = Map(
+  val timers: Map[MetricsEnum, Timer] = Map(
     MetricsEnum.ValidateCoreRegistration -> registry.timer("validate-core-registration-response-timer"),
+    MetricsEnum.GetVatCustomerDetails -> registry.timer("get-vat-customer-details-response-timer")
   )
-
 }

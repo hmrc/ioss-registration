@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.metrics
+package uk.gov.hmrc.iossregistration.utils
 
-object MetricsEnum extends Enumeration {
+import scala.concurrent.Future
 
-  type MetricsEnum = Value
+object FutureSyntax {
 
-  val ValidateCoreRegistration: MetricsEnum = Value
+  implicit class FutureOps[A](val a: A) extends AnyVal {
 
-  val GetVatCustomerDetails: MetricsEnum = Value
+    def toFuture: Future[A] = Future.successful(a)
+  }
+
 }
