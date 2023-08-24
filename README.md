@@ -56,41 +56,35 @@ To log in using the Authority Wizard provide "continue url", "affinity group" an
 
 The VRN can be any 9-digit number.
 
-[//]: # (To successfully register go through the journey providing the answers as follows:)
+To successfully register go through the journey providing the answers as follows:
 
-[//]: # (1.)
+1.
+![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/f56bd082-60c3-42e8-8036-5503b8ed844e)
 
-[//]: # (![image]&#40;https://user-images.githubusercontent.com/48218839/145986022-f387e3d0-0a41-47d7-9d39-f3b290b8e3ea.png&#41;)
+2.
+![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/7db67246-ffae-4591-b4e1-1205e6c5fb78)
 
-[//]: # ()
-[//]: # (2.)
+3.
+![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/ad366c1b-b922-4dcd-bda5-6678a51bc281)
 
-[//]: # (![image]&#40;https://user-images.githubusercontent.com/48218839/145986122-d6f513ba-be1a-4a8c-9e9a-671580719bcd.png&#41;)
+4.
+![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/f73d60c6-912a-4b90-add2-fa5ac5aff5c1)
 
-[//]: # ()
-[//]: # (3.)
+5.
+![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/27a2e705-17e8-4c6b-847a-215c3c7285b1)
 
-[//]: # (![image]&#40;https://user-images.githubusercontent.com/48218839/145986164-4cd4a00a-ec91-4167-be36-e35b9232e672.png&#41;)
+6.
+![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/50b9ef63-26de-40c7-9e12-30af04c9a03e)
 
-[//]: # ()
-[//]: # (4.)
+Or alternatively from step 5 above:
+5.
+![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/1d5d89b1-e1c0-4507-8077-347ffd7018af)
 
-[//]: # (![image]&#40;https://user-images.githubusercontent.com/48218839/145986669-58fecb10-16b3-4822-9c8c-6efd3bff325a.png&#41;)
+6.
+![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/b8dc83d5-71f4-4a9d-b390-b262af02d13b)
 
-[//]: # ()
-[//]: # (5.)
-
-[//]: # (![image]&#40;https://user-images.githubusercontent.com/48218839/145986756-de78aad1-a215-42a0-a71b-aff8ee771103.png&#41;)
-
-[//]: # ()
-[//]: # (6.)
-
-[//]: # (![image]&#40;https://user-images.githubusercontent.com/48218839/145986873-fbae18cd-ce3d-46fa-aa10-c9d51aa0cabc.png&#41;)
-
-[//]: # ()
-[//]: # (7.)
-
-[//]: # (![image]&#40;https://user-images.githubusercontent.com/48218839/145987158-977dac92-15bb-40e5-84b1-835f836b020f.png&#41;)
+7.
+![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/50b9ef63-26de-40c7-9e12-30af04c9a03e)
 
 Unit and Integration Tests
 ------------
