@@ -27,7 +27,7 @@ class VatInfoControllerSpec extends BaseSpec {
         desAddress = DesAddress("line1", None, None, None, None, Some("AA11 1AA"), "GB"),
         partOfVatGroup = false,
         organisationName = Some("Foo"),
-        singleMarketIndicator = Some(false),
+        singleMarketIndicator = false,
         individualName = None,
         deregistrationDecisionDate = None
       )

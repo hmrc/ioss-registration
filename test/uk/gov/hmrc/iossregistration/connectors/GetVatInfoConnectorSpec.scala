@@ -73,7 +73,7 @@ class GetVatInfoConnectorSpec extends BaseSpec with WireMockHelper {
           desAddress = DesAddress("line 1", Some("line 2"), None, None, None, Some("AA11 1AA"), "GB"),
           partOfVatGroup = true,
           organisationName = Some("Foo"),
-          singleMarketIndicator = Some(false),
+          singleMarketIndicator = false,
           individualName = None,
           deregistrationDecisionDate = None
         )

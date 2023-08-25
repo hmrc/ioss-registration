@@ -29,7 +29,7 @@ case class VatCustomerInfo(
                             partOfVatGroup: Boolean,
                             organisationName: Option[String],
                             individualName: Option[String],
-                            singleMarketIndicator: Option[Boolean],
+                            singleMarketIndicator: Boolean,
                             deregistrationDecisionDate: Option[LocalDate]
                           )
 
@@ -43,7 +43,7 @@ object VatCustomerInfo {
                               individualFirstName: Option[String],
                               individualMiddleName: Option[String],
                               individualLastName: Option[String],
-                              singleMarketIndicator: Option[Boolean],
+                              singleMarketIndicator: Boolean,
                               deregistrationDecisionDate: Option[LocalDate]
                             ): VatCustomerInfo = {
 
@@ -78,7 +78,7 @@ object VatCustomerInfo {
         (__ \ "approvedInformation" \ "customerDetails" \ "individual" \ "firstName").readNullable[String] and
         (__ \ "approvedInformation" \ "customerDetails" \ "individual" \ "middleName").readNullable[String] and
         (__ \ "approvedInformation" \ "customerDetails" \ "individual" \ "lastName").readNullable[String] and
-        (__ \ "approvedInformation" \ "customerDetails" \ "singleMarketIndicator").readNullable[Boolean] and
+        (__ \ "approvedInformation" \ "customerDetails" \ "singleMarketIndicator").read[Boolean] and
         (__ \ "approvedInformation" \ "deregistration" \ "effectDateOfCancellation").readNullable[LocalDate]
       ) (VatCustomerInfo.fromDesPayload _)
 
