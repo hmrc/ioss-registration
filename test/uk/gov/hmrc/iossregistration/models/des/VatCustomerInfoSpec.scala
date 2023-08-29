@@ -50,7 +50,7 @@ class VatCustomerInfoSpec extends BaseSpec {
           registrationDate = Some(LocalDate.of(2020, 1, 2)),
           partOfVatGroup = true,
           organisationName = Some("Foo"),
-          singleMarketIndicator = Some(false),
+          singleMarketIndicator = false,
           individualName = Some("A B C"),
           deregistrationDecisionDate = Some(LocalDate.of(2022, 8, 21))
         )
@@ -95,7 +95,7 @@ class VatCustomerInfoSpec extends BaseSpec {
           registrationDate = Some(LocalDate.of(2020, 1, 2)),
           partOfVatGroup = false,
           organisationName = Some("Foo"),
-          singleMarketIndicator = Some(false),
+          singleMarketIndicator = false,
           individualName = Some("A B C"),
           deregistrationDecisionDate = Some(LocalDate.of(2022, 8, 21)),
         )
@@ -113,7 +113,9 @@ class VatCustomerInfoSpec extends BaseSpec {
                 "countryCode" -> "CC"
               )
             ),
-            "customerDetails" -> Json.obj()
+            "customerDetails" -> Json.obj(
+            "singleMarketIndicator" -> false
+            )
           )
         )
 
@@ -122,7 +124,7 @@ class VatCustomerInfoSpec extends BaseSpec {
           registrationDate = None,
           partOfVatGroup = false,
           organisationName = None,
-          singleMarketIndicator = None,
+          singleMarketIndicator = false,
           individualName = None,
           deregistrationDecisionDate = None
         )
