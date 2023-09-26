@@ -38,6 +38,7 @@ class VatCustomerInfoSpec extends BaseSpec {
                 "lastName" -> "C"
               ),
               "singleMarketIndicator" -> false,
+              "overseasIndicator" -> false
             ),
             "deregistration" -> Json.obj(
               "effectDateOfCancellation" -> "2022-08-21"
@@ -52,7 +53,8 @@ class VatCustomerInfoSpec extends BaseSpec {
           organisationName = Some("Foo"),
           singleMarketIndicator = false,
           individualName = Some("A B C"),
-          deregistrationDecisionDate = Some(LocalDate.of(2022, 8, 21))
+          deregistrationDecisionDate = Some(LocalDate.of(2022, 8, 21)),
+          overseasIndicator = false
         )
 
         json.validate[VatCustomerInfo](VatCustomerInfo.desReads) mustBe JsSuccess(expectedResult)
@@ -82,7 +84,8 @@ class VatCustomerInfoSpec extends BaseSpec {
                 "middleName" -> "B",
                 "lastName" -> "C"
               ),
-              "singleMarketIndicator" -> false
+              "singleMarketIndicator" -> false,
+              "overseasIndicator" -> false
             ),
             "deregistration" -> Json.obj(
               "effectDateOfCancellation" -> "2022-08-21"
@@ -98,6 +101,7 @@ class VatCustomerInfoSpec extends BaseSpec {
           singleMarketIndicator = false,
           individualName = Some("A B C"),
           deregistrationDecisionDate = Some(LocalDate.of(2022, 8, 21)),
+          overseasIndicator = false
         )
 
         json.validate[VatCustomerInfo](VatCustomerInfo.desReads) mustBe JsSuccess(expectedResult)
@@ -114,8 +118,10 @@ class VatCustomerInfoSpec extends BaseSpec {
               )
             ),
             "customerDetails" -> Json.obj(
-            "singleMarketIndicator" -> false
-            )
+            "singleMarketIndicator" -> false,
+              "overseasIndicator" -> false
+            ),
+
           )
         )
 
@@ -126,7 +132,8 @@ class VatCustomerInfoSpec extends BaseSpec {
           organisationName = None,
           singleMarketIndicator = false,
           individualName = None,
-          deregistrationDecisionDate = None
+          deregistrationDecisionDate = None,
+          overseasIndicator = false
         )
 
         json.validate[VatCustomerInfo](VatCustomerInfo.desReads) mustBe JsSuccess(expectedResult)

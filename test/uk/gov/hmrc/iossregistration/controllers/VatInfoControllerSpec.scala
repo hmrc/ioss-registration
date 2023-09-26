@@ -29,7 +29,8 @@ class VatInfoControllerSpec extends BaseSpec {
         organisationName = Some("Foo"),
         singleMarketIndicator = false,
         individualName = None,
-        deregistrationDecisionDate = None
+        deregistrationDecisionDate = None,
+        overseasIndicator = false
       )
 
       val mockConnector = mock[GetVatInfoConnector]

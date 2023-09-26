@@ -30,7 +30,8 @@ case class VatCustomerInfo(
                             organisationName: Option[String],
                             individualName: Option[String],
                             singleMarketIndicator: Boolean,
-                            deregistrationDecisionDate: Option[LocalDate]
+                            deregistrationDecisionDate: Option[LocalDate],
+                            overseasIndicator: Boolean
                           )
 
 object VatCustomerInfo {
@@ -44,7 +45,8 @@ object VatCustomerInfo {
                               individualMiddleName: Option[String],
                               individualLastName: Option[String],
                               singleMarketIndicator: Boolean,
-                              deregistrationDecisionDate: Option[LocalDate]
+                              deregistrationDecisionDate: Option[LocalDate],
+                              overseasIndicator: Boolean
                             ): VatCustomerInfo = {
 
     val firstName = individualFirstName.fold("")(fn => s"$fn ")
@@ -65,7 +67,8 @@ object VatCustomerInfo {
         Some(s"$firstName$middleName$lastName")
       },
       singleMarketIndicator = singleMarketIndicator,
-      deregistrationDecisionDate = deregistrationDecisionDate
+      deregistrationDecisionDate = deregistrationDecisionDate,
+      overseasIndicator = overseasIndicator
     )
   }
 
@@ -79,7 +82,8 @@ object VatCustomerInfo {
         (__ \ "approvedInformation" \ "customerDetails" \ "individual" \ "middleName").readNullable[String] and
         (__ \ "approvedInformation" \ "customerDetails" \ "individual" \ "lastName").readNullable[String] and
         (__ \ "approvedInformation" \ "customerDetails" \ "singleMarketIndicator").read[Boolean] and
-        (__ \ "approvedInformation" \ "deregistration" \ "effectDateOfCancellation").readNullable[LocalDate]
+        (__ \ "approvedInformation" \ "deregistration" \ "effectDateOfCancellation").readNullable[LocalDate] and
+        (__ \ "approvedInformation" \ "customerDetails" \ "overseasIndicator").read[Boolean]
       ) (VatCustomerInfo.fromDesPayload _)
 
   implicit val writes: OWrites[VatCustomerInfo] =
