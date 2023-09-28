@@ -118,7 +118,7 @@ class VatCustomerInfoSpec extends BaseSpec {
               )
             ),
             "customerDetails" -> Json.obj(
-            "singleMarketIndicator" -> false,
+              "singleMarketIndicator" -> false,
               "overseasIndicator" -> false
             ),
 
