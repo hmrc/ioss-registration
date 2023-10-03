@@ -44,7 +44,8 @@ class GetVatInfoConnectorSpec extends BaseSpec with WireMockHelper {
           |      "effectiveRegistrationDate": "2000-01-01",
           |      "partyType": "Z2",
           |      "organisationName": "Foo",
-          |      "singleMarketIndicator": false
+          |      "singleMarketIndicator": false,
+          |      "overseasIndicator": false
           |    },
           |    "PPOB": {
           |      "address": {
@@ -75,7 +76,8 @@ class GetVatInfoConnectorSpec extends BaseSpec with WireMockHelper {
           organisationName = Some("Foo"),
           singleMarketIndicator = false,
           individualName = None,
-          deregistrationDecisionDate = None
+          deregistrationDecisionDate = None,
+          overseasIndicator = false
         )
 
         result mustBe Right(expectedResult)
