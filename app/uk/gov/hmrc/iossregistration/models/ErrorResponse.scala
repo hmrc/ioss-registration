@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models.core
+package uk.gov.hmrc.iossregistration.models
 
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.iossregistration.models.core.{EisDisplayErrorResponse, EisErrorResponse}
 
 sealed trait ErrorResponse {
   val body: String

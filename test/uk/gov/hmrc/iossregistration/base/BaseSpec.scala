@@ -28,8 +28,8 @@ import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthAction, FakeAuthAction}
 import uk.gov.hmrc.iossregistration.generators.Generators
 import uk.gov.hmrc.iossregistration.models.core.Match.dateFormatter
-import uk.gov.hmrc.iossregistration.models.{BankDetails, Bic, Country, Iban, Website}
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEuRegistrationDetails, EtmpPreviousEuRegistrationDetails, EtmpSchemeDetails, SchemeType}
+import uk.gov.hmrc.iossregistration.models.etmp._
+import uk.gov.hmrc.iossregistration.models._
 
 import java.time.{Clock, LocalDate, ZoneId}
 
@@ -53,7 +53,7 @@ trait BaseSpec
 
   val userId: String = "12345-userId"
 
-  def etmpEuRegistrationDetails: EtmpEuRegistrationDetails = EtmpEuRegistrationDetails(
+  val etmpEuRegistrationDetails: EtmpEuRegistrationDetails = EtmpEuRegistrationDetails(
     countryOfRegistration = arbitrary[Country].sample.value.code,
     traderId = arbitraryVatNumberTraderId.arbitrary.sample.value,
     tradingName = arbitraryEtmpTradingName.arbitrary.sample.value.tradingName,
@@ -64,14 +64,14 @@ trait BaseSpec
     postcode = Some(arbitrary[String].sample.value)
   )
 
-  def etmpEuPreviousRegistrationDetails: EtmpPreviousEuRegistrationDetails = EtmpPreviousEuRegistrationDetails(
+  val etmpEuPreviousRegistrationDetails: EtmpPreviousEuRegistrationDetails = EtmpPreviousEuRegistrationDetails(
     issuedBy = arbitrary[Country].sample.value.code,
     registrationNumber = arbitrary[String].sample.value,
     schemeType = arbitrary[SchemeType].sample.value,
     intermediaryNumber = Some(arbitrary[String].sample.value)
   )
 
-  def etmpSchemeDetails: EtmpSchemeDetails = EtmpSchemeDetails(
+  val etmpSchemeDetails: EtmpSchemeDetails = EtmpSchemeDetails(
     commencementDate = LocalDate.now.format(dateFormatter),
     euRegistrationDetails = Seq(etmpEuRegistrationDetails),
     previousEURegistrationDetails = Seq(etmpEuPreviousRegistrationDetails),
@@ -83,10 +83,18 @@ trait BaseSpec
     nonCompliantPayments = Some(arbitrary[String].sample.value)
   )
 
-  def genBankDetails: BankDetails = BankDetails(
+  val genBankDetails: BankDetails = BankDetails(
     accountName = arbitrary[String].sample.value,
     bic = Some(arbitrary[Bic].sample.value),
     iban = arbitrary[Iban].sample.value
+  )
+
+  val etmpRegistrationRequest: EtmpRegistrationRequest = EtmpRegistrationRequest(
+    administration = arbitrary[EtmpAdministration].sample.value,
+    customerIdentification = arbitrary[EtmpCustomerIdentification].sample.value,
+    tradingNames = Seq(arbitrary[EtmpTradingName].sample.value),
+    schemeDetails = etmpSchemeDetails,
+    bankDetails = genBankDetails
   )
 }
 

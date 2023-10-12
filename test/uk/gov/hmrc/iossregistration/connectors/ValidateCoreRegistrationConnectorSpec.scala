@@ -25,6 +25,8 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.iossregistration.base.BaseSpec
+import uk.gov.hmrc.iossregistration.models
+import uk.gov.hmrc.iossregistration.models.{EisError, UnexpectedResponseStatus}
 import uk.gov.hmrc.iossregistration.models.core._
 
 import java.time.{Instant, LocalDate}
@@ -155,7 +157,7 @@ class ValidateCoreRegistrationConnectorSpec extends BaseSpec with WireMockHelper
 
         val errorResponse = result.left.toOption.get.asInstanceOf[EisError].eisErrorResponse
 
-        val expectedResponse = EisError(
+        val expectedResponse = models.EisError(
           EisErrorResponse(
             errorResponse.timestamp,
             s"$status",

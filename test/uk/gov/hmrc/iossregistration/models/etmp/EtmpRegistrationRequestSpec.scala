@@ -1,16 +1,15 @@
 package uk.gov.hmrc.iossregistration.models.etmp
 
-import org.scalacheck.Arbitrary.arbitrary
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 
 class EtmpRegistrationRequestSpec extends BaseSpec {
 
-  private val administration = arbitrary[EtmpAdministration].sample.value
-  private val customerIdentification = arbitrary[EtmpCustomerIdentification].sample.value
-  private val tradingNames = Seq(arbitrary[EtmpTradingName].sample.value)
-  private val schemeDetails = etmpSchemeDetails
-  private val bankDetails = genBankDetails
+  private val administration = etmpRegistrationRequest.administration
+  private val customerIdentification = etmpRegistrationRequest.customerIdentification
+  private val tradingNames = etmpRegistrationRequest.tradingNames
+  private val schemeDetails = etmpRegistrationRequest.schemeDetails
+  private val bankDetails = etmpRegistrationRequest.bankDetails
 
 
   "EtmpRegistrationRequest" - {

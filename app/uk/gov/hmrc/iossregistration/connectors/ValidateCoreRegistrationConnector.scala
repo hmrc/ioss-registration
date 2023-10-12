@@ -23,7 +23,8 @@ import uk.gov.hmrc.iossregistration.config.CoreValidationConfig
 import uk.gov.hmrc.iossregistration.connectors.ValidateCoreRegistrationHttpParser.{ValidateCoreRegistrationReads, ValidateCoreRegistrationResponse}
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.metrics.{MetricsEnum, ServiceMetrics}
-import uk.gov.hmrc.iossregistration.models.core.{CoreRegistrationRequest, EisError, EisErrorResponse}
+import uk.gov.hmrc.iossregistration.models
+import uk.gov.hmrc.iossregistration.models.core.{CoreRegistrationRequest, EisErrorResponse}
 
 import java.time.Instant
 import java.util.UUID
@@ -71,7 +72,7 @@ class ValidateCoreRegistrationConnector @Inject()(
             s"body of response was: ${e.message} with self-generated CorrelationId $selfGeneratedRandomUUID " +
             s"and original correlation ID we tried to pass $correlationId"
         )
-        Left(EisError(
+        Left(models.EisError(
           EisErrorResponse(Instant.now(), s"UNEXPECTED_${e.responseCode.toString}", e.message)
         ))
     }

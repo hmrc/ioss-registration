@@ -9,9 +9,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.GetVatInfoConnector
-import uk.gov.hmrc.iossregistration.models.DesAddress
-import uk.gov.hmrc.iossregistration.models.core._
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
+import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 
 import java.time.LocalDate

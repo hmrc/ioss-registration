@@ -20,6 +20,8 @@ import play.api.http.Status.OK
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import uk.gov.hmrc.iossregistration.logging.Logging
+import uk.gov.hmrc.iossregistration.models
+import uk.gov.hmrc.iossregistration.models.{EisError, ErrorResponse, InvalidJson, UnexpectedResponseStatus}
 import uk.gov.hmrc.iossregistration.models.core._
 
 import java.time.Instant
@@ -52,7 +54,7 @@ object ValidateCoreRegistrationHttpParser extends Logging {
             response.json.validateOpt[EisErrorResponse] match {
               case JsSuccess(Some(eisErrorResponse), _) =>
                 logger.error(s"There was an error from EIS when submitting a validation with status $status and $eisErrorResponse")
-                Left(EisError(eisErrorResponse))
+                Left(models.EisError(eisErrorResponse))
 
               case _ =>
                 logger.error(s"Received UnexpectedResponseStatus with status code $status with body ${response.body}")
