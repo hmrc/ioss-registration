@@ -59,7 +59,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
           .withRequestBody(equalTo(requestJson))
           .willReturn(aResponse().withStatus(CREATED)
             .withBody(Json.stringify(Json.toJson(
-              EtmpEnrolmentResponse(now, Some(formBundleNumber), vrn.vrn, Some(iossReference), businessPartner)))))
+              EtmpEnrolmentResponse(now, Some(formBundleNumber), vrn.vrn, iossReference, businessPartner)))))
 
       )
 
@@ -67,7 +67,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
         val connector = app.injector.instanceOf[RegistrationConnector]
         val result = connector.create(etmpRegistrationRequest).futureValue
 
-        result mustBe Right(EtmpEnrolmentResponse(now, Some(formBundleNumber), vrn.vrn, Some(iossReference), businessPartner))
+        result mustBe Right(EtmpEnrolmentResponse(now, Some(formBundleNumber), vrn.vrn, iossReference, businessPartner))
       }
     }
 

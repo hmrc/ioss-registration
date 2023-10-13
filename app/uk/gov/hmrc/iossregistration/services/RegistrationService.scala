@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models.etmp
+package uk.gov.hmrc.iossregistration.services
 
-import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.iossregistration.connectors.RegistrationConnector
+import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.CreateEtmpRegistrationResponse
+import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
 
-case class EtmpEnrolmentErrorResponse(errors: EtmpErrorDetail)
+import javax.inject.Inject
+import scala.concurrent.Future
 
-case class EtmpErrorDetail(processingDate: String, code: String, text: String)
-
-object EtmpEnrolmentErrorResponse {
-  implicit val format: OFormat[EtmpEnrolmentErrorResponse] = Json.format[EtmpEnrolmentErrorResponse]
-  val alreadyActiveSubscriptionErrorCode = "007"
-}
-
-object EtmpErrorDetail {
-  implicit val format: OFormat[EtmpErrorDetail] = Json.format[EtmpErrorDetail]
+class RegistrationService @Inject()(registrationConnector: RegistrationConnector) {
+  def createRegistration(etmpRegistrationRequest: EtmpRegistrationRequest): Future[CreateEtmpRegistrationResponse] =
+    registrationConnector.create(etmpRegistrationRequest)
 }

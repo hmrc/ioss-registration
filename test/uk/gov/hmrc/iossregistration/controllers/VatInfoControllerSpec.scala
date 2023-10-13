@@ -17,6 +17,8 @@ import java.time.LocalDate
 
 class VatInfoControllerSpec extends BaseSpec {
 
+  private val mockConnector = mock[GetVatInfoConnector]
+
   ".get" - {
 
     "must return OK and vat information when the connector returns vat info" in {
@@ -31,8 +33,6 @@ class VatInfoControllerSpec extends BaseSpec {
         deregistrationDecisionDate = None,
         overseasIndicator = false
       )
-
-      val mockConnector = mock[GetVatInfoConnector]
 
       when(mockConnector.getVatCustomerDetails(any())(any())) thenReturn Right(vatInfo).toFuture
 
@@ -52,8 +52,6 @@ class VatInfoControllerSpec extends BaseSpec {
 
     "must return NotFound when the connector returns Not Found" in {
 
-      val mockConnector = mock[GetVatInfoConnector]
-
       when(mockConnector.getVatCustomerDetails(any())(any())) thenReturn Left(NotFound).toFuture
 
       val app = applicationBuilder.overrides(bind[GetVatInfoConnector].toInstance(mockConnector)).build()
@@ -70,7 +68,6 @@ class VatInfoControllerSpec extends BaseSpec {
     "must return INTERNAL_SERVER_ERROR when the connector returns a failure other than Not Found" in {
 
       val response = Gen.oneOf(InvalidJson, ServerError, ServiceUnavailable, InvalidVrn).sample.value
-      val mockConnector = mock[GetVatInfoConnector]
 
       when(mockConnector.getVatCustomerDetails(any())(any())) thenReturn Left(response).toFuture
 

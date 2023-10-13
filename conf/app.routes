@@ -3,3 +3,5 @@
 POST        /validate-core-registration                       uk.gov.hmrc.iossregistration.controllers.ValidateCoreRegistrationController.post()
 
 GET         /vat-information                                  uk.gov.hmrc.iossregistration.controllers.VatInfoController.get()
+
+POST        /create                                           uk.gov.hmrc.iossregistration.controllers.RegistrationController.create()

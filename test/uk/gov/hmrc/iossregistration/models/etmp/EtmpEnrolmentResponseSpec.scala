@@ -12,7 +12,7 @@ class EtmpEnrolmentResponseSpec extends BaseSpec {
   private val processingDateTime = LocalDateTime.now()
   private val formBundleNumber = Some(arbitrary[String].sample.value)
   private val genVrn = arbitrary[Vrn].sample.value
-  private val iossReference = Some(arbitrary[TaxRefTraderID].sample.value)
+  private val iossReference = arbitrary[TaxRefTraderID].sample.value
   private val businessPartner = arbitrary[String].sample.value
 
   "EtmpEnrolmentResponse" - {
@@ -25,7 +25,7 @@ class EtmpEnrolmentResponseSpec extends BaseSpec {
           "processingDateTime" -> processingDateTime,
           "formBundleNumber" -> formBundleNumber,
           "vrn" -> genVrn.vrn,
-          "iossReference" -> iossReference.map(_.taxReferenceNumber),
+          "iossReference" -> iossReference.taxReferenceNumber,
           "businessPartner" -> businessPartner
         )
 
@@ -33,7 +33,7 @@ class EtmpEnrolmentResponseSpec extends BaseSpec {
           processingDateTime = processingDateTime,
           formBundleNumber = formBundleNumber,
           vrn = genVrn.vrn,
-          iossReference = iossReference.map(_.taxReferenceNumber),
+          iossReference = iossReference.taxReferenceNumber,
           businessPartner = businessPartner
         )
 
@@ -46,6 +46,7 @@ class EtmpEnrolmentResponseSpec extends BaseSpec {
         val json = Json.obj(
           "processingDateTime" -> processingDateTime,
           "vrn" -> genVrn.vrn,
+          "iossReference" -> iossReference.taxReferenceNumber,
           "businessPartner" -> businessPartner
         )
 
@@ -53,7 +54,7 @@ class EtmpEnrolmentResponseSpec extends BaseSpec {
           processingDateTime = processingDateTime,
           formBundleNumber = None,
           vrn = genVrn.vrn,
-          iossReference = None,
+          iossReference = iossReference.taxReferenceNumber,
           businessPartner = businessPartner
         )
 
