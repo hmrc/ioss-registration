@@ -19,10 +19,10 @@ package uk.gov.hmrc.iossregistration.connectors
 import play.api.http.HeaderNames._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException}
 import uk.gov.hmrc.iossregistration.config.IfConfig
+import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.{CreateEtmpRegistrationResponse, CreateRegistrationWithEnrolment, serviceName}
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.UnexpectedResponseStatus
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
-import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.{CreateEtmpRegistrationResponse, CreateRegistrationWithEnrolment, serviceName}
 
 import java.util.UUID
 import javax.inject.Inject

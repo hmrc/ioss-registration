@@ -2,6 +2,7 @@ package uk.gov.hmrc.iossregistration.models.etmp
 
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.iossregistration.base.BaseSpec
+import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpEuRegistrationDetails
 
 class EtmpEuRegistrationDetailsSpec extends BaseSpec {
 

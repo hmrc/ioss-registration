@@ -16,6 +16,7 @@ import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.serviceNam
 import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.binders.Format.eisDateTimeFormatter
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpErrorDetail}
+import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpRegistrationRequest
 
 import java.time.LocalDateTime
 

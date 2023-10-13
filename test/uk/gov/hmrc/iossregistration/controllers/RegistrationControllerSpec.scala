@@ -1,6 +1,6 @@
 package uk.gov.hmrc.iossregistration.controllers
 
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{eq => eqTo}
 import play.api.http.Status.CREATED
 import play.api.inject.bind
 import play.api.libs.json.Json
@@ -10,6 +10,7 @@ import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpEnrolmentResponse
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, ServiceUnavailable}
 import uk.gov.hmrc.iossregistration.services.RegistrationService
+import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpRegistrationRequest
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 
 import java.time.LocalDateTime
