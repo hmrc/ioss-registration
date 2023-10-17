@@ -35,7 +35,7 @@ class ValidateCoreRegistrationConnectorSpec extends BaseSpec with WireMockHelper
 
   private val timestamp = Instant.now
 
-  def getValidateCoreRegistrationUrl = s"/ioss-registration-stub/vec/ossregistration/regvalidation/v1"
+  def getValidateCoreRegistrationUrl = s"/ioss-registration-stub/vec/iossregistration/iossregvalidation/v1"
 
   private def application: Application =
     new GuiceApplicationBuilder()
