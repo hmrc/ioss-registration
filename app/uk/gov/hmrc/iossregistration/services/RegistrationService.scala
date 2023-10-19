@@ -24,6 +24,7 @@ import javax.inject.Inject
 import scala.concurrent.Future
 
 class RegistrationService @Inject()(registrationConnector: RegistrationConnector) {
+
   def createRegistration(etmpRegistrationRequest: EtmpRegistrationRequest): Future[CreateEtmpRegistrationResponse] =
-    registrationConnector.create(etmpRegistrationRequest)
+    registrationConnector.createRegistration(etmpRegistrationRequest)
 }

@@ -19,9 +19,9 @@ class RegistrationControllerSpec extends BaseSpec {
 
   private val mockRegistrationService: RegistrationService = mock[RegistrationService]
 
-  private lazy val createRegistrationRoute: String = routes.RegistrationController.create().url
+  private lazy val createRegistrationRoute: String = routes.RegistrationController.createRegistration().url
 
-  ".create" - {
+  ".createRegistration" - {
 
     "must return CREATED with a response payload when given a valid payload and the registration is created successfully" in {
 

@@ -26,8 +26,8 @@ case class IfConfig @Inject()(
                                genericConfig: EisGenericConfig
                              ) {
 
-  val baseUrl: Service = config.get[Service]("microservice.services.if")
-  private val authorizationToken: String = config.get[String]("microservice.services.if.authorizationToken")
+  val baseUrl: Service = config.get[Service]("microservice.services.create-registration")
+  private val authorizationToken: String = config.get[String]("microservice.services.create-registration.authorizationToken")
 
   def eisEtmpCreateHeaders(correlationId: String): Seq[(String, String)] = genericConfig.eisEtmpGenericHeaders(correlationId) ++ Seq(
     AUTHORIZATION -> s"Bearer $authorizationToken"

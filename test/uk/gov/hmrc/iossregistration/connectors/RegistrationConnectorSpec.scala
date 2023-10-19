@@ -25,10 +25,10 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
   private def application: Application =
     new GuiceApplicationBuilder()
       .configure(
-        "microservice.services.if.host" -> "127.0.0.1",
-        "microservice.services.if.port" -> server.port,
-        "microservice.services.if.authorizationToken" -> "auth-token",
-        "microservice.services.if.environment" -> "test-environment"
+        "microservice.services.create-registration.host" -> "127.0.0.1",
+        "microservice.services.create-registration.port" -> server.port,
+        "microservice.services.create-registration.authorizationToken" -> "auth-token",
+        "microservice.services.create-registration.environment" -> "test-environment"
       )
       .build()
 
@@ -39,7 +39,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
   private val timeOutSpan = 30
 
-  ".create" - {
+  ".createRegistration" - {
 
     "should return an ETMP Enrolment Response correctly" in {
 
@@ -66,7 +66,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
       running(app) {
         val connector = app.injector.instanceOf[RegistrationConnector]
-        val result = connector.create(etmpRegistrationRequest).futureValue
+        val result = connector.createRegistration(etmpRegistrationRequest).futureValue
 
         result mustBe Right(EtmpEnrolmentResponse(now, Some(formBundleNumber), vrn.vrn, iossReference, businessPartner))
       }
@@ -90,7 +90,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
       running(app) {
         val connector = app.injector.instanceOf[RegistrationConnector]
-        val result = connector.create(etmpRegistrationRequest).futureValue
+        val result = connector.createRegistration(etmpRegistrationRequest).futureValue
         result mustBe Left(InvalidJson)
       }
     }
@@ -114,7 +114,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
       running(app) {
         val connector = app.injector.instanceOf[RegistrationConnector]
-        val result = connector.create(etmpRegistrationRequest).futureValue
+        val result = connector.createRegistration(etmpRegistrationRequest).futureValue
         result mustBe Left(EtmpEnrolmentError("123", "error"))
       }
     }
@@ -136,7 +136,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
       running(app) {
         val connector = app.injector.instanceOf[RegistrationConnector]
-        val result = connector.create(etmpRegistrationRequest).futureValue
+        val result = connector.createRegistration(etmpRegistrationRequest).futureValue
         result mustBe Left(UnexpectedResponseStatus(UNPROCESSABLE_ENTITY, "Unexpected response from etmp registration, received status 422"))
       }
     }
@@ -160,7 +160,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
           running(app) {
             val connector = app.injector.instanceOf[RegistrationConnector]
-            val result = connector.create(etmpRegistrationRequest).futureValue
+            val result = connector.createRegistration(etmpRegistrationRequest).futureValue
             result mustBe Left(UnexpectedResponseStatus(error._1, s"Unexpected response from etmp registration, received status ${error._1}"))
           }
         }
@@ -184,7 +184,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
       running(app) {
         val connector = app.injector.instanceOf[RegistrationConnector]
-        whenReady(connector.create(etmpRegistrationRequest), Timeout(Span(timeOutSpan, Seconds))) { exp =>
+        whenReady(connector.createRegistration(etmpRegistrationRequest), Timeout(Span(timeOutSpan, Seconds))) { exp =>
           exp.isLeft mustBe true
           exp.left.toOption.get mustBe a[ErrorResponse]
         }

@@ -37,7 +37,7 @@ case class RegistrationConnector @Inject()(
 
   private def createHeaders(correlationId: String): Seq[(String, String)] = ifConfig.eisEtmpCreateHeaders(correlationId)
 
-  def create(registration: EtmpRegistrationRequest): Future[CreateEtmpRegistrationResponse] = {
+  def createRegistration(registration: EtmpRegistrationRequest): Future[CreateEtmpRegistrationResponse] = {
 
     val correlationId = UUID.randomUUID().toString
     val headersWithCorrelationId = createHeaders(correlationId)

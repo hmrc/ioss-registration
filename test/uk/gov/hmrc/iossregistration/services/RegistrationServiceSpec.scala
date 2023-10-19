@@ -33,7 +33,7 @@ class RegistrationServiceSpec extends BaseSpec with WireMockHelper with BeforeAn
           businessPartner = "test businessPartner"
         )
 
-      when(mockRegistrationConnector.create(etmpRegistrationRequest)) thenReturn Right(etmpEnrolmentResponse).toFuture
+      when(mockRegistrationConnector.createRegistration(etmpRegistrationRequest)) thenReturn Right(etmpEnrolmentResponse).toFuture
 
       val app = applicationBuilder
         .build()
@@ -41,7 +41,7 @@ class RegistrationServiceSpec extends BaseSpec with WireMockHelper with BeforeAn
       running(app) {
 
         registrationService.createRegistration(etmpRegistrationRequest).futureValue mustBe Right(etmpEnrolmentResponse)
-        verify(mockRegistrationConnector, times(1)).create(eqTo(etmpRegistrationRequest))
+        verify(mockRegistrationConnector, times(1)).createRegistration(eqTo(etmpRegistrationRequest))
       }
     }
   }
