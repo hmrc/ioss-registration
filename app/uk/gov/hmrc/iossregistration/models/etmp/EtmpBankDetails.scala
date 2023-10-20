@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models
+package uk.gov.hmrc.iossregistration.models.etmp
 
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.iossregistration.models.{Bic, Iban}
 
-case class Website(websiteAddress: String)
+// TODO Tests
+case class EtmpBankDetails(accountName: String, bic: Option[Bic], iban: Iban)
 
-object Website {
+object EtmpBankDetails {
 
-  implicit val format: OFormat[Website] = Json.format[Website]
+  implicit val format: OFormat[EtmpBankDetails] = Json.format[EtmpBankDetails]
 }

@@ -32,7 +32,7 @@ object RegistrationData extends BaseSpec {
     commencementDate = LocalDate.now.format(dateFormatter),
     euRegistrationDetails = Seq(etmpEuRegistrationDetails),
     previousEURegistrationDetails = Seq(etmpEuPreviousRegistrationDetails),
-    websites = Seq(arbitrary[Website].sample.value),
+    websites = Seq(arbitrary[EtmpWebsite].sample.value),
     contactName = arbitrary[String].sample.value,
     businessTelephoneNumber = arbitrary[String].sample.value,
     businessEmailId = arbitrary[String].sample.value,

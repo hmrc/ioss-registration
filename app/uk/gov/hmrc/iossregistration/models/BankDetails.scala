@@ -20,7 +20,6 @@ import play.api.libs.json.{Json, OFormat}
 
 case class BankDetails(accountName: String, bic: Option[Bic], iban: Iban)
 
-//TODO Test
 object BankDetails {
 
   implicit val format: OFormat[BankDetails] = Json.format[BankDetails]

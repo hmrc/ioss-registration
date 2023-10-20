@@ -35,7 +35,6 @@ case class RegistrationController @Inject()(
                                              clock: Clock
                                            )(implicit ec: ExecutionContext) extends BackendController(cc) with Logging {
 
-  // TODO - > Need to create Audit in reg service
   def createRegistration(): Action[EtmpRegistrationRequest] = cc.authAndRequireVat()(parse.json[EtmpRegistrationRequest]).async {
     implicit request =>
       registrationService.createRegistration(request.body).map {

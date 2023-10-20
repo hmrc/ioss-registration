@@ -83,11 +83,11 @@ trait Generators {
       } yield Vrn(chars.mkString(""))
     }
 
-  implicit lazy val arbitraryWebsite: Arbitrary[Website] =
+  implicit lazy val arbitraryWebsite: Arbitrary[EtmpWebsite] =
     Arbitrary {
       for {
         websiteAddress <- Gen.alphaStr
-      } yield Website(websiteAddress)
+      } yield EtmpWebsite(websiteAddress)
     }
 
   implicit lazy val arbitraryEtmpTradingName: Arbitrary[EtmpTradingName] =
