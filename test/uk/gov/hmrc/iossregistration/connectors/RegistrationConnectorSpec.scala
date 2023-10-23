@@ -141,7 +141,6 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
       }
     }
 
-
     Seq((NOT_FOUND, NotFound), (CONFLICT, Conflict), (INTERNAL_SERVER_ERROR, ServerError), (BAD_REQUEST, InvalidVrn), (SERVICE_UNAVAILABLE, ServiceUnavailable), (123, UnexpectedResponseStatus(123, s"Unexpected response from ${serviceName}, received status 123")))
       .foreach { error =>
         s"should return correct error response when server responds with ${error._1}" in {
@@ -161,7 +160,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
           running(app) {
             val connector = app.injector.instanceOf[RegistrationConnector]
             val result = connector.createRegistration(etmpRegistrationRequest).futureValue
-            result mustBe Left(UnexpectedResponseStatus(error._1, s"Unexpected response from etmp registration, received status ${error._1}"))
+            result mustBe Left(UnexpectedResponseStatus(error._1, s": Unexpected response from etmp registration, received status ${error._1}"))
           }
         }
       }

@@ -50,7 +50,7 @@ object RegistrationHttpParser extends BaseHttpParser {
           } else {
             logger.error(s"Failed trying to parse empty JSON with status ${response.status} and body ${response.body}")
             logger.warn(s"Unexpected response from core registration, received status $status")
-            Left(UnexpectedResponseStatus(status, s"Unexpected response from ${serviceName}, received status $status"))
+            Left(UnexpectedResponseStatus(status, s": Unexpected response from ${serviceName}, received status $status"))
           }
       }
   }
