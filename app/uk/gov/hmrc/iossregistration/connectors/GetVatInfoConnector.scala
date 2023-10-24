@@ -24,7 +24,7 @@ import uk.gov.hmrc.iossregistration.config.GetVatInfoConfig
 import uk.gov.hmrc.iossregistration.connectors.VatCustomerInfoHttpParser.{VatCustomerInfoReads, VatCustomerInfoResponse}
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.metrics.{MetricsEnum, ServiceMetrics}
-import uk.gov.hmrc.iossregistration.models.core.GatewayTimeout
+import uk.gov.hmrc.iossregistration.models.GatewayTimeout
 
 import java.util.UUID
 import javax.inject.Inject

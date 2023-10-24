@@ -18,9 +18,9 @@ package uk.gov.hmrc.iossregistration.models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Country(code: String, name: String)
+case class BankDetails(accountName: String, bic: Option[Bic], iban: Iban)
 
-object Country {
+object BankDetails {
 
-  implicit val format: OFormat[Country] = Json.format[Country]
+  implicit val format: OFormat[BankDetails] = Json.format[BankDetails]
 }

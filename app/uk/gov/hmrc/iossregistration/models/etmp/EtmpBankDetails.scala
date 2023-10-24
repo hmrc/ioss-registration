@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models
+package uk.gov.hmrc.iossregistration.models.etmp
 
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.iossregistration.models.{Bic, Iban}
 
-case class Country(code: String, name: String)
+case class EtmpBankDetails(accountName: String, bic: Option[Bic], iban: Iban)
 
-object Country {
+object EtmpBankDetails {
 
-  implicit val format: OFormat[Country] = Json.format[Country]
+  implicit val format: OFormat[EtmpBankDetails] = Json.format[EtmpBankDetails]
 }

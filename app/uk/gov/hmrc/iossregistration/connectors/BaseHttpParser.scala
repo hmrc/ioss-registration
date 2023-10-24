@@ -20,7 +20,7 @@ import play.api.http.Status._
 import play.api.libs.json.{JsError, JsSuccess, Reads}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.models.core._
+import uk.gov.hmrc.iossregistration.models._
 
 trait BaseHttpParser extends Logging {
 

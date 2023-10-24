@@ -17,7 +17,7 @@
 package uk.gov.hmrc.iossregistration.connectors
 
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
-import uk.gov.hmrc.iossregistration.models.core.ErrorResponse
+import uk.gov.hmrc.iossregistration.models.ErrorResponse
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
 
 object VatCustomerInfoHttpParser extends BaseHttpParser {

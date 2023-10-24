@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.iossregistration.connectors.GetVatInfoConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
-import uk.gov.hmrc.iossregistration.models.core.{NotFound => DesNotFound}
+import uk.gov.hmrc.iossregistration.models.{NotFound => DesNotFound}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.Inject

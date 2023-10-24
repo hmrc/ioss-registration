@@ -17,15 +17,13 @@
 package uk.gov.hmrc.iossregistration.controllers
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.ValidateCoreRegistrationConnector
-import uk.gov.hmrc.iossregistration.models.core.{CoreRegistrationRequest, CoreRegistrationValidationResult, Match, MatchType, SourceType}
+import uk.gov.hmrc.iossregistration.models.core._
 
 import java.time.LocalDate
 import scala.concurrent.Future

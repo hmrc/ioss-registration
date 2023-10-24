@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models
+package uk.gov.hmrc.iossregistration.models.etmp
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Country(code: String, name: String)
+case class EtmpPreviousEuRegistrationDetails(
+                                              issuedBy: String,
+                                              registrationNumber: String,
+                                              schemeType: SchemeType,
+                                              intermediaryNumber: Option[String] = None
+                                            )
 
-object Country {
+object EtmpPreviousEuRegistrationDetails {
 
-  implicit val format: OFormat[Country] = Json.format[Country]
+  implicit val format: OFormat[EtmpPreviousEuRegistrationDetails] = Json.format[EtmpPreviousEuRegistrationDetails]
 }
+

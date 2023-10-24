@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models
+package uk.gov.hmrc.iossregistration.models.etmp
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Country(code: String, name: String)
+case class EtmpEnrolmentErrorResponse(errors: EtmpErrorDetail)
 
-object Country {
+case class EtmpErrorDetail(processingDate: String, code: String, text: String)
 
-  implicit val format: OFormat[Country] = Json.format[Country]
+object EtmpEnrolmentErrorResponse {
+  implicit val format: OFormat[EtmpEnrolmentErrorResponse] = Json.format[EtmpEnrolmentErrorResponse]
+  val alreadyActiveSubscriptionErrorCode = "007"
+}
+
+object EtmpErrorDetail {
+  implicit val format: OFormat[EtmpErrorDetail] = Json.format[EtmpErrorDetail]
 }

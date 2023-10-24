@@ -17,14 +17,15 @@
 package uk.gov.hmrc.iossregistration.base
 
 import org.mockito.MockitoSugar
-import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
+import org.scalatest.{OptionValues, TryValues}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthAction, FakeAuthAction}
+import uk.gov.hmrc.iossregistration.generators.Generators
 
 import java.time.{Clock, LocalDate, ZoneId}
 
@@ -35,7 +36,8 @@ trait BaseSpec
     with OptionValues
     with ScalaFutures
     with IntegrationPatience
-    with MockitoSugar {
+    with MockitoSugar
+    with Generators {
 
   protected val vrn: Vrn = Vrn("123456789")
 
@@ -46,7 +48,6 @@ trait BaseSpec
       .overrides(bind[AuthAction].to[FakeAuthAction])
 
   val userId: String = "12345-userId"
-
 }
 
 

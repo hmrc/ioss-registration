@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models
+package uk.gov.hmrc.iossregistration.models.etmp
 
-import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.iossregistration.models.{Enumerable, WithName}
 
-case class Country(code: String, name: String)
+sealed trait EtmpMessageType
 
-object Country {
+object EtmpMessageType extends Enumerable.Implicits {
 
-  implicit val format: OFormat[Country] = Json.format[Country]
+  case object IOSSSubscriptionCreate extends WithName("IOSSSubscriptionCreate") with EtmpMessageType
+
+  val values: Seq[EtmpMessageType] = Seq(
+    IOSSSubscriptionCreate
+  )
+
+  implicit val enumerable: Enumerable[EtmpMessageType] =
+    Enumerable(values.map(v => v.toString -> v): _*)
 }

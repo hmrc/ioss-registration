@@ -9,9 +9,8 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.base.BaseSpec
-import uk.gov.hmrc.iossregistration.models.DesAddress
-import uk.gov.hmrc.iossregistration.models.core._
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
+import uk.gov.hmrc.iossregistration.models._
 
 import java.time.LocalDate
 
