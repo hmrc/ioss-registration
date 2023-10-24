@@ -32,4 +32,7 @@ class AppConfig @Inject()(config: Configuration) {
   val externalEntryTtlDays: Int = config.get[Int]("features.externalEntry.ttlInDays")
   val externalEntryJourneyStartReturnUrl: String = config.get[String]("features.externalEntry.urls.journeyStart")
   val externalEntryNoMoreWelshReturnUrl: String = config.get[String]("features.externalEntry.urls.noMoreWelshJourneyStart")
+
+  val encryptionKey: String = config.get[String]("mongodb.encryption.key")
+  val cacheTtl: Int = config.get[Int]("mongodb.timeToLiveInDays")
 }

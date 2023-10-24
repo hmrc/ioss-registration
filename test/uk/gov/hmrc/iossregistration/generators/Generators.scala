@@ -2,10 +2,15 @@ package uk.gov.hmrc.iossregistration.generators
 
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.amend.EtmpAmendRegistrationChangeLog
 import uk.gov.hmrc.iossregistration.models.etmp._
+import uk.gov.hmrc.iossregistration.models.requests.{SaveForLaterRequest, SaveForLaterResponse}
+import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
+
+import java.time.{Instant, LocalDate}
 
 import java.time.{LocalDate, LocalDateTime}
 
@@ -267,5 +272,89 @@ trait Generators {
         changeDate <- arbitrary[LocalDateTime]
       } yield EtmpAdminUse(Some(changeDate))
     }
+
+
+  implicit val arbitrarySaveForLaterRequest: Arbitrary[SaveForLaterRequest] = {
+    Arbitrary {
+      for {
+        vrn <- arbitrary[Vrn]
+        data = JsObject(Seq(
+          "test" -> Json.toJson("test")
+        ))
+      } yield SaveForLaterRequest(vrn, data)
+    }
+  }
+
+  implicit val arbitrarySavedUserAnswers: Arbitrary[SavedUserAnswers] =
+    Arbitrary {
+      for {
+        vrn <- arbitrary[Vrn]
+        data = JsObject(Seq(
+          "test" -> Json.toJson("test")
+        ))
+        now = Instant.now
+      } yield SavedUserAnswers(vrn = vrn, data = data, lastUpdated = now)
+    }
+
+
+  implicit val arbitraryVatCustomerInfo: Arbitrary[VatCustomerInfo] =
+    Arbitrary {
+
+      for {
+        registrationDate <- arbitrary[LocalDate]
+        partOfVatGroup <- arbitrary[Boolean]
+        organisationName <- arbitrary[String]
+        individualName <- arbitrary[String]
+        singleMarketIndicator <- arbitrary[Boolean]
+        deregistrationDecisionDate <- arbitrary[LocalDate]
+        overseasIndicator <- arbitrary[Boolean]
+      }
+      yield
+        VatCustomerInfo(
+          desAddress = arbitraryDesAddress.arbitrary.sample.get,
+          registrationDate = Some(registrationDate),
+          partOfVatGroup = partOfVatGroup,
+          organisationName = Some(organisationName),
+          individualName = Some(individualName),
+          singleMarketIndicator = singleMarketIndicator,
+          deregistrationDecisionDate = Some(deregistrationDecisionDate),
+          overseasIndicator = overseasIndicator
+        )
+    }
+
+
+  implicit val arbitrarySaveForLaterResponse: Arbitrary[SaveForLaterResponse] =
+    Arbitrary {
+      for {
+        vrn <- arbitrary[Vrn]
+        data = JsObject(Seq(
+          "test" -> Json.toJson("test")
+        ))
+        lastUpdated <- arbitrary[Instant]
+      } yield SaveForLaterResponse(
+        vrn = vrn,
+        data = data,
+        vatInfo = VatCustomerInfo(
+          DesAddress(
+            line1 = "",
+            line2 = None,
+            line3 = None,
+            line4 = None,
+            line5 = None,
+            postCode = None,
+            countryCode = ""
+          ),
+          registrationDate = None,
+          partOfVatGroup = false,
+          organisationName = None,
+          individualName = None,
+          singleMarketIndicator = true,
+          deregistrationDecisionDate = None,
+          overseasIndicator = false
+        ),
+        lastUpdated = lastUpdated
+      )
+    }
+
 
 }

@@ -11,5 +11,9 @@ POST        /authorised/accept/confirm/:subscriptionId        uk.gov.hmrc.iossre
 
 POST        /external-entry                                   uk.gov.hmrc.iossregistration.controllers.external.ExternalEntryController.onExternal(lang: Option[String] ?= None)
 GET         /external-entry                                   uk.gov.hmrc.iossregistration.controllers.external.ExternalEntryController.getExternalEntry()
+POST        /save-for-later                                   uk.gov.hmrc.iossregistration.controllers.SaveForLaterController.post()
+GET         /save-for-later                                   uk.gov.hmrc.iossregistration.controllers.SaveForLaterController.get()
+
+GET         /save-for-later/delete                            uk.gov.hmrc.iossregistration.controllers.SaveForLaterController.delete()
 
 POST        /amend                                            uk.gov.hmrc.iossregistration.controllers.RegistrationController.amend()
