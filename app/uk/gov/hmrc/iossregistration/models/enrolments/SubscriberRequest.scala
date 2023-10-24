@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.metrics
+package uk.gov.hmrc.iossregistration.models.enrolments
 
-object MetricsEnum extends Enumeration {
+import play.api.libs.json._
 
-  type MetricsEnum = Value
+case class SubscriberRequest(serviceName: String, callback: String, etmpId: String)
 
-  val ValidateCoreRegistration: MetricsEnum = Value
+object SubscriberRequest {
+  implicit val format: OFormat[SubscriberRequest] = Json.format[SubscriberRequest]
 
-  val GetVatCustomerDetails: MetricsEnum = Value
-
-  val ConfirmEnrolment: MetricsEnum = Value
 }

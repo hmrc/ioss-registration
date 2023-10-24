@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.metrics
+package uk.gov.hmrc.iossregistration.config
 
-object MetricsEnum extends Enumeration {
+import play.api.Configuration
 
-  type MetricsEnum = Value
+import javax.inject.Inject
 
-  val ValidateCoreRegistration: MetricsEnum = Value
+class EnrolmentsConfig @Inject()(config: Configuration) {
 
-  val GetVatCustomerDetails: MetricsEnum = Value
-
-  val ConfirmEnrolment: MetricsEnum = Value
+  val baseUrl: Service = config.get[Service]("microservice.services.enrolments")
+  val callbackBaseUrl: String = config.get[String]("microservice.services.enrolments.callbackBaseUrl")
+  val iossEnrolmentKey: String = config.get[String]("iossEnrolmentKey")
 }

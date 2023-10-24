@@ -24,6 +24,8 @@ class AppConfig @Inject()(config: Configuration) {
 
   val appName: String = config.get[String]("appName")
 
+  val registrationStatusTtl: Int = config.get[Int]("mongodb.timeToLiveInHours")
+
   val externalEntryTtlDays: Int = config.get[Int]("features.externalEntry.ttlInDays")
   val externalEntryJourneyStartReturnUrl: String = config.get[String]("features.externalEntry.urls.journeyStart")
   val externalEntryNoMoreWelshReturnUrl: String = config.get[String]("features.externalEntry.urls.noMoreWelshJourneyStart")

@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.metrics
+package uk.gov.hmrc.iossregistration.repositories
 
-object MetricsEnum extends Enumeration {
-
-  type MetricsEnum = Value
-
-  val ValidateCoreRegistration: MetricsEnum = Value
-
-  val GetVatCustomerDetails: MetricsEnum = Value
-
-  val ConfirmEnrolment: MetricsEnum = Value
+object MongoErrors {
+  object Duplicate {
+    def unapply(ex: Exception): Option[Exception] =
+      if (ex.getMessage.contains("E11000")) Some(ex) else None
+  }
 }

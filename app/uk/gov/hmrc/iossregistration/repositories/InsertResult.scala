@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.metrics
+package uk.gov.hmrc.iossregistration.repositories
 
-object MetricsEnum extends Enumeration {
+sealed trait InsertResult
 
-  type MetricsEnum = Value
-
-  val ValidateCoreRegistration: MetricsEnum = Value
-
-  val GetVatCustomerDetails: MetricsEnum = Value
-
-  val ConfirmEnrolment: MetricsEnum = Value
+object InsertResult {
+  case object InsertSucceeded extends InsertResult
+  case object AlreadyExists extends InsertResult
 }
