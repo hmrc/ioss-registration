@@ -5,3 +5,6 @@ POST        /validate-core-registration        uk.gov.hmrc.iossregistration.cont
 GET         /vat-information                   uk.gov.hmrc.iossregistration.controllers.VatInfoController.get()
 
 POST        /create-registration               uk.gov.hmrc.iossregistration.controllers.RegistrationController.createRegistration()
+
+POST        /external-entry                    uk.gov.hmrc.iossregistration.controllers.external.ExternalEntryController.onExternal(lang: Option[String] ?= None)
+GET         /external-entry                    uk.gov.hmrc.iossregistration.controllers.external.ExternalEntryController.getExternalEntry()
