@@ -17,16 +17,13 @@
 package uk.gov.hmrc.iossregistration.controllers
 
 import play.api.libs.json.JsValue
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.iossregistration.config.AppConfig
-import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
+import play.api.mvc.Action
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.enrolments.EnrolmentStatus
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationStatus
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
-import uk.gov.hmrc.iossregistration.services.RetryService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.Inject

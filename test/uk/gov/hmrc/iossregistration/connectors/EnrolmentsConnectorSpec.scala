@@ -6,13 +6,9 @@ import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{Json, JsValue}
 import play.api.test.Helpers.running
-import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.base.BaseSpec
-import uk.gov.hmrc.iossregistration.models.core.TaxEnrolmentErrorResponse
-
-import java.time.LocalDate
-import java.util.UUID
+import uk.gov.hmrc.iossregistration.models.TaxEnrolmentErrorResponse
 
 class EnrolmentsConnectorSpec extends BaseSpec with WireMockHelper {
 

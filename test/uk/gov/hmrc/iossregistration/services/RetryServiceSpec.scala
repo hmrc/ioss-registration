@@ -2,7 +2,6 @@ package uk.gov.hmrc.iossregistration.services
 
 import akka.actor.ActorSystem
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus

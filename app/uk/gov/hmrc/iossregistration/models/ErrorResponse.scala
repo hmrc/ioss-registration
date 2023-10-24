@@ -57,9 +57,9 @@ case class UnexpectedResponseStatus(status: Int, body: String) extends ErrorResp
 
 case class TaxEnrolmentErrorResponse(code: String, message: String)
 
-  object TaxEnrolmentErrorResponse {
-    implicit val format: OFormat[TaxEnrolmentErrorResponse] = Json.format[TaxEnrolmentErrorResponse]
-  }
+object TaxEnrolmentErrorResponse {
+  implicit val format: OFormat[TaxEnrolmentErrorResponse] = Json.format[TaxEnrolmentErrorResponse]
+}
 
 case class EtmpEnrolmentError(code: String, body: String) extends ErrorResponse
 

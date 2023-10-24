@@ -22,7 +22,7 @@ import java.time.LocalDateTime
 
 case class EtmpEnrolmentResponse(
                                   processingDateTime: LocalDateTime,
-                                  formBundleNumber: Option[String],
+                                  formBundleNumber: String,
                                   vrn: String,
                                   iossReference: String,
                                   businessPartner: String

@@ -38,7 +38,7 @@ class EnrolmentsSubscriptionControllerSpec extends BaseSpec with BeforeAndAfterE
 
         val result = route(app, request).value
 
-        status(result) mustEqual OK
+        status(result) mustEqual NO_CONTENT
       }
     }
 
