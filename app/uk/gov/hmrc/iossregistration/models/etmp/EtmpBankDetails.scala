@@ -19,7 +19,6 @@ package uk.gov.hmrc.iossregistration.models.etmp
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.iossregistration.models.{Bic, Iban}
 
-// TODO Tests
 case class EtmpBankDetails(accountName: String, bic: Option[Bic], iban: Iban)
 
 object EtmpBankDetails {

@@ -32,6 +32,5 @@ case class EtmpEuRegistrationDetails(
 object EtmpEuRegistrationDetails {
 
   implicit val format: OFormat[EtmpEuRegistrationDetails] = Json.format[EtmpEuRegistrationDetails]
-
 }
 
