@@ -2,10 +2,8 @@ package uk.gov.hmrc.iossregistration.controllers
 
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.scalatest.BeforeAndAfterEach
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.time.{Seconds, Span}
-import org.scalatest.BeforeAndAfterEach
 import play.api.http.Status.CREATED
 import play.api.inject.bind
 import play.api.libs.json.Json
@@ -14,17 +12,14 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.iossregistration.base.BaseSpec
+import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryVrnRequest
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
-import uk.gov.hmrc.iossregistration.models.etmp.EtmpEnrolmentResponse
-import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, ServiceUnavailable}
-import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService}
-import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentResponse, EtmpRegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus, ServiceUnavailable}
 import uk.gov.hmrc.iossregistration.repositories.InsertResult.InsertSucceeded
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
-import uk.gov.hmrc.iossregistration.services.{RegistrationService, RetryService}
+import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
 import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpRegistrationRequest
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 
@@ -45,7 +40,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
     reset(mockEnrolmentsConnector)
     reset(mockRegistrationStatusRepository)
     reset(mockRetryService)
-    mockAuditService
+    reset(mockAuditService)
 
     super.beforeEach()
   }
@@ -142,7 +137,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
       }
     }
 
-    "must return Conflict when the error response is a Left EtmpEnrolmentError with error code 007" in {
+    "must audit the event and return Conflict when the error response is a Left EtmpEnrolmentError with error code 007" in {
 
       val etmpEnrolmentError = EtmpEnrolmentError("007", "test error")
 
@@ -181,7 +176,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
       }
     }
 
-    "must return INTERNAL_SERVER_ERROR when there is any other error response" in {
+    "must audit the event and return INTERNAL_SERVER_ERROR when there is any other error response" in {
 
       when(mockRegistrationService.createRegistration(eqTo(etmpRegistrationRequest))) thenReturn Left(ServiceUnavailable).toFuture
       doNothing.when(mockAuditService).audit(any())(any(), any())

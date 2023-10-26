@@ -22,14 +22,11 @@ import play.api.mvc.Action
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
-import uk.gov.hmrc.iossregistration.models.EtmpEnrolmentError
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpRegistrationRequest}
-import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService}
-import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
-import uk.gov.hmrc.iossregistration.services.{RegistrationService, RetryService}
+import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
