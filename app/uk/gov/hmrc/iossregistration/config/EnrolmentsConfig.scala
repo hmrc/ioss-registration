@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models.etmp
+package uk.gov.hmrc.iossregistration.config
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.Configuration
 
-import java.time.LocalDateTime
+import javax.inject.Inject
 
-case class EtmpEnrolmentResponse(
-                                  processingDateTime: LocalDateTime,
-                                  formBundleNumber: String,
-                                  vrn: String,
-                                  iossReference: String,
-                                  businessPartner: String
-                                )
+class EnrolmentsConfig @Inject()(config: Configuration) {
 
-object EtmpEnrolmentResponse {
-
-  implicit val format: OFormat[EtmpEnrolmentResponse] = Json.format[EtmpEnrolmentResponse]
+  val baseUrl: Service = config.get[Service]("microservice.services.enrolments")
+  val callbackBaseUrl: String = config.get[String]("microservice.services.enrolments.callbackBaseUrl")
+  val iossEnrolmentKey: String = config.get[String]("iossEnrolmentKey")
 }

@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models.etmp
+package uk.gov.hmrc.iossregistration.models.enrolments
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
 
-import java.time.LocalDateTime
+case class SubscriberRequest(serviceName: String, callback: String, etmpId: String)
 
-case class EtmpEnrolmentResponse(
-                                  processingDateTime: LocalDateTime,
-                                  formBundleNumber: String,
-                                  vrn: String,
-                                  iossReference: String,
-                                  businessPartner: String
-                                )
+object SubscriberRequest {
+  implicit val format: OFormat[SubscriberRequest] = Json.format[SubscriberRequest]
 
-object EtmpEnrolmentResponse {
-
-  implicit val format: OFormat[EtmpEnrolmentResponse] = Json.format[EtmpEnrolmentResponse]
 }

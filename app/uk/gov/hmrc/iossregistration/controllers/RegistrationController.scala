@@ -19,10 +19,14 @@ package uk.gov.hmrc.iossregistration.controllers
 import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc.Action
+import uk.gov.hmrc.iossregistration.config.AppConfig
+import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
-import uk.gov.hmrc.iossregistration.models.EtmpEnrolmentError
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpRegistrationRequest}
-import uk.gov.hmrc.iossregistration.services.RegistrationService
+import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
+import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
+import uk.gov.hmrc.iossregistration.services.{RegistrationService, RetryService}
+import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import java.time.Clock
@@ -31,15 +35,40 @@ import scala.concurrent.ExecutionContext
 
 case class RegistrationController @Inject()(
                                              cc: AuthenticatedControllerComponents,
+                                             enrolmentsConnector: EnrolmentsConnector,
                                              registrationService: RegistrationService,
+                                             registrationStatusRepository: RegistrationStatusRepository,
+                                             retryService: RetryService,
+                                             appConfig: AppConfig,
                                              clock: Clock
                                            )(implicit ec: ExecutionContext) extends BackendController(cc) with Logging {
 
   def createRegistration(): Action[EtmpRegistrationRequest] = cc.authAndRequireVat()(parse.json[EtmpRegistrationRequest]).async {
     implicit request =>
-      registrationService.createRegistration(request.body).map {
+      registrationService.createRegistration(request.body).flatMap {
         case Right(response) =>
-          Created(Json.toJson(response))
+          (for {
+            _ <- registrationStatusRepository.delete(response.formBundleNumber)
+            _ <- registrationStatusRepository.insert(RegistrationStatus(subscriptionId = response.formBundleNumber,
+              status = EtmpRegistrationStatus.Pending))
+            enrolmentResponse <- enrolmentsConnector.confirmEnrolment(response.formBundleNumber)
+          } yield {
+            enrolmentResponse.status match {
+              case NO_CONTENT =>
+                retryService.getEtmpRegistrationStatus(appConfig.maxRetryCount, appConfig.delay, response.formBundleNumber).map {
+                  case EtmpRegistrationStatus.Success =>
+                    logger.info("Successfully created registration and enrolment")
+                    Created(Json.toJson(response))
+                  case registrationStatus =>
+                    logger.error(s"Failed to add enrolment, got registration status $registrationStatus")
+                    registrationStatusRepository.set(RegistrationStatus(subscriptionId = response.formBundleNumber, status = EtmpRegistrationStatus.Error))
+                    throw EtmpException(s"Failed to add enrolment, got registration status $registrationStatus")
+                }
+              case status =>
+                logger.error(s"Failed to add enrolment - $status with body ${enrolmentResponse.body}")
+                throw EtmpException(s"Failed to add enrolment - ${enrolmentResponse.body}")
+            }
+          }).flatten
         case Left(EtmpEnrolmentError(EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode, body)) =>
           logger.error(
             s"Business Partner already has an active IOSS Subscription for this regime with error code ${EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode}" +
@@ -48,10 +77,10 @@ case class RegistrationController @Inject()(
           Conflict(Json.toJson(
             s"Business Partner already has an active IOSS Subscription for this regime with error code ${EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode}" +
               s"with message body $body"
-          ))
+          )).toFuture
         case Left(error) =>
           logger.error(s"Internal server error ${error.body}")
-          InternalServerError(Json.toJson(s"Internal server error ${error.body}"))
+          InternalServerError(Json.toJson(s"Internal server error ${error.body}")).toFuture
       }
   }
 }

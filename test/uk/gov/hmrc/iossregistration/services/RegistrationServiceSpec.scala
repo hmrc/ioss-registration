@@ -27,7 +27,7 @@ class RegistrationServiceSpec extends BaseSpec with WireMockHelper with BeforeAn
       val etmpEnrolmentResponse =
         EtmpEnrolmentResponse(
           processingDateTime = LocalDateTime.now(stubClock),
-          formBundleNumber = Some("123456789"),
+          formBundleNumber = "123456789",
           vrn = vrn.vrn,
           iossReference = "test",
           businessPartner = "test businessPartner"
