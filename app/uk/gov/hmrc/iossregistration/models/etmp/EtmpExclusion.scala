@@ -39,22 +39,21 @@ sealed trait EtmpExclusionReason
 
 object EtmpExclusionReason extends Enumerable.Implicits {
 
-  // TODO work out name vs functional spec
   case object Reversal extends WithName("-1") with EtmpExclusionReason
-  case object ReasonOne extends WithName("1") with EtmpExclusionReason
-  case object ReasonTwo extends WithName("2") with EtmpExclusionReason
-  case object ReasonThree extends WithName("3") with EtmpExclusionReason
-  case object ReasonFour extends WithName("4") with EtmpExclusionReason
-  case object ReasonFive extends WithName("5") with EtmpExclusionReason
+  case object NoLongerSupplies extends WithName("1") with EtmpExclusionReason
+  case object CeasedTrade extends WithName("2") with EtmpExclusionReason
+  case object NoLongerMeetsConditions extends WithName("3") with EtmpExclusionReason
+  case object FailsToComply extends WithName("4") with EtmpExclusionReason
+  case object VoluntarilyLeaves extends WithName("5") with EtmpExclusionReason
   case object TransferringMSID extends WithName("6") with EtmpExclusionReason
 
   val values: Seq[EtmpExclusionReason] = Seq(
     Reversal,
-    ReasonOne,
-    ReasonTwo,
-    ReasonThree,
-    ReasonFour,
-    ReasonFive,
+    NoLongerSupplies,
+    CeasedTrade,
+    NoLongerMeetsConditions,
+    FailsToComply,
+    VoluntarilyLeaves,
     TransferringMSID
   )
 
