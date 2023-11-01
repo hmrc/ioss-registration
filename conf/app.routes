@@ -4,6 +4,7 @@ POST        /validate-core-registration                       uk.gov.hmrc.iossre
 
 GET         /vat-information                                  uk.gov.hmrc.iossregistration.controllers.VatInfoController.get()
 
+GET         /registration                                     uk.gov.hmrc.iossregistration.controllers.RegistrationController.get()
 POST        /create-registration                              uk.gov.hmrc.iossregistration.controllers.RegistrationController.createRegistration()
 
 POST        /authorised/accept/confirm/:subscriptionId        uk.gov.hmrc.iossregistration.controllers.EnrolmentsSubscriptionController.authoriseEnrolment(subscriptionId: String)

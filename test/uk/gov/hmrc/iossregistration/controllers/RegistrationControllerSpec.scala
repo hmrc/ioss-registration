@@ -14,16 +14,18 @@ import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryVrnRequest
+import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus, ServiceUnavailable}
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentResponse, EtmpRegistrationStatus}
-import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus, ServiceUnavailable}
 import uk.gov.hmrc.iossregistration.repositories.InsertResult.InsertSucceeded
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
+import uk.gov.hmrc.iossregistration.testutils.RegistrationData
 import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpRegistrationRequest
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 
 import java.time.LocalDateTime
+import scala.concurrent.Future
 
 class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
@@ -207,6 +209,46 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe INTERNAL_SERVER_ERROR
         contentAsJson(result) mustBe Json.toJson(s"Internal server error ${ServiceUnavailable.body}")
         verify(mockAuditService, times(1)).audit(eqTo(expectedAuditEvent))(any(), any())
+      }
+    }
+  }
+
+  "get" - {
+
+    "must return OK and a registration when one is found" in {
+
+      val mockService = mock[RegistrationService]
+      when(mockService.get()(any(), any())) thenReturn RegistrationData.registrationWrapper.toFuture
+
+      val app =
+        applicationBuilder
+          .overrides(bind[RegistrationService].toInstance(mockService))
+          .build()
+
+      running(app) {
+        val request = FakeRequest(GET, routes.RegistrationController.get().url)
+        val result = route(app, request).value
+
+        status(result) mustEqual OK
+        contentAsJson(result) mustEqual Json.toJson(RegistrationData.registrationWrapper)
+      }
+    }
+
+    "must return INTERNAL_SERVER_ERROR when a registration connector response with Error" in {
+
+      val mockService = mock[RegistrationService]
+      when(mockService.get()(any(), any())) thenReturn Future.failed(EtmpException("Error Occurred"))
+
+      val app =
+        applicationBuilder
+          .overrides(bind[RegistrationService].toInstance(mockService))
+          .build()
+
+      running(app) {
+        val request = FakeRequest(GET, routes.RegistrationController.get().url)
+        val result = route(app, request).value
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
       }
     }
   }

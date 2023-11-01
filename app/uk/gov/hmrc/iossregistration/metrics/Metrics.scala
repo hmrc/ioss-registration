@@ -32,6 +32,7 @@ trait ServiceMetrics {
 
   val registry: MetricRegistry = metrics.defaultRegistry
   val timers: Map[MetricsEnum, Timer] = Map(
+    MetricsEnum.GetRegistration -> registry.timer("get-registration-response-timer"),
     MetricsEnum.ValidateCoreRegistration -> registry.timer("validate-core-registration-response-timer"),
     MetricsEnum.GetVatCustomerDetails -> registry.timer("get-vat-customer-details-response-timer"),
     MetricsEnum.ConfirmEnrolment -> registry.timer("confirm-enrolment-response-timer")

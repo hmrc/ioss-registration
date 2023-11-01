@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.iossregistration.connectors
 
-import play.api.http.Status.CREATED
+import play.api.http.Status.{CREATED, OK}
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse}
-import uk.gov.hmrc.iossregistration.models.{ErrorResponse, EtmpEnrolmentError, InvalidJson, UnexpectedResponseStatus}
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpDisplayRegistration, EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse}
+import uk.gov.hmrc.iossregistration.models.{ErrorResponse, EtmpEnrolmentError, InvalidJson, ServerError, UnexpectedResponseStatus}
 
 object RegistrationHttpParser extends BaseHttpParser {
 
@@ -28,13 +28,15 @@ object RegistrationHttpParser extends BaseHttpParser {
 
   type CreateEtmpRegistrationResponse = Either[ErrorResponse, EtmpEnrolmentResponse]
 
-  implicit object CreateRegistrationWithEnrolment extends HttpReads[CreateEtmpRegistrationResponse] {
+  type DisplayRegistrationResponse = Either[ErrorResponse, EtmpDisplayRegistration]
+
+  implicit object CreateRegistrationReads extends HttpReads[CreateEtmpRegistrationResponse] {
     override def read(method: String, url: String, response: HttpResponse): CreateEtmpRegistrationResponse =
       response.status match {
         case CREATED => response.json.validate[EtmpEnrolmentResponse] match {
           case JsSuccess(enrolmentResponse, _) => Right(enrolmentResponse)
           case JsError(errors) =>
-            logger.error(s"Failed trying to parse JSON, but was successfully created ${response.body} ${errors}", errors)
+            logger.error(s"Failed trying to parse JSON, but was successfully created ${response.body} $errors")
             Left(InvalidJson)
         }
         case status =>
@@ -43,8 +45,7 @@ object RegistrationHttpParser extends BaseHttpParser {
               case JsSuccess(enrolmentErrorResponse, _) =>
                 Left(EtmpEnrolmentError(enrolmentErrorResponse.errors.code, enrolmentErrorResponse.errors.text))
               case JsError(errors) =>
-                logger.error(s"Failed trying to parse JSON with status ${response.status} and body ${response.body}", errors)
-                logger.warn(s"Unexpected response from core registration, received status $status")
+                logger.error(s"Failed trying to parse JSON with status $status and body ${response.body} json parse error: $errors")
                 Left(UnexpectedResponseStatus(status, s"Unexpected response from ${serviceName}, received status $status"))
             }
           } else {
@@ -52,6 +53,21 @@ object RegistrationHttpParser extends BaseHttpParser {
             logger.warn(s"Unexpected response from core registration, received status $status")
             Left(UnexpectedResponseStatus(status, s": Unexpected response from ${serviceName}, received status $status"))
           }
+      }
+  }
+
+  implicit object DisplayRegistrationReads extends HttpReads[DisplayRegistrationResponse] {
+    override def read(method: String, url: String, response: HttpResponse): DisplayRegistrationResponse =
+      response.status match {
+        case OK => response.json.validate[EtmpDisplayRegistration] match {
+          case JsSuccess(displayRegistrationResponse, _) => Right(displayRegistrationResponse)
+          case JsError(errors) =>
+            logger.error(s"Failed trying to parse display registration response JSON with status ${response.status} with errors: $errors")
+            Left(InvalidJson)
+        }
+        case status =>
+          logger.error(s"Unknown error happened on display registration $status with body ${response.body}")
+          Left(ServerError)
       }
   }
 }

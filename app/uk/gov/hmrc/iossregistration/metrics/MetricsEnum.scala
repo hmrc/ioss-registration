@@ -20,6 +20,8 @@ object MetricsEnum extends Enumeration {
 
   type MetricsEnum = Value
 
+  val GetRegistration: MetricsEnum = Value
+
   val ValidateCoreRegistration: MetricsEnum = Value
 
   val GetVatCustomerDetails: MetricsEnum = Value
