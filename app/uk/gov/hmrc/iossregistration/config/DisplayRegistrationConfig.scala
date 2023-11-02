@@ -17,19 +17,19 @@
 package uk.gov.hmrc.iossregistration.config
 
 import play.api.Configuration
-import play.api.http.HeaderNames._
+import play.api.http.HeaderNames
 
 import javax.inject.Inject
 
-case class IfConfig @Inject()(
+case class DisplayRegistrationConfig @Inject()(
                                config: Configuration,
                                genericConfig: EisGenericConfig
                              ) {
 
-  val baseUrl: Service = config.get[Service]("microservice.services.create-registration")
-  private val authorizationToken: String = config.get[String]("microservice.services.create-registration.authorizationToken")
+  val baseUrl: Service = config.get[Service]("microservice.services.display-registration")
+  private val authorizationToken: String = config.get[String]("microservice.services.display-registration.authorizationToken")
 
-  def eisEtmpCreateHeaders(correlationId: String): Seq[(String, String)] = genericConfig.eisEtmpGenericHeaders(correlationId) ++ Seq(
-    AUTHORIZATION -> s"Bearer $authorizationToken"
+  def eisEtmpGetHeaders(correlationId: String): Seq[(String, String)] = genericConfig.eisEtmpGenericHeaders(correlationId) ++ Seq(
+    HeaderNames.AUTHORIZATION -> s"Bearer $authorizationToken"
   )
 }

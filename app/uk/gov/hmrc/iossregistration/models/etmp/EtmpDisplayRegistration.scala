@@ -16,17 +16,21 @@
 
 package uk.gov.hmrc.iossregistration.models.etmp
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, Reads, Writes}
+import uk.gov.hmrc.iossregistration.models.etmp.EtmpSchemeDetails.displayReads
 
-case class EtmpRegistrationRequest(
-                                    administration: EtmpAdministration,
-                                    customerIdentification: EtmpCustomerIdentification,
+case class EtmpDisplayRegistration(
                                     tradingNames: Seq[EtmpTradingName],
                                     schemeDetails: EtmpSchemeDetails,
-                                    bankDetails: EtmpBankDetails
+                                    bankDetails: EtmpBankDetails,
+                                    exclusions: Seq[EtmpExclusion],
+                                    adminUse: EtmpAdminUse
                                   )
 
-object EtmpRegistrationRequest {
+object EtmpDisplayRegistration {
 
-  implicit val format: OFormat[EtmpRegistrationRequest] = Json.format[EtmpRegistrationRequest]
+  implicit private val etmpDetailsReads: Reads[EtmpSchemeDetails] = displayReads
+
+  implicit val reads: Reads[EtmpDisplayRegistration] = Json.reads[EtmpDisplayRegistration]
+  implicit val writes: Writes[EtmpDisplayRegistration] = Json.writes[EtmpDisplayRegistration]
 }

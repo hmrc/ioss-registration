@@ -26,6 +26,8 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthAction, FakeAuthAction}
 import uk.gov.hmrc.iossregistration.generators.Generators
+import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
+import uk.gov.hmrc.iossregistration.models.DesAddress
 
 import java.time.{Clock, LocalDate, ZoneId}
 
@@ -41,6 +43,8 @@ trait BaseSpec
 
   protected val vrn: Vrn = Vrn("123456789")
 
+  protected val iossNumber: String = "IM9001234567"
+
   val stubClock: Clock = Clock.fixed(LocalDate.now.atStartOfDay(ZoneId.systemDefault).toInstant, ZoneId.systemDefault)
 
   protected def applicationBuilder: GuiceApplicationBuilder =
@@ -48,6 +52,18 @@ trait BaseSpec
       .overrides(bind[AuthAction].to[FakeAuthAction])
 
   val userId: String = "12345-userId"
+
+  val vatCustomerInfo: VatCustomerInfo =
+    VatCustomerInfo(
+      registrationDate = Some(LocalDate.now(stubClock)),
+      desAddress = DesAddress("Line 1", None, None, None, None, Some("AA11 1AA"), "GB"),
+      partOfVatGroup = false,
+      organisationName = Some("Company name"),
+      singleMarketIndicator = true,
+      individualName = None,
+      deregistrationDecisionDate = Some(LocalDate.now(stubClock)),
+      overseasIndicator = false
+    )
 }
 
 

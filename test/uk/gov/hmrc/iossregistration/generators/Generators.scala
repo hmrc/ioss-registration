@@ -6,6 +6,8 @@ import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.etmp._
 
+import java.time.{LocalDate, LocalDateTime}
+
 trait Generators {
 
   implicit lazy val arbitraryUkAddress: Arbitrary[UkAddress] =
@@ -158,4 +160,101 @@ trait Generators {
         "GB42CPBK08005470328725"
       ).map(v => Iban(v).toOption.get)
     }
+
+  implicit lazy val arbitraryEtmpExclusion: Arbitrary[EtmpExclusion] = {
+    Arbitrary {
+      for {
+        exclusionReason <- Gen.oneOf[EtmpExclusionReason](EtmpExclusionReason.values)
+        effectiveDate <- arbitrary[Int].map(n => LocalDate.ofEpochDay(n))
+        decisionDate <- arbitrary[Int].map(n => LocalDate.ofEpochDay(n))
+        quarantine <- arbitrary[Boolean]
+      } yield EtmpExclusion(
+        exclusionReason,
+        effectiveDate,
+        decisionDate,
+        quarantine
+      )
+    }
+  }
+
+  implicit val arbitraryEtmpEuRegistrationDetails: Arbitrary[EtmpEuRegistrationDetails] = {
+    Arbitrary {
+      for {
+        countryOfRegistration <- Gen.listOfN(2, Gen.alphaChar).map(_.mkString.toUpperCase)
+        traderId <- arbitrary[VatNumberTraderId]
+        tradingName <- arbitrary[String]
+        fixedEstablishmentAddressLine1 <- arbitrary[String]
+        fixedEstablishmentAddressLine2 <- Gen.option(arbitrary[String])
+        townOrCity <- arbitrary[String]
+        regionOrState <- Gen.option(arbitrary[String])
+        postcode <- Gen.option(arbitrary[String])
+      } yield {
+        EtmpEuRegistrationDetails(
+          countryOfRegistration,
+          traderId,
+          tradingName,
+          fixedEstablishmentAddressLine1,
+          fixedEstablishmentAddressLine2,
+          townOrCity,
+          regionOrState,
+          postcode
+        )
+      }
+    }
+  }
+
+  implicit val arbitraryEtmpPreviousEURegistrationDetails: Arbitrary[EtmpPreviousEuRegistrationDetails] = {
+    Arbitrary {
+      for {
+        issuedBy <- arbitrary[String]
+        registrationNumber <- arbitrary[String]
+        schemeType <- Gen.oneOf(SchemeType.values)
+        intermediaryNumber <- Gen.option(arbitrary[String])
+      } yield EtmpPreviousEuRegistrationDetails(issuedBy, registrationNumber, schemeType, intermediaryNumber)
+    }
+  }
+
+  implicit val arbitraryEtmpSchemeDetails: Arbitrary[EtmpSchemeDetails] = {
+    Arbitrary {
+      for {
+        commencementDate <- arbitrary[String]
+        euRegistrationDetails <- Gen.listOfN(5, arbitraryEtmpEuRegistrationDetails.arbitrary)
+        previousEURegistrationDetails <- Gen.listOfN(5, arbitraryEtmpPreviousEURegistrationDetails.arbitrary)
+        websites <- Gen.listOfN(10, arbitraryWebsite.arbitrary)
+        contactName <- arbitrary[String]
+        businessTelephoneNumber <- arbitrary[String]
+        businessEmailId <- arbitrary[String]
+        nonCompliantReturns <- Gen.option(arbitrary[Int].toString)
+        nonCompliantPayments <- Gen.option(arbitrary[Int].toString)
+      } yield
+        EtmpSchemeDetails(
+          commencementDate,
+          euRegistrationDetails,
+          previousEURegistrationDetails,
+          websites,
+          contactName,
+          businessTelephoneNumber,
+          businessEmailId,
+          nonCompliantReturns,
+          nonCompliantPayments
+        )
+    }
+  }
+
+  implicit lazy val arbitraryEtmpBankDetails: Arbitrary[EtmpBankDetails] =
+    Arbitrary {
+      for {
+        accountName <- arbitrary[String]
+        bic <- Gen.option(arbitrary[Bic])
+        iban <- arbitrary[Iban]
+      } yield EtmpBankDetails(accountName, bic, iban)
+    }
+
+  implicit lazy val arbitraryAdminUse: Arbitrary[EtmpAdminUse] =
+    Arbitrary {
+      for {
+        changeDate <- arbitrary[LocalDateTime]
+      } yield EtmpAdminUse(Some(changeDate))
+    }
+
 }

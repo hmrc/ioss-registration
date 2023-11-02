@@ -16,15 +16,46 @@
 
 package uk.gov.hmrc.iossregistration.services
 
-import uk.gov.hmrc.iossregistration.connectors.RegistrationConnector
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, RegistrationConnector}
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.CreateEtmpRegistrationResponse
+import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryIossRequest
+import uk.gov.hmrc.iossregistration.logging.Logging
+import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class RegistrationService @Inject()(registrationConnector: RegistrationConnector) {
+class RegistrationService @Inject()(
+                                     registrationConnector: RegistrationConnector,
+                                     getVatInfoConnector: GetVatInfoConnector
+                                   )(implicit ec: ExecutionContext) extends Logging {
 
   def createRegistration(etmpRegistrationRequest: EtmpRegistrationRequest): Future[CreateEtmpRegistrationResponse] =
     registrationConnector.createRegistration(etmpRegistrationRequest)
+
+  def get()(implicit request: AuthorisedMandatoryIossRequest[_], headerCarrier: HeaderCarrier): Future[RegistrationWrapper] = {
+    for {
+      etmpDisplayRegistrationResponse <- registrationConnector.get(request.iossNumber)
+      vatInfoResponse <- getVatInfoConnector.getVatCustomerDetails(request.vrn)
+    } yield {
+      (etmpDisplayRegistrationResponse, vatInfoResponse) match {
+        case (Right(etmpDisplayRegistration), Right(vatInfo)) =>
+          RegistrationWrapper(
+            vatInfo,
+            etmpDisplayRegistration
+          )
+        case (Left(displayError), Left(vatInfoError)) =>
+          logger.error(s"There was an error getting Registration and vat info from ETMP: ${displayError.body} and ${vatInfoError.body}")
+          throw EtmpException(s"There was an error getting Registration from ETMP: ${displayError.body} and ${vatInfoError.body}")
+        case (Left(displayError), _) =>
+          logger.error(s"There was an error getting Registration from ETMP: ${displayError.body}")
+          throw EtmpException(s"There was an error getting Registration from ETMP: ${displayError.body}")
+        case (_, Left(vatInfoError)) =>
+          logger.error(s"There was an error getting vat info from ETMP: ${vatInfoError.body}")
+          throw EtmpException(s"There was an error getting  vat info from ETMP: ${vatInfoError.body}")
+      }
+    }
+  }
 }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.iossregistration.controllers
 
 import play.api.Logging
 import play.api.libs.json.Json
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
@@ -80,7 +80,7 @@ case class RegistrationController @Inject()(
           )
           logger.error(
             s"Business Partner already has an active IOSS Subscription for this regime with error code ${EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode}" +
-            s"with message body $body"
+              s"with message body $body"
           )
           Conflict(Json.toJson(
             s"Business Partner already has an active IOSS Subscription for this regime with error code ${EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode}" +
@@ -92,6 +92,17 @@ case class RegistrationController @Inject()(
           )
           logger.error(s"Internal server error ${error.body}")
           InternalServerError(Json.toJson(s"Internal server error ${error.body}")).toFuture
+      }
+  }
+
+  def get(): Action[AnyContent] = cc.authAndRequireIoss().async {
+    implicit request =>
+      (registrationService.get().map { registration =>
+        Ok(Json.toJson(registration))
+      }).recover {
+        case exception =>
+          logger.error(exception.getMessage, exception)
+          InternalServerError(exception.getMessage)
       }
   }
 }

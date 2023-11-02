@@ -56,18 +56,20 @@ class AuthActionImpl @Inject()(
 
       case Some(internalId) ~ enrolments ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == User =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
-        block(AuthorisedRequest(request, internalId, maybeVrn))
+        val maybeIossNumber = findIossFromEnrolments(enrolments)
+        block(AuthorisedRequest(request, internalId, maybeVrn, maybeIossNumber))
 
       case _ ~ _ ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == Assistant =>
         throw UnsupportedCredentialRole("Unsupported credential role")
 
       case Some(internalId) ~ enrolments ~ Some(Individual) ~ confidence ~ _ =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
-            if (confidence >= ConfidenceLevel.L200) {
-              block(AuthorisedRequest(request, internalId, maybeVrn))
-            } else {
-              throw InsufficientConfidenceLevel("Insufficient confidence level")
-            }
+        val maybeIossNumber = findIossFromEnrolments(enrolments)
+        if (confidence >= ConfidenceLevel.L200) {
+          block(AuthorisedRequest(request, internalId, maybeVrn, maybeIossNumber))
+        } else {
+          throw InsufficientConfidenceLevel("Insufficient confidence level")
+        }
       case _ =>
         throw new UnauthorizedException("Unable to retrieve authorisation data")
     } recover {
@@ -86,5 +88,12 @@ class AuthActionImpl @Inject()(
       .flatMap {
         enrolment =>
           enrolment.identifiers.find(_.key == "VATRegNo").map(e => Vrn(e.value))
+      }
+
+  private def findIossFromEnrolments(enrolments: Enrolments): Option[String] =
+    enrolments.enrolments.find(_.key == "HMRC-IOSS-ORG")
+      .flatMap {
+        enrolment =>
+          enrolment.identifiers.find(_.key == "IOSSNumber").map(_.value)
       }
 }

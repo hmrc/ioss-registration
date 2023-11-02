@@ -25,24 +25,24 @@ import uk.gov.hmrc.iossregistration.base.BaseSpec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class VatRequiredActionSpec extends BaseSpec {
+class IossRequiredActionSpec extends BaseSpec {
 
-  class Harness() extends VatRequiredAction {
+  class Harness() extends IossRequiredAction {
 
-    def callRefine[A](request: AuthorisedRequest[A]): Future[Either[Result, AuthorisedMandatoryVrnRequest[A]]] = refine(request)
+    def callRefine[A](request: AuthorisedMandatoryVrnRequest[A]): Future[Either[Result, AuthorisedMandatoryIossRequest[A]]] = refine(request)
   }
 
-  "Vat Required Action" - {
+  "Ioss Required Action" - {
 
-    "when the user has logged in as an Organisation Admin with strong credentials but no vat enrolment" - {
+    "when the user has logged in as an Organisation Admin with strong credentials but ioss enrolment" - {
 
       "must return Unauthorized" in {
 
         val action = new Harness()
         val request = FakeRequest(GET, "/test/url?k=session-id")
-        val result = action.callRefine(AuthorisedRequest(request,
+        val result = action.callRefine(AuthorisedMandatoryVrnRequest(request,
           userId,
-          None,
+          vrn,
           None
         )).futureValue
 
@@ -53,33 +53,18 @@ class VatRequiredActionSpec extends BaseSpec {
 
         val action = new Harness()
         val request = FakeRequest(GET, "/test/url?k=session-id")
-        val result = action.callRefine(AuthorisedRequest(request,
+        val result = action.callRefine(AuthorisedMandatoryVrnRequest(request,
           userId,
-          Some(vrn),
-          None
+          vrn,
+          Some(iossNumber)
         )).futureValue
 
-        val expectResult = AuthorisedMandatoryVrnRequest(request, userId, vrn, None)
+        val expectResult = AuthorisedMandatoryIossRequest(request, userId, vrn, iossNumber)
 
         result mustBe Right(expectResult)
       }
     }
 
-    "when the user has logged in as an Individual without a VAT enrolment" - {
-
-      "must be redirected to the insufficient Enrolments page" in {
-
-        val action = new Harness()
-        val request = FakeRequest(GET, "/test/url?k=session-id")
-        val result = action.callRefine(AuthorisedRequest(request,
-          userId,
-          None,
-          None
-        )).futureValue
-
-        result mustBe Left(Unauthorized)
-      }
-    }
   }
 
 }

@@ -6,7 +6,7 @@ import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.core.Match.dateFormatter
 import uk.gov.hmrc.iossregistration.models.etmp._
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 object RegistrationData extends BaseSpec {
 
@@ -40,7 +40,7 @@ object RegistrationData extends BaseSpec {
     nonCompliantPayments = Some(arbitrary[String].sample.value)
   )
 
-  val genBankDetails: BankDetails = BankDetails(
+  val etmpBankDetails: EtmpBankDetails = EtmpBankDetails(
     accountName = arbitrary[String].sample.value,
     bic = Some(arbitrary[Bic].sample.value),
     iban = arbitrary[Iban].sample.value
@@ -51,6 +51,21 @@ object RegistrationData extends BaseSpec {
     customerIdentification = arbitrary[EtmpCustomerIdentification].sample.value,
     tradingNames = Seq(arbitrary[EtmpTradingName].sample.value),
     schemeDetails = etmpSchemeDetails,
-    bankDetails = genBankDetails
+    bankDetails = etmpBankDetails
+  )
+
+  val adminUse: EtmpAdminUse = EtmpAdminUse(Some(LocalDateTime.now))
+
+  val displayRegistration: EtmpDisplayRegistration = EtmpDisplayRegistration(
+    tradingNames = Seq(arbitrary[EtmpTradingName].sample.value),
+    schemeDetails = etmpSchemeDetails,
+    bankDetails = etmpBankDetails,
+    exclusions = Seq(arbitrary[EtmpExclusion].sample.value),
+    adminUse = adminUse
+  )
+
+  val registrationWrapper: RegistrationWrapper = RegistrationWrapper(
+    vatInfo = vatCustomerInfo,
+    registration = displayRegistration
   )
 }
