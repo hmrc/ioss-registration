@@ -17,9 +17,7 @@ class EtmpEnrolmentResponseSpec extends BaseSpec {
 
   "EtmpEnrolmentResponse" - {
 
-    "must deserialise/serialise to and from EtmpEnrolmentResponse" - {
-
-      "when all values are present" in {
+    "must deserialise/serialise to and from EtmpEnrolmentResponse" in {
 
         val json = Json.obj(
           "processingDateTime" -> processingDateTime,
@@ -29,18 +27,16 @@ class EtmpEnrolmentResponseSpec extends BaseSpec {
           "businessPartner" -> businessPartner
         )
 
-        val expectedResult = EtmpEnrolmentResponse(
-          processingDateTime = processingDateTime,
-          formBundleNumber = formBundleNumber,
-          vrn = genVrn.vrn,
-          iossReference = iossReference.taxReferenceNumber,
-          businessPartner = businessPartner
-        )
+      val expectedResult = EtmpEnrolmentResponse(
+        processingDateTime = processingDateTime,
+        formBundleNumber = formBundleNumber,
+        vrn = genVrn.vrn,
+        iossReference = iossReference.taxReferenceNumber,
+        businessPartner = businessPartner
+      )
 
-        Json.toJson(expectedResult) mustBe json
-        json.validate[EtmpEnrolmentResponse] mustBe JsSuccess(expectedResult)
-      }
-
+      Json.toJson(expectedResult) mustBe json
+      json.validate[EtmpEnrolmentResponse] mustBe JsSuccess(expectedResult)
     }
   }
 }

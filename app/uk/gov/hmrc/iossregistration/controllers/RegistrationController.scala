@@ -22,10 +22,11 @@ import play.api.mvc.Action
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
-import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
-import uk.gov.hmrc.iossregistration.services.{RegistrationService, RetryService}
+import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -37,6 +38,7 @@ case class RegistrationController @Inject()(
                                              cc: AuthenticatedControllerComponents,
                                              enrolmentsConnector: EnrolmentsConnector,
                                              registrationService: RegistrationService,
+                                             auditService: AuditService,
                                              registrationStatusRepository: RegistrationStatusRepository,
                                              retryService: RetryService,
                                              appConfig: AppConfig,
@@ -57,6 +59,9 @@ case class RegistrationController @Inject()(
               case NO_CONTENT =>
                 retryService.getEtmpRegistrationStatus(appConfig.maxRetryCount, appConfig.delay, response.formBundleNumber).map {
                   case EtmpRegistrationStatus.Success =>
+                    auditService.audit(EtmpRegistrationRequestAuditModel.build(
+                      EtmpRegistrationAuditType.CreateRegistration, request.body, Some(response), None, SubmissionResult.Success)
+                    )
                     logger.info("Successfully created registration and enrolment")
                     Created(Json.toJson(response))
                   case registrationStatus =>
@@ -70,6 +75,9 @@ case class RegistrationController @Inject()(
             }
           }).flatten
         case Left(EtmpEnrolmentError(EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode, body)) =>
+          auditService.audit(EtmpRegistrationRequestAuditModel.build(
+            EtmpRegistrationAuditType.CreateRegistration, request.body, None, Some(body), SubmissionResult.Duplicate)
+          )
           logger.error(
             s"Business Partner already has an active IOSS Subscription for this regime with error code ${EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode}" +
             s"with message body $body"
@@ -79,6 +87,9 @@ case class RegistrationController @Inject()(
               s"with message body $body"
           )).toFuture
         case Left(error) =>
+          auditService.audit(EtmpRegistrationRequestAuditModel.build(
+            EtmpRegistrationAuditType.CreateRegistration, request.body, None, Some(error.body), SubmissionResult.Failure)
+          )
           logger.error(s"Internal server error ${error.body}")
           InternalServerError(Json.toJson(s"Internal server error ${error.body}")).toFuture
       }
