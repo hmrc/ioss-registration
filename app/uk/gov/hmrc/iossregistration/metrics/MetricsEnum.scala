@@ -27,4 +27,6 @@ object MetricsEnum extends Enumeration {
   val GetVatCustomerDetails: MetricsEnum = Value
 
   val ConfirmEnrolment: MetricsEnum = Value
+
+  val AmendRegistration: MetricsEnum = Value
 }

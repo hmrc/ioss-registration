@@ -14,6 +14,7 @@ import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryVrnRequest
+import uk.gov.hmrc.iossregistration.models.amend.AmendResult.AmendSucceeded
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus, ServiceUnavailable}
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentResponse, EtmpRegistrationStatus}
@@ -249,6 +250,47 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = route(app, request).value
 
         status(result) mustEqual INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "amend" - {
+
+    "must return 201 when given a valid payload and the registration is created successfully" in {
+
+      val mockService = mock[RegistrationService]
+      when(mockService.amendRegistration(any())) thenReturn Future.successful(AmendSucceeded)
+
+      val app =
+        applicationBuilder
+          .overrides(bind[RegistrationService].toInstance(mockService))
+          .build
+
+      running(app) {
+
+        val request =
+          FakeRequest(POST, routes.RegistrationController.amend().url)
+            .withJsonBody(Json.toJson(RegistrationData.etmpRegistrationRequest))
+
+        val result = route(app, request).value
+
+        status(result) mustEqual OK
+      }
+    }
+
+    "must return 400 when the JSON request payload is not a registration" in {
+
+      val app = applicationBuilder.build()
+
+      running(app) {
+
+        val request =
+          FakeRequest(POST, routes.RegistrationController.amend().url)
+            .withJsonBody(Json.toJson(RegistrationData.invalidRegistration))
+
+        val result = route(app, request).value
+
+        status(result) mustEqual BAD_REQUEST
       }
     }
   }

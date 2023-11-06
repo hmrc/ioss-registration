@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models.etmp
+package uk.gov.hmrc.iossregistration.models.amend
 
-import uk.gov.hmrc.iossregistration.models.{Enumerable, WithName}
+sealed trait AmendResult
 
-sealed trait EtmpMessageType
-
-object EtmpMessageType extends Enumerable.Implicits {
-
-  case object IOSSSubscriptionCreate extends WithName("IOSSSubscriptionCreate") with EtmpMessageType
-
-  case object IOSSSubscriptionAmend extends WithName("IOSSSubscriptionAmend") with EtmpMessageType
-
-  val values: Seq[EtmpMessageType] = Seq(
-    IOSSSubscriptionCreate, IOSSSubscriptionAmend
-  )
-
-  implicit val enumerable: Enumerable[EtmpMessageType] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+object AmendResult {
+  case object AmendSucceeded extends AmendResult
+  case object AmendFailed extends AmendResult
 }

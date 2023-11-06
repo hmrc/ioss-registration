@@ -21,6 +21,8 @@ import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, Registratio
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.CreateEtmpRegistrationResponse
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryIossRequest
 import uk.gov.hmrc.iossregistration.logging.Logging
+import uk.gov.hmrc.iossregistration.models.amend.AmendResult
+import uk.gov.hmrc.iossregistration.models.amend.AmendResult.AmendSucceeded
 import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
 
@@ -56,6 +58,17 @@ class RegistrationService @Inject()(
           logger.error(s"There was an error getting vat info from ETMP: ${vatInfoError.body}")
           throw EtmpException(s"There was an error getting  vat info from ETMP: ${vatInfoError.body}")
       }
+    }
+  }
+
+  def amendRegistration(etmpRegistrationRequest: EtmpRegistrationRequest): Future[AmendResult] = {
+    registrationConnector.amendRegistration(etmpRegistrationRequest).flatMap {
+      case Right(amendRegistrationResponse) =>
+        logger.info(s"Successfully sent amend registration to ETMP at ${amendRegistrationResponse.processingDateTime} for vrn ${amendRegistrationResponse.vrn}")
+        Future.successful(AmendSucceeded)
+      case Left(error) =>
+        logger.error(s"An error occurred while amending registration ${error.getClass} ${error.body}")
+        throw EtmpException(s"There was an error amending Registration from ETMP: ${error.getClass} ${error.body}")
     }
   }
 }

@@ -15,7 +15,7 @@ import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.serviceName
 import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.binders.Format.eisDateTimeFormatter
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpErrorDetail}
+import uk.gov.hmrc.iossregistration.models.etmp.{AmendRegistrationResponse, EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpErrorDetail}
 import uk.gov.hmrc.iossregistration.testutils.DisplayRegistrationData.{arbitraryDisplayRegistration, optionalDisplayRegistration, writesEtmpSchemeDetails}
 import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpRegistrationRequest
 
@@ -34,6 +34,9 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
         "microservice.services.display-registration.port" -> server.port,
         "microservice.services.display-registration.authorizationToken" -> "auth-token",
         "microservice.services.display-registration.environment" -> "test-environment",
+        "microservice.services.amend-registration.host" -> "127.0.0.1",
+        "microservice.services.amend-registration.port" -> server.port,
+        "microservice.services.amend-registration.authorizationToken" -> "auth-token"
       )
       .build()
 
@@ -42,9 +45,20 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
   private def getDisplayRegistrationUrl(iossNumber: String) = s"/ioss-registration-stub/vec/iossregistration/viewreg/v1/$iossNumber"
 
+  private val amendRegistrationUrl = "/ioss-registration-stub/vec/iosssubscription/amendreg/v1"
+
   private val fixedDelay = 21000
 
   private val timeOutSpan = 30
+
+  private val amendRegistrationResponse: AmendRegistrationResponse =
+    AmendRegistrationResponse(
+      processingDateTime = LocalDateTime.now(),
+      formBundleNumber = "12345",
+      vrn = "123456789",
+      iossReference = "IM900100000001",
+      businessPartner = "businessPartner"
+    )
 
   ".get" - {
 
@@ -340,6 +354,83 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
       running(app) {
         val connector = app.injector.instanceOf[RegistrationConnector]
         whenReady(connector.createRegistration(etmpRegistrationRequest), Timeout(Span(timeOutSpan, Seconds))) { exp =>
+          exp.isLeft mustBe true
+          exp.left.toOption.get mustBe a[ErrorResponse]
+        }
+      }
+    }
+  }
+
+  ".amendRegistration" - {
+
+    "must return Ok with an Amend Registration response when a valid payload is sent" in {
+
+      val app = application
+
+      val requestJson = Json.stringify(Json.toJson(etmpRegistrationRequest))
+
+      server.stubFor(
+        put(urlEqualTo(amendRegistrationUrl))
+          .withHeader(AUTHORIZATION, equalTo("Bearer auth-token"))
+          .withHeader(CONTENT_TYPE, equalTo(MimeTypes.JSON))
+          .withRequestBody(equalTo(requestJson))
+          .willReturn(aResponse()
+            .withStatus(OK)
+            .withBody(Json.stringify(Json.toJson(amendRegistrationResponse)))
+          )
+      )
+
+      running(app) {
+
+        val connector = app.injector.instanceOf[RegistrationConnector]
+        val result = connector.amendRegistration(etmpRegistrationRequest).futureValue
+
+        result mustBe Right(amendRegistrationResponse)
+
+      }
+    }
+
+    "should return not found when server responds with NOT_FOUND" in {
+
+      val app = application
+
+      val requestJson = Json.stringify(Json.toJson(registrationRequest))
+
+      server.stubFor(
+        put(urlEqualTo(amendRegistrationUrl))
+          .withHeader(AUTHORIZATION, equalTo("Bearer auth-token"))
+          .withHeader(CONTENT_TYPE, equalTo(MimeTypes.JSON))
+          .withRequestBody(equalTo(requestJson))
+          .willReturn(aResponse()
+            .withStatus(NOT_FOUND))
+      )
+
+      running(app) {
+
+        val connector = app.injector.instanceOf[RegistrationConnector]
+        val result = connector.amendRegistration(etmpRegistrationRequest).futureValue
+
+        result mustBe Left(NotFound)
+      }
+    }
+
+    "should return Error Response when server responds with Http Exception" in {
+
+      val app = application
+
+      server.stubFor(
+        put(urlEqualTo(amendRegistrationUrl))
+          .withHeader(AUTHORIZATION, equalTo("Bearer auth-token"))
+          .withHeader(CONTENT_TYPE, equalTo(MimeTypes.JSON))
+          .willReturn(aResponse()
+            .withStatus(GATEWAY_TIMEOUT)
+            .withFixedDelay(fixedDelay))
+      )
+
+      running(app) {
+
+        val connector = app.injector.instanceOf[RegistrationConnector]
+        whenReady(connector.amendRegistration(etmpRegistrationRequest), Timeout(Span(timeOutSpan, Seconds))) { exp =>
           exp.isLeft mustBe true
           exp.left.toOption.get mustBe a[ErrorResponse]
         }

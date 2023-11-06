@@ -68,4 +68,6 @@ object RegistrationData extends BaseSpec {
     vatInfo = vatCustomerInfo,
     registration = displayRegistration
   )
+
+  val invalidRegistration = """{"invalidName":"invalid"}"""
 }
