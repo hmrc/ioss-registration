@@ -16,20 +16,19 @@
 
 package uk.gov.hmrc.iossregistration.models.etmp
 
-import uk.gov.hmrc.iossregistration.models.{Enumerable, WithName}
+import play.api.libs.json.{Json, OFormat}
 
-sealed trait EtmpMessageType
+import java.time.LocalDateTime
 
-object EtmpMessageType extends Enumerable.Implicits {
+case class AmendRegistrationResponse(
+                                      processingDateTime: LocalDateTime,
+                                      formBundleNumber: String,
+                                      vrn: String,
+                                      iossReference: String,
+                                      businessPartner: String
+                                    )
 
-  case object IOSSSubscriptionCreate extends WithName("IOSSSubscriptionCreate") with EtmpMessageType
+object AmendRegistrationResponse {
 
-  case object IOSSSubscriptionAmend extends WithName("IOSSSubscriptionAmend") with EtmpMessageType
-
-  val values: Seq[EtmpMessageType] = Seq(
-    IOSSSubscriptionCreate, IOSSSubscriptionAmend
-  )
-
-  implicit val enumerable: Enumerable[EtmpMessageType] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+  implicit val format: OFormat[AmendRegistrationResponse] = Json.format[AmendRegistrationResponse]
 }

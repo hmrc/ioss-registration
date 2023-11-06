@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.iossregistration.connectors
 
-import play.api.http.Status.{CREATED, OK}
+import play.api.http.Status.{CREATED, NOT_FOUND, OK}
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpDisplayRegistration, EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse}
-import uk.gov.hmrc.iossregistration.models.{ErrorResponse, EtmpEnrolmentError, InvalidJson, ServerError, UnexpectedResponseStatus}
+import uk.gov.hmrc.iossregistration.models.etmp.{AmendRegistrationResponse, EtmpDisplayRegistration, EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse}
+import uk.gov.hmrc.iossregistration.models.{ErrorResponse, EtmpEnrolmentError, InvalidJson, NotFound, ServerError, UnexpectedResponseStatus}
 
 object RegistrationHttpParser extends BaseHttpParser {
 
@@ -29,6 +29,8 @@ object RegistrationHttpParser extends BaseHttpParser {
   type CreateEtmpRegistrationResponse = Either[ErrorResponse, EtmpEnrolmentResponse]
 
   type DisplayRegistrationResponse = Either[ErrorResponse, EtmpDisplayRegistration]
+
+  type CreateAmendRegistrationResponse = Either[ErrorResponse, AmendRegistrationResponse]
 
   implicit object CreateRegistrationReads extends HttpReads[CreateEtmpRegistrationResponse] {
     override def read(method: String, url: String, response: HttpResponse): CreateEtmpRegistrationResponse =
@@ -67,6 +69,24 @@ object RegistrationHttpParser extends BaseHttpParser {
         }
         case status =>
           logger.error(s"Unknown error happened on display registration $status with body ${response.body}")
+          Left(ServerError)
+      }
+  }
+
+  implicit object CreateAmendRegistrationResponseReads extends HttpReads[CreateAmendRegistrationResponse] {
+    override def read(method: String, url: String, response: HttpResponse): CreateAmendRegistrationResponse =
+      response.status match {
+        case OK => response.json.validate[AmendRegistrationResponse] match {
+          case JsSuccess(amendRegistrationResponse, _) => Right(amendRegistrationResponse)
+          case JsError(errors) =>
+            logger.error(s"Failed trying to parse JSON with status ${response.status} and body ${response.body}", errors)
+            Left(InvalidJson)
+        }
+        case NOT_FOUND =>
+          logger.warn(s"url not reachable")
+          Left(NotFound)
+        case status =>
+          logger.error(s"Unknown error happened on amend registration $status with body ${response.body}")
           Left(ServerError)
       }
   }

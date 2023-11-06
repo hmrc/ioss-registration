@@ -22,6 +22,7 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
+import uk.gov.hmrc.iossregistration.models.amend.AmendResult.{AmendFailed, AmendSucceeded}
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
@@ -104,5 +105,17 @@ case class RegistrationController @Inject()(
           logger.error(exception.getMessage, exception)
           InternalServerError(exception.getMessage)
       }
+  }
+
+  def amend(): Action[EtmpRegistrationRequest] = cc.authAndRequireVat()(parse.json[EtmpRegistrationRequest]).async {
+    implicit request =>
+      registrationService
+        .amendRegistration(request.body)
+        .map {
+          case AmendSucceeded => Ok
+          case AmendFailed =>
+            logger.error(s"Internal server error ${request.body}")
+            InternalServerError(Json.toJson(s"Internal server error ${request.body}"))
+        }
   }
 }

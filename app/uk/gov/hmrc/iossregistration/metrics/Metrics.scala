@@ -35,6 +35,7 @@ trait ServiceMetrics {
     MetricsEnum.GetRegistration -> registry.timer("get-registration-response-timer"),
     MetricsEnum.ValidateCoreRegistration -> registry.timer("validate-core-registration-response-timer"),
     MetricsEnum.GetVatCustomerDetails -> registry.timer("get-vat-customer-details-response-timer"),
-    MetricsEnum.ConfirmEnrolment -> registry.timer("confirm-enrolment-response-timer")
+    MetricsEnum.ConfirmEnrolment -> registry.timer("confirm-enrolment-response-timer"),
+    MetricsEnum.AmendRegistration -> registry.timer("get-amend-registration-response-timer")
   )
 }
