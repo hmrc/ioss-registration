@@ -24,7 +24,7 @@ import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.amend.AmendResult
 import uk.gov.hmrc.iossregistration.models.amend.AmendResult.AmendSucceeded
 import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
-import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpAmendRegistrationRequest, EtmpRegistrationRequest}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -61,7 +61,7 @@ class RegistrationService @Inject()(
     }
   }
 
-  def amendRegistration(etmpRegistrationRequest: EtmpRegistrationRequest): Future[AmendResult] = {
+  def amendRegistration(etmpRegistrationRequest: EtmpAmendRegistrationRequest): Future[AmendResult] = {
     registrationConnector.amendRegistration(etmpRegistrationRequest).flatMap {
       case Right(amendRegistrationResponse) =>
         logger.info(s"Successfully sent amend registration to ETMP at ${amendRegistrationResponse.processingDateTime} for vrn ${amendRegistrationResponse.vrn} and IOSS number ${amendRegistrationResponse.iossReference}")

@@ -4,6 +4,7 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.models._
+import uk.gov.hmrc.iossregistration.models.amend.EtmpAmendRegistrationChangeLog
 import uk.gov.hmrc.iossregistration.models.etmp._
 
 import java.time.{LocalDate, LocalDateTime}
@@ -111,6 +112,16 @@ trait Generators {
       for {
         messageType <- Gen.oneOf(EtmpMessageType.values)
       } yield EtmpAdministration(messageType, "IOSS")
+    }
+
+  implicit lazy val arbitraryEtmpAmendRegistrationChangeLog: Arbitrary[EtmpAmendRegistrationChangeLog] =
+    Arbitrary {
+      for {
+        tradingNames <- arbitrary[Boolean]
+        fixedEstablishments <- arbitrary[Boolean]
+        contactDetails <- arbitrary[Boolean]
+        bankDetails <- arbitrary[Boolean]
+      } yield EtmpAmendRegistrationChangeLog(tradingNames, fixedEstablishments, contactDetails, bankDetails)
     }
 
   implicit lazy val arbitrarySchemeType: Arbitrary[SchemeType] =

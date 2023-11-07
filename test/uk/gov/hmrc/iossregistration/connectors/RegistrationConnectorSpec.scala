@@ -367,7 +367,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
       val app = application
 
-      val requestJson = Json.stringify(Json.toJson(etmpRegistrationRequest))
+      val requestJson = Json.stringify(Json.toJson(etmpAmendRegistrationRequest))
 
       server.stubFor(
         put(urlEqualTo(amendRegistrationUrl))
@@ -383,7 +383,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
       running(app) {
 
         val connector = app.injector.instanceOf[RegistrationConnector]
-        val result = connector.amendRegistration(etmpRegistrationRequest).futureValue
+        val result = connector.amendRegistration(etmpAmendRegistrationRequest).futureValue
 
         result mustBe Right(amendRegistrationResponse)
 
@@ -408,7 +408,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
       running(app) {
 
         val connector = app.injector.instanceOf[RegistrationConnector]
-        val result = connector.amendRegistration(etmpRegistrationRequest).futureValue
+        val result = connector.amendRegistration(etmpAmendRegistrationRequest).futureValue
 
         result mustBe Left(NotFound)
       }
@@ -430,7 +430,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
       running(app) {
 
         val connector = app.injector.instanceOf[RegistrationConnector]
-        whenReady(connector.amendRegistration(etmpRegistrationRequest), Timeout(Span(timeOutSpan, Seconds))) { exp =>
+        whenReady(connector.amendRegistration(etmpAmendRegistrationRequest), Timeout(Span(timeOutSpan, Seconds))) { exp =>
           exp.isLeft mustBe true
           exp.left.toOption.get mustBe a[ErrorResponse]
         }

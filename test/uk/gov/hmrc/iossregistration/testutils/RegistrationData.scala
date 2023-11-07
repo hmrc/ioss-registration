@@ -3,6 +3,7 @@ package uk.gov.hmrc.iossregistration.testutils
 import org.scalacheck.Arbitrary.arbitrary
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models._
+import uk.gov.hmrc.iossregistration.models.amend.EtmpAmendRegistrationChangeLog
 import uk.gov.hmrc.iossregistration.models.core.Match.dateFormatter
 import uk.gov.hmrc.iossregistration.models.etmp._
 
