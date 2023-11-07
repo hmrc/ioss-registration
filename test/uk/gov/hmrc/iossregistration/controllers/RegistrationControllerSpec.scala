@@ -270,7 +270,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         val request =
           FakeRequest(POST, routes.RegistrationController.amend().url)
-            .withJsonBody(Json.toJson(RegistrationData.etmpRegistrationRequest))
+            .withJsonBody(Json.toJson(RegistrationData.etmpAmendRegistrationRequest))
 
         val result = route(app, request).value
 
