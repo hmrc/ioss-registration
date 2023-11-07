@@ -367,7 +367,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
       val app = application
 
-      val requestJson = Json.stringify(Json.toJson(etmpRegistrationRequest))
+      val requestJson = Json.stringify(Json.toJson(etmpAmendRegistrationRequest))
 
       server.stubFor(
         put(urlEqualTo(amendRegistrationUrl))
