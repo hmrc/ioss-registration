@@ -17,6 +17,7 @@
 package uk.gov.hmrc.iossregistration.models
 
 import play.api.libs.json._
+import uk.gov.hmrc.iossregistration.crypto.EncryptedValue
 
 sealed trait Address
 
@@ -109,4 +110,21 @@ case class InternationalAddress(
 object InternationalAddress {
 
   implicit val format: OFormat[InternationalAddress] = Json.format[InternationalAddress]
+}
+
+sealed trait EncryptedAddress
+
+case class EncryptedDesAddress(
+                                line1: EncryptedValue,
+                                line2: Option[EncryptedValue],
+                                line3: Option[EncryptedValue],
+                                line4: Option[EncryptedValue],
+                                line5: Option[EncryptedValue],
+                                postCode: Option[EncryptedValue],
+                                countryCode: EncryptedValue
+                              ) extends EncryptedAddress
+
+object EncryptedDesAddress {
+
+  implicit val format: OFormat[EncryptedDesAddress] = Json.format[EncryptedDesAddress]
 }
