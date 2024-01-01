@@ -24,7 +24,8 @@ import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.amend.AmendResult
 import uk.gov.hmrc.iossregistration.models.amend.AmendResult.AmendSucceeded
 import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpAmendRegistrationRequest, EtmpRegistrationRequest}
+import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
+import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationRequest
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models.etmp
+package uk.gov.hmrc.iossregistration.models.etmp.amend
 
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.iossregistration.models.amend.EtmpAmendRegistrationChangeLog
+import uk.gov.hmrc.iossregistration.models.etmp._
 
 case class EtmpAmendRegistrationRequest(
                                          administration: EtmpAdministration,
                                          changeLog: EtmpAmendRegistrationChangeLog,
+                                         exclusionDetails: Option[EtmpExclusionDetails],
                                          customerIdentification: EtmpCustomerIdentification,
                                          tradingNames: Seq[EtmpTradingName],
                                          schemeDetails: EtmpSchemeDetails,

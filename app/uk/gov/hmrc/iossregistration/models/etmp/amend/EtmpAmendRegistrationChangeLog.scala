@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models.amend
+package uk.gov.hmrc.iossregistration.models.etmp.amend
 
 import play.api.libs.json.{Json, OFormat}
 
@@ -23,6 +23,7 @@ case class EtmpAmendRegistrationChangeLog(
                                            fixedEstablishments: Boolean,
                                            contactDetails: Boolean,
                                            bankDetails: Boolean,
+                                           reRegistration: Boolean
                                   )
 
 object EtmpAmendRegistrationChangeLog {

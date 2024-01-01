@@ -23,7 +23,8 @@ import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser._
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.metrics.{MetricsEnum, ServiceMetrics}
 import uk.gov.hmrc.iossregistration.models.UnexpectedResponseStatus
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpAmendRegistrationRequest, EtmpRegistrationRequest}
+import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
+import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationRequest
 
 import java.util.UUID
 import javax.inject.Inject

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.iossregistration.models.etmp
+package uk.gov.hmrc.iossregistration.models.etmp.amend
 
 import play.api.libs.json.{Json, OFormat}
 

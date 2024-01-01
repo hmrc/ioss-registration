@@ -4,6 +4,7 @@ import org.scalacheck.Arbitrary.arbitrary
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.etmp._
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationRequest, EtmpExclusionDetails}
 
 import java.time.{LocalDate, LocalDateTime}
 

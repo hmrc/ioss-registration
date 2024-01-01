@@ -26,10 +26,10 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthAction, FakeAuthAction}
 import uk.gov.hmrc.iossregistration.generators.Generators
-import uk.gov.hmrc.iossregistration.models.amend.EtmpAmendRegistrationChangeLog
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
 import uk.gov.hmrc.iossregistration.models.{Bic, DesAddress, Iban}
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpAdministration, EtmpAmendRegistrationRequest, EtmpBankDetails, EtmpCustomerIdentification, EtmpEuRegistrationDetails, EtmpMessageType, EtmpPreviousEuRegistrationDetails, EtmpRegistrationRequest, EtmpSchemeDetails, EtmpTradingName, EtmpWebsite, SchemeType, VatNumberTraderId}
+import uk.gov.hmrc.iossregistration.models.etmp.{amend, EtmpAdministration, EtmpBankDetails, EtmpCustomerIdentification, EtmpEuRegistrationDetails, EtmpMessageType, EtmpPreviousEuRegistrationDetails, EtmpRegistrationRequest, EtmpSchemeDetails, EtmpTradingName, EtmpWebsite, SchemeType, VatNumberTraderId}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationRequest}
 
 import java.time.format.DateTimeFormatter
 import java.time.{Clock, LocalDate, LocalDateTime, ZoneId}
@@ -119,14 +119,16 @@ trait BaseSpec
     )
   )
 
-  val etmpAmendRegistrationRequest: EtmpAmendRegistrationRequest = EtmpAmendRegistrationRequest(
+  val etmpAmendRegistrationRequest: EtmpAmendRegistrationRequest = amend.EtmpAmendRegistrationRequest(
     administration = registrationRequest.administration.copy(messageType = EtmpMessageType.IOSSSubscriptionAmend),
     changeLog = EtmpAmendRegistrationChangeLog(
       tradingNames = true,
       fixedEstablishments = true,
       contactDetails = true,
-      bankDetails = true
+      bankDetails = true,
+      reRegistration = false
     ),
+    exclusionDetails = None,
     customerIdentification = registrationRequest.customerIdentification,
     tradingNames = registrationRequest.tradingNames,
     schemeDetails = registrationRequest.schemeDetails,
