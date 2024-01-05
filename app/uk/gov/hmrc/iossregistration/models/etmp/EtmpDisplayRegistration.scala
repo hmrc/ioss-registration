@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.iossregistration.models.etmp
 
-import play.api.libs.json.{Json, Reads, Writes}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{__, Json, Reads, Writes}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpSchemeDetails.displayReads
 
 case class EtmpDisplayRegistration(
@@ -31,6 +32,13 @@ object EtmpDisplayRegistration {
 
   implicit private val etmpDetailsReads: Reads[EtmpSchemeDetails] = displayReads
 
-  implicit val reads: Reads[EtmpDisplayRegistration] = Json.reads[EtmpDisplayRegistration]
+  implicit val reads: Reads[EtmpDisplayRegistration] =
+    (
+      (__ \ "tradingNames").readNullable[Seq[EtmpTradingName]].map(_.getOrElse(List.empty)) and
+        (__ \ "schemeDetails").read[EtmpSchemeDetails] and
+        (__ \ "bankDetails").read[EtmpBankDetails] and
+        (__ \ "exclusions").readNullable[Seq[EtmpExclusion]].map(_.getOrElse(List.empty)) and
+        (__ \ "adminUse").read[EtmpAdminUse]
+      )(EtmpDisplayRegistration.apply _)
   implicit val writes: Writes[EtmpDisplayRegistration] = Json.writes[EtmpDisplayRegistration]
 }
