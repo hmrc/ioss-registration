@@ -23,7 +23,8 @@ case class EtmpAmendRegistrationChangeLog(
                                            fixedEstablishments: Boolean,
                                            contactDetails: Boolean,
                                            bankDetails: Boolean,
-                                  )
+                                           reRegistration: Boolean
+                                         )
 
 object EtmpAmendRegistrationChangeLog {
 

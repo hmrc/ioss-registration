@@ -125,7 +125,8 @@ trait BaseSpec
       tradingNames = true,
       fixedEstablishments = true,
       contactDetails = true,
-      bankDetails = true
+      bankDetails = true,
+      reRegistration = false
     ),
     customerIdentification = registrationRequest.customerIdentification,
     tradingNames = registrationRequest.tradingNames,

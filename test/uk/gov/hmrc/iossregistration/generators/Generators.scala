@@ -126,7 +126,8 @@ trait Generators {
         fixedEstablishments <- arbitrary[Boolean]
         contactDetails <- arbitrary[Boolean]
         bankDetails <- arbitrary[Boolean]
-      } yield EtmpAmendRegistrationChangeLog(tradingNames, fixedEstablishments, contactDetails, bankDetails)
+        reRegistration <- arbitrary[Boolean]
+      } yield EtmpAmendRegistrationChangeLog(tradingNames, fixedEstablishments, contactDetails, bankDetails, reRegistration)
     }
 
   implicit lazy val arbitrarySchemeType: Arbitrary[SchemeType] =
