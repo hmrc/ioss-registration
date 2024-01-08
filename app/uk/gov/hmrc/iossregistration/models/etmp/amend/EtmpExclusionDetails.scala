@@ -24,10 +24,10 @@ case class EtmpExclusionDetails(
                                  revertExclusion: Boolean,
                                  noLongerSupplyGoods: Boolean,
                                  partyType: String = "NETP",
-                                 exclusionRequestDate: LocalDate,
-                                 identificationValidityDate: LocalDate,
-                                 intExclusionRequestDate: LocalDate,
-                                 newMemberState: EtmpNewMemberState
+                                 exclusionRequestDate: Option[LocalDate],
+                                 identificationValidityDate: Option[LocalDate],
+                                 intExclusionRequestDate: Option[LocalDate],
+                                 newMemberState: Option[EtmpNewMemberState]
                                )
 
 object EtmpExclusionDetails {

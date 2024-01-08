@@ -22,8 +22,8 @@ import java.time.LocalDate
 
 case class EtmpNewMemberState(
                                newMemberState: Boolean,
-                               ceaseSpecialSchemeDate: LocalDate,
-                               ceaseFixedEstDate: LocalDate,
+                               ceaseSpecialSchemeDate: Option[LocalDate],
+                               ceaseFixedEstDate: Option[LocalDate],
                                movePOBDate: LocalDate,
                                issuedBy: String,
                                vatNumber: String
