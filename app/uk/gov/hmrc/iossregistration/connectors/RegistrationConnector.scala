@@ -97,7 +97,7 @@ case class RegistrationConnector @Inject()(
     logger.info(s"Sending amend request to etmp with headers $headersWithoutAuth")
 
     httpClient.PUT[EtmpAmendRegistrationRequest, CreateAmendRegistrationResponse](
-      s"${amendRegistrationConfig.baseUrl}vec/iosssubscription/amendreg/v1",
+      s"${amendRegistrationConfig.baseUrl}vec/iossregistration/amendregistration/v1",
       registration,
       headers = headersWithCorrelationId
     ).map { result =>

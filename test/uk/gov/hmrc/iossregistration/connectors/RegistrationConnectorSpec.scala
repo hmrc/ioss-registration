@@ -46,7 +46,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
   private def getDisplayRegistrationUrl(iossNumber: String) = s"/ioss-registration-stub/vec/iossregistration/viewreg/v1/$iossNumber"
 
-  private val amendRegistrationUrl = "/ioss-registration-stub/vec/iosssubscription/amendreg/v1"
+  private val amendRegistrationUrl = "/ioss-registration-stub/vec/iossregistration/amendregistration/v1"
 
   private val fixedDelay = 21000
 
