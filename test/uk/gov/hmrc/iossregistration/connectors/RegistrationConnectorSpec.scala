@@ -15,7 +15,8 @@ import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.serviceName
 import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.binders.Format.eisDateTimeFormatter
-import uk.gov.hmrc.iossregistration.models.etmp.{AmendRegistrationResponse, EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpErrorDetail}
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpErrorDetail}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.AmendRegistrationResponse
 import uk.gov.hmrc.iossregistration.testutils.DisplayRegistrationData.{arbitraryDisplayRegistration, optionalDisplayRegistration, writesEtmpSchemeDetails}
 import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpRegistrationRequest
 

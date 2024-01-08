@@ -19,8 +19,9 @@ package uk.gov.hmrc.iossregistration.connectors
 import play.api.http.Status.{CREATED, NOT_FOUND, OK}
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
-import uk.gov.hmrc.iossregistration.models.etmp.{AmendRegistrationResponse, EtmpDisplayRegistration, EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse}
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpDisplayRegistration, EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse}
 import uk.gov.hmrc.iossregistration.models.{ErrorResponse, EtmpEnrolmentError, InvalidJson, NotFound, ServerError, UnexpectedResponseStatus}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.AmendRegistrationResponse
 
 object RegistrationHttpParser extends BaseHttpParser {
 

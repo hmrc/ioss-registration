@@ -24,8 +24,9 @@ import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
 import uk.gov.hmrc.iossregistration.models.amend.AmendResult.{AmendFailed, AmendSucceeded}
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpAmendRegistrationRequest, EtmpEnrolmentErrorResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationRequest
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps

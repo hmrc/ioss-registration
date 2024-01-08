@@ -5,10 +5,10 @@ import org.scalacheck.{Arbitrary, Gen}
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.models._
-import uk.gov.hmrc.iossregistration.models.amend.EtmpAmendRegistrationChangeLog
 import uk.gov.hmrc.iossregistration.models.etmp._
 import uk.gov.hmrc.iossregistration.models.requests.{SaveForLaterRequest, SaveForLaterResponse}
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
+import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationChangeLog
 
 import java.time.{Instant, LocalDate}
 
@@ -126,7 +126,8 @@ trait Generators {
         fixedEstablishments <- arbitrary[Boolean]
         contactDetails <- arbitrary[Boolean]
         bankDetails <- arbitrary[Boolean]
-      } yield EtmpAmendRegistrationChangeLog(tradingNames, fixedEstablishments, contactDetails, bankDetails)
+        reRegistration <- arbitrary[Boolean]
+      } yield EtmpAmendRegistrationChangeLog(tradingNames, fixedEstablishments, contactDetails, bankDetails, reRegistration)
     }
 
   implicit lazy val arbitrarySchemeType: Arbitrary[SchemeType] =
