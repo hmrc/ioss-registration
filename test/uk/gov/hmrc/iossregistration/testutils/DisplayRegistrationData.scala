@@ -1,11 +1,11 @@
 package uk.gov.hmrc.iossregistration.testutils
 
 import org.scalacheck.Gen
-import uk.gov.hmrc.iossregistration.base.BaseSpec
-import uk.gov.hmrc.iossregistration.models.etmp._
 import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
 import play.api.libs.json.{__, OWrites}
+import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models.binders.Format.dateTimeFormatter
+import uk.gov.hmrc.iossregistration.models.etmp._
 import uk.gov.hmrc.iossregistration.models.Iban
 
 import java.time.{LocalDate, LocalDateTime}
@@ -34,6 +34,7 @@ object DisplayRegistrationData extends BaseSpec {
         contactName = "Mr Test",
         businessTelephoneNumber = "1234567890",
         businessEmailId = "test@testEmail.com",
+        unusableStatus = false,
         None,
         None
       ),
@@ -55,6 +56,7 @@ object DisplayRegistrationData extends BaseSpec {
         (__ \ "contactDetails" \ "contactNameOrBusinessAddress").write[String] and
         (__ \ "contactDetails" \ "businessTelephoneNumber").write[String] and
         (__ \ "contactDetails" \ "businessEmailAddress").write[String] and
+        (__ \ "contactDetails" \ "unusableStatus").write[Boolean] and
         (__ \ "nonCompliantReturns").writeNullable[String] and
         (__ \ "nonCompliantPayments").writeNullable[String]
       )(unlift(EtmpSchemeDetails.unapply))

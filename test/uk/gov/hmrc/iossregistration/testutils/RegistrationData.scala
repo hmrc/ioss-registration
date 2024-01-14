@@ -4,7 +4,6 @@ import org.scalacheck.Arbitrary.arbitrary
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.etmp._
-import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationRequest, EtmpExclusionDetails}
 
 import java.time.{LocalDate, LocalDateTime}
 
@@ -36,6 +35,7 @@ object RegistrationData extends BaseSpec {
     contactName = arbitrary[String].sample.value,
     businessTelephoneNumber = arbitrary[String].sample.value,
     businessEmailId = arbitrary[String].sample.value,
+    unusableStatus = false,
     nonCompliantReturns = Some(arbitrary[String].sample.value),
     nonCompliantPayments = Some(arbitrary[String].sample.value)
   )

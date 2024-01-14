@@ -1,18 +1,16 @@
 package uk.gov.hmrc.iossregistration.generators
 
-import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary.arbitrary
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.models._
-import uk.gov.hmrc.iossregistration.models.etmp._
-import uk.gov.hmrc.iossregistration.models.requests.{SaveForLaterRequest, SaveForLaterResponse}
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
+import uk.gov.hmrc.iossregistration.models.etmp._
 import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationChangeLog
+import uk.gov.hmrc.iossregistration.models.requests.{SaveForLaterRequest, SaveForLaterResponse}
 
-import java.time.{Instant, LocalDate}
-
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{Instant, LocalDate, LocalDateTime}
 
 trait Generators {
 
@@ -252,6 +250,7 @@ trait Generators {
           contactName,
           businessTelephoneNumber,
           businessEmailId,
+          unusableStatus = false,
           nonCompliantReturns,
           nonCompliantPayments
         )

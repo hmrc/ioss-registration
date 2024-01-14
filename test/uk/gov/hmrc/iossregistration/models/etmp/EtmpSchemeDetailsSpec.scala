@@ -13,6 +13,7 @@ class EtmpSchemeDetailsSpec extends BaseSpec {
   private val contactName = etmpSchemeDetails.contactName
   private val businessTelephoneNumber = etmpSchemeDetails.businessTelephoneNumber
   private val businessEmailId = etmpSchemeDetails.businessEmailId
+  private val unusableStatus = etmpSchemeDetails.unusableStatus
   private val nonCompliantReturns = etmpSchemeDetails.nonCompliantReturns
   private val nonCompliantPayments = etmpSchemeDetails.nonCompliantPayments
 
@@ -30,6 +31,7 @@ class EtmpSchemeDetailsSpec extends BaseSpec {
           "contactName" -> contactName,
           "businessTelephoneNumber" -> businessTelephoneNumber,
           "businessEmailId" -> businessEmailId,
+          "unusableStatus" -> unusableStatus,
           "nonCompliantReturns" -> nonCompliantReturns,
           "nonCompliantPayments" -> nonCompliantPayments
         )
@@ -42,6 +44,7 @@ class EtmpSchemeDetailsSpec extends BaseSpec {
           contactName = contactName,
           businessTelephoneNumber = businessTelephoneNumber,
           businessEmailId = businessEmailId,
+          unusableStatus = unusableStatus,
           nonCompliantReturns = nonCompliantReturns,
           nonCompliantPayments = nonCompliantPayments
         )
@@ -60,6 +63,7 @@ class EtmpSchemeDetailsSpec extends BaseSpec {
           "contactName" -> contactName,
           "businessTelephoneNumber" -> businessTelephoneNumber,
           "businessEmailId" -> businessEmailId,
+          "unusableStatus" -> unusableStatus
         )
 
         val expectedResult = EtmpSchemeDetails(
@@ -70,6 +74,7 @@ class EtmpSchemeDetailsSpec extends BaseSpec {
           contactName = contactName,
           businessTelephoneNumber = businessTelephoneNumber,
           businessEmailId = businessEmailId,
+          unusableStatus = unusableStatus,
           nonCompliantReturns = None,
           nonCompliantPayments = None
         )
