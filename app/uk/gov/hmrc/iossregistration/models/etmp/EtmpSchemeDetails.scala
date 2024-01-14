@@ -27,6 +27,7 @@ case class EtmpSchemeDetails(
                               contactName: String,
                               businessTelephoneNumber: String,
                               businessEmailId: String,
+                              unusableStatus: Boolean,
                               nonCompliantReturns: Option[String],
                               nonCompliantPayments: Option[String]
                             )
@@ -41,6 +42,7 @@ object EtmpSchemeDetails {
                                               contactNameOrBusinessAddress: String,
                                               businessTelephoneNumber: String,
                                               businessEmailAddress: String,
+                                              unusableStatus: Boolean,
                                               nonCompliantReturns: Option[String],
                                               nonCompliantPayments: Option[String]
                                             ): EtmpSchemeDetails =
@@ -52,6 +54,7 @@ object EtmpSchemeDetails {
       contactName = contactNameOrBusinessAddress,
       businessTelephoneNumber = businessTelephoneNumber,
       businessEmailId = businessEmailAddress,
+      unusableStatus = unusableStatus,
       nonCompliantReturns = nonCompliantReturns,
       nonCompliantPayments = nonCompliantPayments
     )
@@ -65,6 +68,7 @@ object EtmpSchemeDetails {
         (__ \ "contactDetails" \ "contactNameOrBusinessAddress").read[String] and
         (__ \ "contactDetails" \ "businessTelephoneNumber").read[String] and
         (__ \ "contactDetails" \ "businessEmailAddress").read[String] and
+        (__ \ "contactDetails" \ "unusableStatus").read[Boolean] and
         (__ \ "nonCompliantReturns").readNullable[String] and
         (__ \ "nonCompliantPayments").readNullable[String]
       )(EtmpSchemeDetails.fromDisplayRegistrationPayload _)
