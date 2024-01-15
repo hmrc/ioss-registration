@@ -109,7 +109,6 @@ trait BaseSpec
       contactName = "Mr Test",
       businessTelephoneNumber = "0123 456789",
       businessEmailId = "mrtest@example.co.uk",
-      unusableStatus = false,
       nonCompliantReturns = Some("1"),
       nonCompliantPayments = Some("2")
     ),
