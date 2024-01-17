@@ -17,15 +17,20 @@
 package uk.gov.hmrc.iossregistration.services
 
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, RegistrationConnector}
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.CreateEtmpRegistrationResponse
+import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, RegistrationConnector}
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryIossRequest
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.amend.AmendResult
 import uk.gov.hmrc.iossregistration.models.amend.AmendResult.AmendSucceeded
 import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpRegistrationRequest}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
-import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationRequest
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
+import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
+import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
+import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -62,14 +67,14 @@ class RegistrationService @Inject()(
     }
   }
 
-  def amendRegistration(etmpRegistrationRequest: EtmpAmendRegistrationRequest): Future[AmendResult] = {
+  def amendRegistration(etmpRegistrationRequest: EtmpAmendRegistrationRequest): Future[Either[Throwable, AmendRegistrationResponse]] = {
     registrationConnector.amendRegistration(etmpRegistrationRequest).flatMap {
-      case Right(amendRegistrationResponse) =>
+      case Right(amendRegistrationResponse: AmendRegistrationResponse) =>
         logger.info(s"Successfully sent amend registration to ETMP at ${amendRegistrationResponse.processingDateTime} for vrn ${amendRegistrationResponse.vrn} and IOSS number ${amendRegistrationResponse.iossReference}")
-        Future.successful(AmendSucceeded)
+        Future.successful(Right(amendRegistrationResponse))
       case Left(error) =>
         logger.error(s"An error occurred while amending registration ${error.getClass} ${error.body}")
-        throw EtmpException(s"There was an error amending Registration from ETMP: ${error.getClass} ${error.body}")
+        Future.successful(Left(EtmpException(s"There was an error amending Registration from ETMP: ${error.getClass} ${error.body}")))
     }
   }
 }

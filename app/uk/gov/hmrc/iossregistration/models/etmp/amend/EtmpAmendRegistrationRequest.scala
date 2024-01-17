@@ -27,7 +27,7 @@ case class EtmpAmendRegistrationRequest(
                                          tradingNames: Seq[EtmpTradingName],
                                          schemeDetails: EtmpSchemeDetails,
                                          bankDetails: EtmpBankDetails,
-                                  )
+                                       )
 
 object EtmpAmendRegistrationRequest {
 
