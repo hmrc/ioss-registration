@@ -59,7 +59,7 @@ class EtmpSchemeDetailsSpec extends BaseSpec {
           "websites" -> websites,
           "contactName" -> contactName,
           "businessTelephoneNumber" -> businessTelephoneNumber,
-          "businessEmailId" -> businessEmailId,
+          "businessEmailId" -> businessEmailId
         )
 
         val expectedResult = EtmpSchemeDetails(

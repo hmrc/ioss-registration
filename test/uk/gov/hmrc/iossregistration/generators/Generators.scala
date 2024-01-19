@@ -1,18 +1,16 @@
 package uk.gov.hmrc.iossregistration.generators
 
-import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary.arbitrary
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.models._
-import uk.gov.hmrc.iossregistration.models.etmp._
-import uk.gov.hmrc.iossregistration.models.requests.{SaveForLaterRequest, SaveForLaterResponse}
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
+import uk.gov.hmrc.iossregistration.models.etmp._
 import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationChangeLog
+import uk.gov.hmrc.iossregistration.models.requests.{SaveForLaterRequest, SaveForLaterResponse}
 
-import java.time.{Instant, LocalDate}
-
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{Instant, LocalDate, LocalDateTime}
 
 trait Generators {
 
@@ -252,6 +250,34 @@ trait Generators {
           contactName,
           businessTelephoneNumber,
           businessEmailId,
+          nonCompliantReturns,
+          nonCompliantPayments
+        )
+    }
+  }
+
+  implicit val arbitraryEtmpDisplaySchemeDetails: Arbitrary[EtmpDisplaySchemeDetails] = {
+    Arbitrary {
+      for {
+        commencementDate <- arbitrary[String]
+        euRegistrationDetails <- Gen.listOfN(5, arbitraryEtmpEuRegistrationDetails.arbitrary)
+        previousEURegistrationDetails <- Gen.listOfN(5, arbitraryEtmpPreviousEURegistrationDetails.arbitrary)
+        websites <- Gen.listOfN(10, arbitraryWebsite.arbitrary)
+        contactName <- arbitrary[String]
+        businessTelephoneNumber <- arbitrary[String]
+        businessEmailId <- arbitrary[String]
+        nonCompliantReturns <- Gen.option(arbitrary[Int].toString)
+        nonCompliantPayments <- Gen.option(arbitrary[Int].toString)
+      } yield
+        EtmpDisplaySchemeDetails(
+          commencementDate,
+          euRegistrationDetails,
+          previousEURegistrationDetails,
+          websites,
+          contactName,
+          businessTelephoneNumber,
+          businessEmailId,
+          unusableStatus = false,
           nonCompliantReturns,
           nonCompliantPayments
         )

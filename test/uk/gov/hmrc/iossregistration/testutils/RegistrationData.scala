@@ -4,7 +4,6 @@ import org.scalacheck.Arbitrary.arbitrary
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.etmp._
-import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationRequest, EtmpExclusionDetails}
 
 import java.time.{LocalDate, LocalDateTime}
 
@@ -40,6 +39,19 @@ object RegistrationData extends BaseSpec {
     nonCompliantPayments = Some(arbitrary[String].sample.value)
   )
 
+  val etmpDisplaySchemeDetails: EtmpDisplaySchemeDetails = EtmpDisplaySchemeDetails(
+    commencementDate = etmpSchemeDetails.commencementDate,
+    euRegistrationDetails = etmpSchemeDetails.euRegistrationDetails,
+    previousEURegistrationDetails = etmpSchemeDetails.previousEURegistrationDetails,
+    websites = etmpSchemeDetails.websites,
+    contactName = etmpSchemeDetails.contactName,
+    businessTelephoneNumber = etmpSchemeDetails.businessTelephoneNumber,
+    businessEmailId = etmpSchemeDetails.businessEmailId,
+    unusableStatus = false,
+    nonCompliantReturns = etmpSchemeDetails.nonCompliantReturns,
+    nonCompliantPayments = etmpSchemeDetails.nonCompliantPayments
+  )
+
   val etmpBankDetails: EtmpBankDetails = EtmpBankDetails(
     accountName = arbitrary[String].sample.value,
     bic = Some(arbitrary[Bic].sample.value),
@@ -58,7 +70,7 @@ object RegistrationData extends BaseSpec {
 
   val displayRegistration: EtmpDisplayRegistration = EtmpDisplayRegistration(
     tradingNames = Seq(arbitrary[EtmpTradingName].sample.value),
-    schemeDetails = etmpSchemeDetails,
+    schemeDetails = etmpDisplaySchemeDetails,
     bankDetails = etmpBankDetails,
     exclusions = Seq(arbitrary[EtmpExclusion].sample.value),
     adminUse = adminUse

@@ -17,22 +17,22 @@
 package uk.gov.hmrc.iossregistration.base
 
 import org.mockito.MockitoSugar
+import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.{OptionValues, TryValues}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthAction, FakeAuthAction}
 import uk.gov.hmrc.iossregistration.generators.Generators
-import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
 import uk.gov.hmrc.iossregistration.models.{Bic, DesAddress, Iban}
-import uk.gov.hmrc.iossregistration.models.etmp.{amend, EtmpAdministration, EtmpBankDetails, EtmpCustomerIdentification, EtmpEuRegistrationDetails, EtmpMessageType, EtmpPreviousEuRegistrationDetails, EtmpRegistrationRequest, EtmpSchemeDetails, EtmpTradingName, EtmpWebsite, SchemeType, VatNumberTraderId}
+import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
+import uk.gov.hmrc.iossregistration.models.etmp._
 import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationRequest}
 
-import java.time.format.DateTimeFormatter
 import java.time.{Clock, LocalDate, LocalDateTime, ZoneId}
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 trait BaseSpec

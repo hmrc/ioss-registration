@@ -17,8 +17,8 @@
 package uk.gov.hmrc.iossregistration.repositories
 
 import org.mockito.Mockito.when
-import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary.arbitrary
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -28,12 +28,11 @@ import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.crypto.{SavedUserAnswersEncryptor, SecureGCMCipher}
-import uk.gov.hmrc.iossregistration.models.domain.VatCustomerInfo
-import uk.gov.hmrc.iossregistration.models.{DesAddress, EncryptedSavedUserAnswers, SavedUserAnswers}
+import uk.gov.hmrc.iossregistration.models.{EncryptedSavedUserAnswers, SavedUserAnswers}
 import uk.gov.hmrc.mongo.test.{CleanMongoCollectionSupport, DefaultPlayMongoRepositorySupport}
 
-import java.time.temporal.ChronoUnit
 import java.time.{Clock, Instant, LocalDate, ZoneId}
+import java.time.temporal.ChronoUnit
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class SaveForLaterRepositorySpec

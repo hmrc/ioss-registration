@@ -113,7 +113,8 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
            |   "contactDetails": {
            |     "contactNameOrBusinessAddress": "Mr Test",
            |     "businessTelephoneNumber": "1234567890",
-           |     "businessEmailAddress": "test@testEmail.com"
+           |     "businessEmailAddress": "test@testEmail.com",
+           |     "unusableStatus": false
            |   }
            | },
            | "bankDetails": {
