@@ -1,6 +1,7 @@
 package uk.gov.hmrc.iossregistration.testutils
 
 import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Gen
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.etmp._
@@ -13,6 +14,18 @@ object RegistrationData extends BaseSpec {
     countryOfRegistration = arbitrary[Country].sample.value.code,
     traderId = arbitraryVatNumberTraderId.arbitrary.sample.value,
     tradingName = arbitraryEtmpTradingName.arbitrary.sample.value.tradingName,
+    fixedEstablishmentAddressLine1 = arbitrary[String].sample.value,
+    fixedEstablishmentAddressLine2 = Some(arbitrary[String].sample.value),
+    townOrCity = arbitrary[String].sample.value,
+    regionOrState = Some(arbitrary[String].sample.value),
+    postcode = Some(arbitrary[String].sample.value)
+  )
+
+  val etmpDisplayEuRegistrationDetails: EtmpDisplayEuRegistrationDetails = EtmpDisplayEuRegistrationDetails(
+    issuedBy = arbitrary[Country].sample.value.code,
+    vatNumber = Some(Gen.alphaNumStr.sample.value),
+    taxIdentificationNumber = None,
+    fixedEstablishmentTradingName = arbitraryEtmpTradingName.arbitrary.sample.value.tradingName,
     fixedEstablishmentAddressLine1 = arbitrary[String].sample.value,
     fixedEstablishmentAddressLine2 = Some(arbitrary[String].sample.value),
     townOrCity = arbitrary[String].sample.value,
@@ -41,7 +54,7 @@ object RegistrationData extends BaseSpec {
 
   val etmpDisplaySchemeDetails: EtmpDisplaySchemeDetails = EtmpDisplaySchemeDetails(
     commencementDate = etmpSchemeDetails.commencementDate,
-    euRegistrationDetails = etmpSchemeDetails.euRegistrationDetails,
+    euRegistrationDetails = Seq(etmpDisplayEuRegistrationDetails),
     previousEURegistrationDetails = etmpSchemeDetails.previousEURegistrationDetails,
     websites = etmpSchemeDetails.websites,
     contactName = etmpSchemeDetails.contactName,

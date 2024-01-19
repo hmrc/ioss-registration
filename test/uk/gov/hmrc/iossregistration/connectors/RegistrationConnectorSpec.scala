@@ -90,6 +90,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
         val connector = app.injector.instanceOf[RegistrationConnector]
         val result = connector.get(iossNumber).futureValue
         val expectedResult = etmpRegistration
+        println(result)
         result mustBe Right(expectedResult)
 
       }
