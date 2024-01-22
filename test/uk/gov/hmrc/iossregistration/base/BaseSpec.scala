@@ -29,7 +29,7 @@ import uk.gov.hmrc.iossregistration.generators.Generators
 import uk.gov.hmrc.iossregistration.models.{Bic, DesAddress, Iban}
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
 import uk.gov.hmrc.iossregistration.models.etmp._
-import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationRequest}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendCustomerIdentification, EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationRequest}
 
 import java.time.{Clock, LocalDate, LocalDateTime, ZoneId}
 import java.time.format.DateTimeFormatter
@@ -129,7 +129,7 @@ trait BaseSpec
       reRegistration = false
     ),
     exclusionDetails = None,
-    customerIdentification = registrationRequest.customerIdentification,
+    customerIdentification = EtmpAmendCustomerIdentification(iossNumber),
     tradingNames = registrationRequest.tradingNames,
     schemeDetails = registrationRequest.schemeDetails,
     bankDetails = registrationRequest.bankDetails
