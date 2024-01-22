@@ -23,7 +23,7 @@ case class EtmpAmendRegistrationRequest(
                                          administration: EtmpAdministration,
                                          changeLog: EtmpAmendRegistrationChangeLog,
                                          exclusionDetails: Option[EtmpExclusionDetails],
-                                         customerIdentification: EtmpCustomerIdentification,
+                                         customerIdentification: EtmpAmendCustomerIdentification,
                                          tradingNames: Seq[EtmpTradingName],
                                          schemeDetails: EtmpSchemeDetails,
                                          bankDetails: EtmpBankDetails,
