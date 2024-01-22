@@ -21,7 +21,7 @@ import play.api.libs.json.{__, Json, OFormat, Reads}
 
 case class EtmpDisplaySchemeDetails(
                               commencementDate: String,
-                              euRegistrationDetails: Seq[EtmpEuRegistrationDetails],
+                              euRegistrationDetails: Seq[EtmpDisplayEuRegistrationDetails],
                               previousEURegistrationDetails: Seq[EtmpPreviousEuRegistrationDetails],
                               websites: Seq[EtmpWebsite],
                               contactName: String,
@@ -36,7 +36,7 @@ object EtmpDisplaySchemeDetails {
 
   private def fromDisplayRegistrationPayload(
                                               commencementDate: String,
-                                              euRegistrationDetails: Option[Seq[EtmpEuRegistrationDetails]],
+                                              euRegistrationDetails: Option[Seq[EtmpDisplayEuRegistrationDetails]],
                                               previousEURegistrationDetails: Option[Seq[EtmpPreviousEuRegistrationDetails]],
                                               websites: Seq[EtmpWebsite],
                                               contactNameOrBusinessAddress: String,
@@ -48,7 +48,7 @@ object EtmpDisplaySchemeDetails {
                                             ): EtmpDisplaySchemeDetails =
     EtmpDisplaySchemeDetails(
       commencementDate = commencementDate,
-      euRegistrationDetails = euRegistrationDetails.fold(Seq.empty[EtmpEuRegistrationDetails])(a => a),
+      euRegistrationDetails = euRegistrationDetails.fold(Seq.empty[EtmpDisplayEuRegistrationDetails])(a => a),
       previousEURegistrationDetails = previousEURegistrationDetails.fold(Seq.empty[EtmpPreviousEuRegistrationDetails])(a => a),
       websites = websites,
       contactName = contactNameOrBusinessAddress,
@@ -62,7 +62,7 @@ object EtmpDisplaySchemeDetails {
   val displayReads: Reads[EtmpDisplaySchemeDetails] =
     (
       (__ \ "commencementDate").read[String] and
-        (__ \ "euRegistrationDetails").readNullable[Seq[EtmpEuRegistrationDetails]] and
+        (__ \ "euRegistrationDetails").readNullable[Seq[EtmpDisplayEuRegistrationDetails]] and
         (__ \ "previousEURegistrationDetails").readNullable[Seq[EtmpPreviousEuRegistrationDetails]] and
         (__ \ "websites").read[Seq[EtmpWebsite]] and
         (__ \ "contactDetails" \ "contactNameOrBusinessAddress").read[String] and
