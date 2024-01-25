@@ -23,7 +23,7 @@ import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
 import uk.gov.hmrc.iossregistration.models.amend.AmendResult.{AmendFailed, AmendSucceeded}
-import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
+import uk.gov.hmrc.iossregistration.models.audit.{EtmpAmendRegistrationRequestAuditModel, EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationRequest
@@ -113,10 +113,24 @@ case class RegistrationController @Inject()(
       registrationService
         .amendRegistration(request.body)
         .map {
-          case AmendSucceeded => Ok
+          case AmendSucceeded =>
+            auditService.audit(EtmpAmendRegistrationRequestAuditModel.build(
+              EtmpRegistrationAuditType.AmendRegistration,
+              request.body,
+              None,
+              None,
+              SubmissionResult.Success
+            ))
+            Ok
           case AmendFailed =>
-            logger.error(s"Internal server error ${request.body}")
-            InternalServerError(Json.toJson(s"Internal server error ${request.body}"))
+            auditService.audit(EtmpAmendRegistrationRequestAuditModel.build(
+              EtmpRegistrationAuditType.AmendRegistration,
+              request.body,
+              None,
+              None,
+              SubmissionResult.Failure
+            ))
+            InternalServerError(Json.toJson(s"Internal server error when amending"))
         }
   }
 }
