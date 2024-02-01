@@ -18,7 +18,7 @@ package uk.gov.hmrc.iossregistration.models.etmp.channelPreference
 
 import play.api.libs.json.{Json, OFormat}
 
-case class ChannelPreferenceRequest(identifierType: String, identifier: String, emailAddress: String, unusableStatus: String)
+case class ChannelPreferenceRequest(identifierType: String, identifier: String, emailAddress: String, unusableStatus: Boolean)
 
 object ChannelPreferenceRequest {
   implicit val format: OFormat[ChannelPreferenceRequest] = Json.format[ChannelPreferenceRequest]
