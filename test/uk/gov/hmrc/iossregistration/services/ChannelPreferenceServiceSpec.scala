@@ -44,7 +44,7 @@ class ChannelPreferenceServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
         channelPreferenceService.updatePreferences(eventRequest).futureValue mustBe true
 
-        val expectedRequest = ChannelPreferenceRequest("IOSS", iossNumber, email, "true")
+        val expectedRequest = ChannelPreferenceRequest("IOSS", iossNumber, email, unusableStatus = true)
         verify(mockChannelPreferenceConnector, times(1)).updatePreferences(eqTo(expectedRequest))(any())
       }
     }
@@ -62,7 +62,7 @@ class ChannelPreferenceServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
         channelPreferenceService.updatePreferences(eventRequest).futureValue mustBe false
 
-        val expectedRequest = ChannelPreferenceRequest("IOSS", iossNumber, email, "true")
+        val expectedRequest = ChannelPreferenceRequest("IOSS", iossNumber, email, unusableStatus = true)
         verify(mockChannelPreferenceConnector, times(1)).updatePreferences(eqTo(expectedRequest))(any())
       }
     }
