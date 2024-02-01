@@ -35,7 +35,7 @@ class ChannelPreferenceService @Inject()(channelPreferenceConnector: ChannelPref
       identifierType = "IOSS",
       identifier = getIossFromTags(event.event.tags),
       emailAddress = event.event.emailAddress,
-      unusableStatus = true.toString
+      unusableStatus = true
     )
 
     channelPreferenceConnector.updatePreferences(channelPreferenceRequest).map { response =>
@@ -43,7 +43,7 @@ class ChannelPreferenceService @Inject()(channelPreferenceConnector: ChannelPref
         case OK =>
           true
         case status =>
-          logger.error(s"Received unknown status $status from channel preference")
+          logger.error(s"Received unknown status $status from channel preference with body ${response.body}")
           false
       }
 
