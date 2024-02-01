@@ -40,7 +40,7 @@ class ChannelPreferenceConnector  @Inject()(
   )
 
   def updatePreferences(channelPreference: ChannelPreferenceRequest)(implicit headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val url = s"${channelPreferenceConfig.baseUrl}generic/channel-preference"
+    val url = s"${channelPreferenceConfig.baseUrl}income-tax/customer/IOSS/contact-preference"
     val correlationId = UUID.randomUUID().toString
     httpClient.PUT[ChannelPreferenceRequest, HttpResponse](
       url = url,
