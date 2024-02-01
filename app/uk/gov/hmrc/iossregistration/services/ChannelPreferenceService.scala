@@ -43,7 +43,7 @@ class ChannelPreferenceService @Inject()(channelPreferenceConnector: ChannelPref
         case OK =>
           true
         case status =>
-          logger.error(s"Received unknown status $status from channel preference")
+          logger.error(s"Received unknown status $status from channel preference with body ${response.body}")
           false
       }
 
