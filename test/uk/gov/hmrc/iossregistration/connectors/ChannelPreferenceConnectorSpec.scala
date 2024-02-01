@@ -27,7 +27,7 @@ class ChannelPreferenceConnectorSpec extends BaseSpec with WireMockHelper {
         )
         .build()
 
-    val url = s"/${basePath}generic/channel-preference"
+    val url = s"/${basePath}income-tax/customer/IOSS/contact-preference"
     val channelPreferenceRequest = ChannelPreferenceRequest("IOSS", "IM9001234567", "email@email.com", "true")
 
     "must return an HttpResponse with status NoContent when the server returns NoContent" in {
