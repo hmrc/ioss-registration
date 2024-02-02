@@ -22,11 +22,10 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
-import uk.gov.hmrc.iossregistration.models.amend.AmendResult.{AmendFailed, AmendSucceeded}
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpAmendRegistrationRequestAuditModel, EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationRequest
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
-import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationRequest
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
@@ -113,7 +112,7 @@ case class RegistrationController @Inject()(
       registrationService
         .amendRegistration(request.body)
         .map {
-          case AmendSucceeded =>
+          case Right(amendRegistrationResponse) =>
             auditService.audit(EtmpAmendRegistrationRequestAuditModel.build(
               EtmpRegistrationAuditType.AmendRegistration,
               request.body,
@@ -121,8 +120,9 @@ case class RegistrationController @Inject()(
               None,
               SubmissionResult.Success
             ))
-            Ok
-          case AmendFailed =>
+
+            Ok(Json.toJson(amendRegistrationResponse))
+          case Left(_) =>
             auditService.audit(EtmpAmendRegistrationRequestAuditModel.build(
               EtmpRegistrationAuditType.AmendRegistration,
               request.body,

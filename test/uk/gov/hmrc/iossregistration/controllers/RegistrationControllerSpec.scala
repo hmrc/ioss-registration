@@ -14,10 +14,10 @@ import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryVrnRequest
-import uk.gov.hmrc.iossregistration.models.amend.AmendResult.AmendSucceeded
-import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus, ServiceUnavailable}
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.AmendRegistrationResponse
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentResponse, EtmpRegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus, ServiceUnavailable}
 import uk.gov.hmrc.iossregistration.repositories.InsertResult.InsertSucceeded
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
@@ -48,6 +48,15 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
     super.beforeEach()
   }
 
+
+  private val amendRegistrationResponse: AmendRegistrationResponse =
+    AmendRegistrationResponse(
+      processingDateTime = LocalDateTime.now(),
+      formBundleNumber = "12345",
+      vrn = "123456789",
+      iossReference = "IM900100000001",
+      businessPartner = "businessPartner"
+    )
 
   ".createRegistration" - {
 
@@ -259,7 +268,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "must return 201 when given a valid payload and the registration is created successfully" in {
 
       val mockService = mock[RegistrationService]
-      when(mockService.amendRegistration(any())) thenReturn Future.successful(AmendSucceeded)
+      when(mockService.amendRegistration(any())) thenReturn Future.successful(Right(amendRegistrationResponse))
 
       val app =
         applicationBuilder
@@ -275,6 +284,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = route(app, request).value
 
         status(result) mustEqual OK
+        contentAsJson(result) mustEqual Json.toJson(amendRegistrationResponse)
       }
     }
 

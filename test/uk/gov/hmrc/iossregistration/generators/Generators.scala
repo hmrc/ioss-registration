@@ -9,6 +9,8 @@ import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
 import uk.gov.hmrc.iossregistration.models.etmp._
 import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationChangeLog
 import uk.gov.hmrc.iossregistration.models.requests.{SaveForLaterRequest, SaveForLaterResponse}
+import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
+import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationChangeLog
 
 import java.time.{Instant, LocalDate, LocalDateTime}
 

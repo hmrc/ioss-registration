@@ -120,7 +120,7 @@ class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
       running(app) {
 
-        registrationService.amendRegistration(etmpAmendRegistrationRequest).futureValue mustBe AmendSucceeded
+        registrationService.amendRegistration(etmpAmendRegistrationRequest).futureValue mustBe  Right(amendRegistrationResponse)
         verify(mockRegistrationConnector, times(1)).amendRegistration(eqTo(etmpAmendRegistrationRequest))
       }
     }
