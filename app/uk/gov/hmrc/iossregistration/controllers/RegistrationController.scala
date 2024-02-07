@@ -18,13 +18,14 @@ package uk.gov.hmrc.iossregistration.controllers
 
 import play.api.Logging
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
-import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
+import uk.gov.hmrc.iossregistration.controllers.actions.{AuthenticatedControllerComponents, AuthorisedMandatoryVrnRequest}
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpAmendRegistrationRequestAuditModel, EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
-import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationRequest
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
@@ -33,7 +34,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import java.time.Clock
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 case class RegistrationController @Inject()(
                                              cc: AuthenticatedControllerComponents,
@@ -47,34 +48,16 @@ case class RegistrationController @Inject()(
                                            )(implicit ec: ExecutionContext) extends BackendController(cc) with Logging {
 
   def createRegistration(): Action[EtmpRegistrationRequest] = cc.authAndRequireVat()(parse.json[EtmpRegistrationRequest]).async {
-    implicit request =>
+    implicit request: AuthorisedMandatoryVrnRequest[EtmpRegistrationRequest] =>
       registrationService.createRegistration(request.body).flatMap {
-        case Right(response) =>
-          (for {
-            _ <- registrationStatusRepository.delete(response.formBundleNumber)
-            _ <- registrationStatusRepository.insert(RegistrationStatus(subscriptionId = response.formBundleNumber,
-              status = EtmpRegistrationStatus.Pending))
-            enrolmentResponse <- enrolmentsConnector.confirmEnrolment(response.formBundleNumber)
-          } yield {
-            enrolmentResponse.status match {
-              case NO_CONTENT =>
-                retryService.getEtmpRegistrationStatus(appConfig.maxRetryCount, appConfig.delay, response.formBundleNumber).map {
-                  case EtmpRegistrationStatus.Success =>
-                    auditService.audit(EtmpRegistrationRequestAuditModel.build(
-                      EtmpRegistrationAuditType.CreateRegistration, request.body, Some(response), None, SubmissionResult.Success)
-                    )
-                    logger.info("Successfully created registration and enrolment")
-                    Created(Json.toJson(response))
-                  case registrationStatus =>
-                    logger.error(s"Failed to add enrolment, got registration status $registrationStatus")
-                    registrationStatusRepository.set(RegistrationStatus(subscriptionId = response.formBundleNumber, status = EtmpRegistrationStatus.Error))
-                    throw EtmpException(s"Failed to add enrolment, got registration status $registrationStatus")
-                }
-              case status =>
-                logger.error(s"Failed to add enrolment - $status with body ${enrolmentResponse.body}")
-                throw EtmpException(s"Failed to add enrolment - ${enrolmentResponse.body}")
-            }
-          }).flatten
+        case Right(etmpEnrolmentResponse) =>
+          enrollRegistration(etmpEnrolmentResponse.formBundleNumber).map { etmpRegistrationStatus =>
+            auditRegistrationEvent(
+              formBundleNumber = etmpEnrolmentResponse.formBundleNumber,
+              etmpEnrolmentResponse = etmpEnrolmentResponse,
+              etmpRegistrationStatus = etmpRegistrationStatus,
+              successResponse = Created(Json.toJson(etmpEnrolmentResponse)))
+          }
         case Left(EtmpEnrolmentError(EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode, body)) =>
           auditService.audit(EtmpRegistrationRequestAuditModel.build(
             EtmpRegistrationAuditType.CreateRegistration, request.body, None, Some(body), SubmissionResult.Duplicate)
@@ -96,6 +79,45 @@ case class RegistrationController @Inject()(
       }
   }
 
+  private def enrollRegistration(formBundleNumber: String)
+                                (implicit hc: HeaderCarrier): Future[EtmpRegistrationStatus] = {
+    (for {
+      _ <- registrationStatusRepository.delete(formBundleNumber)
+      _ <- registrationStatusRepository.insert(RegistrationStatus(subscriptionId = formBundleNumber,
+        status = EtmpRegistrationStatus.Pending))
+      enrolmentResponse <- enrolmentsConnector.confirmEnrolment(formBundleNumber)
+    } yield {
+      val enrolmentResponseStatus = enrolmentResponse.status
+      enrolmentResponseStatus match {
+        case NO_CONTENT =>
+          retryService.getEtmpRegistrationStatus(appConfig.maxRetryCount, appConfig.delay, formBundleNumber)
+        case status =>
+          logger.error(s"Failed to add enrolment - $status with body ${enrolmentResponse.body}")
+          throw EtmpException(s"Failed to add enrolment - ${enrolmentResponse.body}")
+      }
+    }).flatten
+  }
+
+  private def auditRegistrationEvent(formBundleNumber: String,
+                                     etmpEnrolmentResponse: EtmpEnrolmentResponse,
+                                     etmpRegistrationStatus: EtmpRegistrationStatus,
+                                     successResponse: Result)
+                                    (implicit hc: HeaderCarrier, request: AuthorisedMandatoryVrnRequest[EtmpRegistrationRequest]): Result = {
+    etmpRegistrationStatus match {
+      case EtmpRegistrationStatus.Success =>
+        auditService.audit(EtmpRegistrationRequestAuditModel.build(
+          EtmpRegistrationAuditType.CreateRegistration, request.body, Some(etmpEnrolmentResponse), None, SubmissionResult.Success)
+        )
+        logger.info("Successfully created registration and enrolment")
+        //  Created(Json.toJson(response))
+        successResponse
+      case registrationStatus: EtmpRegistrationStatus =>
+        logger.error(s"Failed to add enrolment, got registration status $registrationStatus")
+        registrationStatusRepository.set(RegistrationStatus(subscriptionId = formBundleNumber, status = EtmpRegistrationStatus.Error))
+        throw EtmpException(s"Failed to add enrolment, got registration status $registrationStatus")
+    }
+  }
+
   def get(): Action[AnyContent] = cc.authAndRequireIoss().async {
     implicit request =>
       (registrationService.get().map { registration =>
@@ -109,28 +131,45 @@ case class RegistrationController @Inject()(
 
   def amend(): Action[EtmpAmendRegistrationRequest] = cc.authAndRequireVat()(parse.json[EtmpAmendRegistrationRequest]).async {
     implicit request =>
+      val etmpAmendRegistrationRequest: EtmpAmendRegistrationRequest = request.body
       registrationService
-        .amendRegistration(request.body)
-        .map {
-          case Right(amendRegistrationResponse) =>
-            auditService.audit(EtmpAmendRegistrationRequestAuditModel.build(
+        .amendRegistration(etmpAmendRegistrationRequest)
+        .flatMap {
+          case Right(amendRegistrationResponse: AmendRegistrationResponse) =>
+            def auditCall(): Unit = auditService.audit(EtmpAmendRegistrationRequestAuditModel.build(
               EtmpRegistrationAuditType.AmendRegistration,
-              request.body,
+              etmpAmendRegistrationRequest,
               None,
               None,
               SubmissionResult.Success
             ))
 
-            Ok(Json.toJson(amendRegistrationResponse))
+            if (etmpAmendRegistrationRequest.changeLog.reRegistration) {
+              enrollRegistration(amendRegistrationResponse.formBundleNumber).map {
+                case EtmpRegistrationStatus.Success =>
+                  auditCall()
+                  Ok(Json.toJson(amendRegistrationResponse))
+                case registrationStatus =>
+                  logger.error(s"Failed to add enrolment, got registration status $registrationStatus")
+                  registrationStatusRepository.set(
+                    RegistrationStatus(subscriptionId = amendRegistrationResponse.formBundleNumber, status = EtmpRegistrationStatus.Error)
+                  )
+                  throw EtmpException(s"Failed to add enrolment, got registration status $registrationStatus")
+              }
+            } else {
+              auditCall()
+              Future.successful(Ok(Json.toJson(amendRegistrationResponse)))
+            }
+
           case Left(_) =>
             auditService.audit(EtmpAmendRegistrationRequestAuditModel.build(
               EtmpRegistrationAuditType.AmendRegistration,
-              request.body,
+              etmpAmendRegistrationRequest,
               None,
               None,
               SubmissionResult.Failure
             ))
-            InternalServerError(Json.toJson(s"Internal server error when amending"))
+            Future.successful(InternalServerError(Json.toJson(s"Internal server error when amending")))
         }
   }
 }

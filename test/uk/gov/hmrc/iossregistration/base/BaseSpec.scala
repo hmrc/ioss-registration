@@ -119,14 +119,14 @@ trait BaseSpec
     )
   )
 
-  val etmpAmendRegistrationRequest: EtmpAmendRegistrationRequest = amend.EtmpAmendRegistrationRequest(
+  def etmpAmendRegistrationRequest(reRegistration: Boolean = false): EtmpAmendRegistrationRequest = amend.EtmpAmendRegistrationRequest(
     administration = registrationRequest.administration.copy(messageType = EtmpMessageType.IOSSSubscriptionAmend),
     changeLog = EtmpAmendRegistrationChangeLog(
       tradingNames = true,
       fixedEstablishments = true,
       contactDetails = true,
       bankDetails = true,
-      reRegistration = false
+      reRegistration = reRegistration
     ),
     exclusionDetails = None,
     customerIdentification = EtmpAmendCustomerIdentification(iossNumber),

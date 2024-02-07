@@ -265,7 +265,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   "amend" - {
 
-    "must return 201 when given a valid payload and the registration is created successfully" in {
+    "must return 201 when given a valid non reRegistration payload and the registration is created successfully with no enrollment" in {
 
       val mockService = mock[RegistrationService]
       when(mockService.amendRegistration(any())) thenReturn Future.successful(Right(amendRegistrationResponse))
@@ -279,7 +279,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         val request =
           FakeRequest(POST, routes.RegistrationController.amend().url)
-            .withJsonBody(Json.toJson(RegistrationData.etmpAmendRegistrationRequest))
+            .withJsonBody(Json.toJson(RegistrationData.etmpAmendRegistrationRequest(reRegistration = false)))
 
         val result = route(app, request).value
 
@@ -287,6 +287,39 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
         contentAsJson(result) mustEqual Json.toJson(amendRegistrationResponse)
       }
     }
+
+    "must return 201 when given a valid reRegistration payload and the registration is created successfully with an enrollment" in {
+      val formBundleNumber = amendRegistrationResponse.formBundleNumber
+
+      val mockService = mock[RegistrationService]
+      when(mockService.amendRegistration(any())) thenReturn Future.successful(Right(amendRegistrationResponse))
+      when(mockEnrolmentsConnector.confirmEnrolment(any())(any())) thenReturn HttpResponse(204, "").toFuture
+      when(mockRegistrationStatusRepository.delete(eqTo(formBundleNumber))) thenReturn true.toFuture
+      when(mockRegistrationStatusRepository.insert(eqTo(RegistrationStatus(formBundleNumber, EtmpRegistrationStatus.Pending)))) thenReturn InsertSucceeded.toFuture
+      when(mockRetryService.getEtmpRegistrationStatus(any(), any(), any())) thenReturn EtmpRegistrationStatus.Success.toFuture
+
+      val app =
+        applicationBuilder
+          .overrides(bind[RegistrationService].toInstance(mockService))
+          .overrides(bind[RegistrationStatusRepository].toInstance(mockRegistrationStatusRepository))
+          .overrides(bind[EnrolmentsConnector].toInstance(mockEnrolmentsConnector))
+          .overrides(bind[RetryService].toInstance(mockRetryService))
+          .build
+
+      running(app) {
+
+        val request =
+          FakeRequest(POST, routes.RegistrationController.amend().url)
+            .withJsonBody(Json.toJson(RegistrationData.etmpAmendRegistrationRequest(reRegistration = true)))
+
+        val result = route(app, request).value
+
+        status(result) mustEqual OK
+        contentAsJson(result) mustEqual Json.toJson(amendRegistrationResponse)
+      }
+    }
+
+
 
     "must return 400 when the JSON request payload is not a registration" in {
 
