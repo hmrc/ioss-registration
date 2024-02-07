@@ -113,15 +113,15 @@ class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
           businessPartner = "test businessPartner"
         )
 
-      when(mockRegistrationConnector.amendRegistration(etmpAmendRegistrationRequest)) thenReturn Right(amendRegistrationResponse).toFuture
+      when(mockRegistrationConnector.amendRegistration(etmpAmendRegistrationRequest())) thenReturn Right(amendRegistrationResponse).toFuture
 
       val app = applicationBuilder
         .build()
 
       running(app) {
 
-        registrationService.amendRegistration(etmpAmendRegistrationRequest).futureValue mustBe  Right(amendRegistrationResponse)
-        verify(mockRegistrationConnector, times(1)).amendRegistration(eqTo(etmpAmendRegistrationRequest))
+        registrationService.amendRegistration(etmpAmendRegistrationRequest()).futureValue mustBe  Right(amendRegistrationResponse)
+        verify(mockRegistrationConnector, times(1)).amendRegistration(eqTo(etmpAmendRegistrationRequest()))
       }
     }
   }
