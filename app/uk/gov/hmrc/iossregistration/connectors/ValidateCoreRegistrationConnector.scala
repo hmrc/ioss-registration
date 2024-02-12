@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpErrorFunctions, HttpException}
 import uk.gov.hmrc.iossregistration.config.CoreValidationConfig
 import uk.gov.hmrc.iossregistration.connectors.ValidateCoreRegistrationHttpParser.{ValidateCoreRegistrationReads, ValidateCoreRegistrationResponse}
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models
 import uk.gov.hmrc.iossregistration.models.core.{CoreRegistrationRequest, EisErrorResponse}
 

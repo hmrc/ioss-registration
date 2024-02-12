@@ -17,7 +17,7 @@
 package uk.gov.hmrc.iossregistration.connectors
 
 import play.api.http.HeaderNames
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.{GatewayTimeoutException, HeaderCarrier, HttpClient, HttpErrorFunctions}
 import uk.gov.hmrc.iossregistration.config.GetVatInfoConfig

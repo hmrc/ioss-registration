@@ -20,7 +20,7 @@ import play.api.http.HeaderNames
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpErrorFunctions, HttpResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.iossregistration.config.ChannelPreferenceConfig
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.etmp.channelPreference.ChannelPreferenceRequest
 
 import java.util.UUID

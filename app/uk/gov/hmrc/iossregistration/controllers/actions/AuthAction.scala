@@ -24,7 +24,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject

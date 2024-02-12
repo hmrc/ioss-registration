@@ -20,7 +20,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, RegistrationConnector}
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.CreateEtmpRegistrationResponse
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryIossRequest
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
 import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}

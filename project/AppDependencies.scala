@@ -19,9 +19,8 @@ object AppDependencies {
     "org.playframework"       %% "play-test"                  % PlayVersion.current,
     "com.vladsch.flexmark"    %  "flexmark-all"               % "0.64.6",
     "org.scalatestplus.play"  %% "scalatestplus-play"         % "5.1.0",
-    "org.scalatestplus"       %% "mockito-4-2"                % "3.2.11.0",
+    "org.scalatestplus"       %% "mockito-4-6"                % "3.2.15.0",
     "org.mockito"             %% "mockito-scala"              % "1.17.30",
-    "com.github.tomakehurst"  % "wiremock-standalone"         % "2.27.2",
     "org.scalatestplus"       %% "scalacheck-1-15"            % "3.2.11.0",
     "org.scalacheck"          %% "scalacheck"                 % "1.17.0"
   ).map(_ % "test, it")

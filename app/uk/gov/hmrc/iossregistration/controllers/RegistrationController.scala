@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.iossregistration.controllers
 
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.http.HeaderCarrier

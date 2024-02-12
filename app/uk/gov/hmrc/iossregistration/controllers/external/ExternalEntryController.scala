@@ -19,7 +19,7 @@ package uk.gov.hmrc.iossregistration.controllers.external
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.audit.BTAExternalEntryAuditModel
 import uk.gov.hmrc.iossregistration.models.external.{ExternalEntryUrlResponse, ExternalRequest}
 import uk.gov.hmrc.iossregistration.services.external.ExternalEntryService

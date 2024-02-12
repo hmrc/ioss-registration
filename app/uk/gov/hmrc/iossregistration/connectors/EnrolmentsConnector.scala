@@ -20,7 +20,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpErrorFunctions, HttpResp
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.iossregistration.config.EnrolmentsConfig
 import uk.gov.hmrc.iossregistration.controllers.routes
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.enrolments.SubscriberRequest
 
 import java.util.UUID

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.iossregistration.services.external
 
 import uk.gov.hmrc.iossregistration.config.AppConfig
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.external.{ExternalEntry, ExternalRequest, ExternalResponse}
 import uk.gov.hmrc.iossregistration.repositories.ExternalEntryRepository
 

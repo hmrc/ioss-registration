@@ -18,7 +18,7 @@ package uk.gov.hmrc.iossregistration.controllers.actions
 
 import play.api.mvc.{ActionRefiner, Result}
 import play.api.mvc.Results.Unauthorized
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

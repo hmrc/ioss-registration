@@ -20,7 +20,7 @@ import play.api.http.HeaderNames._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException}
 import uk.gov.hmrc.iossregistration.config.{AmendRegistrationConfig, CreateRegistrationConfig, DisplayRegistrationConfig}
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser._
-import play.api.Logging
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.UnexpectedResponseStatus
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
 import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationRequest
