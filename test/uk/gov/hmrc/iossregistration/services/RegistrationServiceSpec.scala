@@ -11,7 +11,6 @@ import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, RegistrationConnector}
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryIossRequest
 import uk.gov.hmrc.iossregistration.models.{EtmpException, NotFound}
-import uk.gov.hmrc.iossregistration.models.amend.AmendResult.AmendSucceeded
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpEnrolmentResponse
 import uk.gov.hmrc.iossregistration.models.etmp.amend.AmendRegistrationResponse
 import uk.gov.hmrc.iossregistration.testutils.RegistrationData.{displayRegistration, etmpRegistrationRequest, registrationWrapper}

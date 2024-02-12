@@ -19,7 +19,7 @@ package uk.gov.hmrc.iossregistration.repositories
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model._
 import uk.gov.hmrc.iossregistration.config.AppConfig
-import uk.gov.hmrc.iossregistration.logging.Logging
+import play.api.Logging
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus
 import uk.gov.hmrc.iossregistration.repositories.InsertResult.{AlreadyExists, InsertSucceeded}
 import uk.gov.hmrc.iossregistration.repositories.MongoErrors.Duplicate

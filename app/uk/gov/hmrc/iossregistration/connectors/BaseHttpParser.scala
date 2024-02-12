@@ -19,7 +19,7 @@ package uk.gov.hmrc.iossregistration.connectors
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsSuccess, Reads}
 import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.iossregistration.logging.Logging
+import play.api.Logging
 import uk.gov.hmrc.iossregistration.models._
 
 trait BaseHttpParser extends Logging {
@@ -31,7 +31,7 @@ trait BaseHttpParser extends Logging {
       case OK => response.json.validate[T] match {
         case JsSuccess(registration, _) => Right(registration)
         case JsError(errors) =>
-          logger.error(s"Failed trying to parse JSON with errors: $errors", errors)
+          logger.error(s"Failed trying to parse JSON with errors: $errors")
           Left(InvalidJson)
       }
       case NOT_FOUND =>

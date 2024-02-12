@@ -20,8 +20,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpErrorFunctions, HttpResp
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.iossregistration.config.EnrolmentsConfig
 import uk.gov.hmrc.iossregistration.controllers.routes
-import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.metrics.{MetricsEnum, ServiceMetrics}
+import play.api.Logging
 import uk.gov.hmrc.iossregistration.models.enrolments.SubscriberRequest
 
 import java.util.UUID
@@ -30,12 +29,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EnrolmentsConnector @Inject()(
                                      enrolments: EnrolmentsConfig,
-                                     httpClient: HttpClient,
-                                     metrics: ServiceMetrics)
+                                     httpClient: HttpClient
+                                   )
                                    (implicit ec: ExecutionContext) extends HttpErrorFunctions with Logging {
 
   def confirmEnrolment(subscriptionId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val timerContext = metrics.startTimer(MetricsEnum.ConfirmEnrolment)
     val etmpId = UUID.randomUUID().toString
 
     httpClient.PUT[SubscriberRequest, HttpResponse](
@@ -43,10 +41,7 @@ class EnrolmentsConnector @Inject()(
       SubscriberRequest(enrolments.iossEnrolmentKey,
         s"${enrolments.callbackBaseUrl}${routes.EnrolmentsSubscriptionController.authoriseEnrolment(subscriptionId).url}",
         etmpId
-      )).map { result =>
-      timerContext.stop()
-      result
-    }
+      ))
   }
 
 }

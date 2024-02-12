@@ -20,7 +20,7 @@ import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model._
 import play.api.libs.json.Format
 import uk.gov.hmrc.iossregistration.config.AppConfig
-import uk.gov.hmrc.iossregistration.logging.Logging
+import play.api.Logging
 import uk.gov.hmrc.iossregistration.models.external.ExternalEntry
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository

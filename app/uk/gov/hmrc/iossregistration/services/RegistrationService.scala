@@ -17,20 +17,13 @@
 package uk.gov.hmrc.iossregistration.services
 
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.CreateEtmpRegistrationResponse
 import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, RegistrationConnector}
+import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.CreateEtmpRegistrationResponse
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryIossRequest
-import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.models.amend.AmendResult
-import uk.gov.hmrc.iossregistration.models.amend.AmendResult.AmendSucceeded
-import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpRegistrationRequest}
-import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
-import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
+import play.api.Logging
 import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
 import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
-import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

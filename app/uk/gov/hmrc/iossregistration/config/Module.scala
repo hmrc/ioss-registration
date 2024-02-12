@@ -18,7 +18,6 @@ package uk.gov.hmrc.iossregistration.config
 
 import com.google.inject.AbstractModule
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthAction, AuthActionImpl, AuthenticatedControllerComponents, DefaultAuthenticatedControllerComponents}
-import uk.gov.hmrc.iossregistration.metrics.{DefaultServiceMetrics, ServiceMetrics}
 
 import java.time.{Clock, ZoneOffset}
 
@@ -29,7 +28,6 @@ class Module extends AbstractModule {
     bind(classOf[AppConfig]).asEagerSingleton()
 
     bind(classOf[AuthAction]).to(classOf[AuthActionImpl]).asEagerSingleton()
-    bind(classOf[ServiceMetrics]).to(classOf[DefaultServiceMetrics])
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
 

@@ -16,14 +16,12 @@
 
 package uk.gov.hmrc.iossregistration.connectors
 
-
 import play.api.http.HeaderNames
+import play.api.Logging
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.{GatewayTimeoutException, HeaderCarrier, HttpClient, HttpErrorFunctions}
 import uk.gov.hmrc.iossregistration.config.GetVatInfoConfig
 import uk.gov.hmrc.iossregistration.connectors.VatCustomerInfoHttpParser.{VatCustomerInfoReads, VatCustomerInfoResponse}
-import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.metrics.{MetricsEnum, ServiceMetrics}
 import uk.gov.hmrc.iossregistration.models.GatewayTimeout
 
 import java.util.UUID
@@ -32,8 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class GetVatInfoConnector @Inject()(
                                      getVatInfoConfig: GetVatInfoConfig,
-                                     httpClient: HttpClient,
-                                     metrics: ServiceMetrics
+                                     httpClient: HttpClient
                                    )(implicit ec: ExecutionContext)
   extends HttpErrorFunctions with Logging {
 
@@ -47,17 +44,12 @@ class GetVatInfoConnector @Inject()(
 
   def getVatCustomerDetails(vrn: Vrn)(implicit headerCarrier: HeaderCarrier): Future[VatCustomerInfoResponse] = {
     val url = s"${getVatInfoConfig.baseUrl}vat/customer/vrn/${vrn.value}/information"
-    val timerContext = metrics.startTimer(MetricsEnum.GetVatCustomerDetails)
     val correlationId = UUID.randomUUID().toString
     httpClient.GET[VatCustomerInfoResponse](
       url = url,
       headers = headers(correlationId)
-    ).map { result =>
-      timerContext.stop()
-      result
-    }.recover {
+    ).recover {
       case e: GatewayTimeoutException =>
-        timerContext.stop()
         logger.error(s"Request timeout from Get vat info: $e", e)
         Left(GatewayTimeout)
     }

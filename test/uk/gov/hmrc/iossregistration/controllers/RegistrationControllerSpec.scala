@@ -273,7 +273,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val app =
         applicationBuilder
           .overrides(bind[RegistrationService].toInstance(mockService))
-          .build
+          .build()
 
       running(app) {
 
@@ -304,7 +304,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
           .overrides(bind[RegistrationStatusRepository].toInstance(mockRegistrationStatusRepository))
           .overrides(bind[EnrolmentsConnector].toInstance(mockEnrolmentsConnector))
           .overrides(bind[RetryService].toInstance(mockRetryService))
-          .build
+          .build()
 
       running(app) {
 

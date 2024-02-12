@@ -20,8 +20,7 @@ import play.api.http.HeaderNames._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException}
 import uk.gov.hmrc.iossregistration.config.{AmendRegistrationConfig, CreateRegistrationConfig, DisplayRegistrationConfig}
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser._
-import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.metrics.{MetricsEnum, ServiceMetrics}
+import play.api.Logging
 import uk.gov.hmrc.iossregistration.models.UnexpectedResponseStatus
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
 import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationRequest
@@ -34,8 +33,7 @@ case class RegistrationConnector @Inject()(
                                             httpClient: HttpClient,
                                             createRegistrationConfig: CreateRegistrationConfig,
                                             displayRegistrationConfig: DisplayRegistrationConfig,
-                                            amendRegistrationConfig: AmendRegistrationConfig,
-                                            metrics: ServiceMetrics
+                                            amendRegistrationConfig: AmendRegistrationConfig
                                           )(implicit ec: ExecutionContext) extends Logging {
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -48,14 +46,9 @@ case class RegistrationConnector @Inject()(
 
     val correlationId = UUID.randomUUID().toString
     val headersWithCorrelationId = getHeaders(correlationId)
-    val timerContext = metrics.startTimer(MetricsEnum.GetRegistration)
     val url = s"${displayRegistrationConfig.baseUrl}vec/iossregistration/viewreg/v1/$iossNumber"
-    httpClient.GET[DisplayRegistrationResponse](url = url, headers = headersWithCorrelationId).map { result =>
-      timerContext.stop()
-      result
-    }.recover {
+    httpClient.GET[DisplayRegistrationResponse](url = url, headers = headersWithCorrelationId).recover {
       case e: HttpException =>
-        timerContext.stop()
         logger.error(s"Unexpected response from etmp registration ${e.getMessage}", e)
         Left(UnexpectedResponseStatus(e.responseCode, s"Unexpected response from ${serviceName}, received status ${e.responseCode}"))
     }
@@ -89,7 +82,6 @@ case class RegistrationConnector @Inject()(
 
     val correlationId: String = UUID.randomUUID().toString
     val headersWithCorrelationId = amendHeaders(correlationId)
-    val timerContext = metrics.startTimer(MetricsEnum.AmendRegistration)
     val headersWithoutAuth = headersWithCorrelationId.filterNot {
       case (key, _) => key.matches(AUTHORIZATION)
     }
@@ -100,12 +92,8 @@ case class RegistrationConnector @Inject()(
       s"${amendRegistrationConfig.baseUrl}vec/iossregistration/amendregistration/v1",
       registration,
       headers = headersWithCorrelationId
-    ).map { result =>
-      timerContext.stop()
-      result
-    }.recover {
+    ).recover {
       case e: HttpException =>
-        timerContext.stop()
         logger.error(s"Unexpected response from etmp registration ${e.getMessage}", e)
         Left(UnexpectedResponseStatus(e.responseCode, s"Unexpected response from ${serviceName}, received status ${e.responseCode}"))
     }

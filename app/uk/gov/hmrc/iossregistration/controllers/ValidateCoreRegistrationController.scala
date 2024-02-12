@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.iossregistration.connectors.ValidateCoreRegistrationConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
-import uk.gov.hmrc.iossregistration.logging.Logging
+import play.api.Logging
 import uk.gov.hmrc.iossregistration.models.core.CoreRegistrationRequest
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 

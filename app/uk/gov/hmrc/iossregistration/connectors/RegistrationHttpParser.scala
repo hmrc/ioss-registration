@@ -80,7 +80,7 @@ object RegistrationHttpParser extends BaseHttpParser {
         case OK => response.json.validate[AmendRegistrationResponse] match {
           case JsSuccess(amendRegistrationResponse, _) => Right(amendRegistrationResponse)
           case JsError(errors) =>
-            logger.error(s"Failed trying to parse JSON with status ${response.status} and body ${response.body}", errors)
+            logger.error(s"Failed trying to parse JSON with status ${response.status} and body ${response.body} errors ${errors}")
             Left(InvalidJson)
         }
         case NOT_FOUND =>

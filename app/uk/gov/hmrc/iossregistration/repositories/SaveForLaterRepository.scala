@@ -22,7 +22,7 @@ import play.api.libs.json.Format
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.crypto.SavedUserAnswersEncryptor
-import uk.gov.hmrc.iossregistration.logging.Logging
+import play.api.Logging
 import uk.gov.hmrc.iossregistration.models.{EncryptedSavedUserAnswers, SavedUserAnswers}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository

@@ -20,8 +20,8 @@ import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.connectors.GetVatInfoConnector
 import uk.gov.hmrc.iossregistration.connectors.VatCustomerInfoHttpParser.VatCustomerInfoResponse
+import uk.gov.hmrc.iossregistration.models.{ErrorResponse, SavedUserAnswers}
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
-import uk.gov.hmrc.iossregistration.models.{ErrorResponse, NotFound, SavedUserAnswers}
 import uk.gov.hmrc.iossregistration.models.requests.{SaveForLaterRequest, SaveForLaterResponse}
 import uk.gov.hmrc.iossregistration.repositories.SaveForLaterRepository
 

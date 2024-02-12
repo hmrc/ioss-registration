@@ -21,8 +21,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpErrorFunctions, HttpException}
 import uk.gov.hmrc.iossregistration.config.CoreValidationConfig
 import uk.gov.hmrc.iossregistration.connectors.ValidateCoreRegistrationHttpParser.{ValidateCoreRegistrationReads, ValidateCoreRegistrationResponse}
-import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.metrics.{MetricsEnum, ServiceMetrics}
+import play.api.Logging
 import uk.gov.hmrc.iossregistration.models
 import uk.gov.hmrc.iossregistration.models.core.{CoreRegistrationRequest, EisErrorResponse}
 
@@ -33,8 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ValidateCoreRegistrationConnector @Inject()(
                                                    coreValidationConfig: CoreValidationConfig,
-                                                   httpClient: HttpClient,
-                                                   metrics: ServiceMetrics
+                                                   httpClient: HttpClient
                                                  )(implicit ec: ExecutionContext) extends HttpErrorFunctions with Logging {
 
   private implicit val emptyHc: HeaderCarrier = HeaderCarrier()
@@ -54,19 +52,14 @@ class ValidateCoreRegistrationConnector @Inject()(
     }
 
     logger.info(s"Sending request to EIS with headers $headersWithoutAuth and request ${Json.toJson(coreRegistrationRequest)}")
-    val timerContext = metrics.startTimer(MetricsEnum.ValidateCoreRegistration)
     val url = s"$baseUrl"
     httpClient.POST[CoreRegistrationRequest, ValidateCoreRegistrationResponse](
       url,
       coreRegistrationRequest,
       headers = headersWithCorrelationId
-    ).map { result =>
-      timerContext.stop()
-      result
-    }.recover {
+    ).recover {
       case e: HttpException =>
         val selfGeneratedRandomUUID = UUID.randomUUID()
-        timerContext.stop()
         logger.error(
           s"Unexpected error response from EIS $url, received status ${e.responseCode}," +
             s"body of response was: ${e.message} with self-generated CorrelationId $selfGeneratedRandomUUID " +

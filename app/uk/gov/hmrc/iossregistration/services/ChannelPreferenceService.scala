@@ -19,7 +19,7 @@ package uk.gov.hmrc.iossregistration.services
 import play.api.http.Status.OK
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.connectors.ChannelPreferenceConnector
-import uk.gov.hmrc.iossregistration.logging.Logging
+import play.api.Logging
 import uk.gov.hmrc.iossregistration.models.etmp.channelPreference.ChannelPreferenceRequest
 import uk.gov.hmrc.iossregistration.models.external.Event
 
