@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.iossregistration.models.requests
 
-import play.api.libs.json.{JsObject, JsValue, Json, OFormat}
+import play.api.libs.json.{Json, JsValue, OFormat}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.models.SavedUserAnswers
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo

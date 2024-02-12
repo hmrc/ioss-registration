@@ -1,6 +1,6 @@
 package uk.gov.hmrc.iossregistration.services
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import org.mockito.ArgumentMatchers.anyString
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.iossregistration.base.BaseSpec

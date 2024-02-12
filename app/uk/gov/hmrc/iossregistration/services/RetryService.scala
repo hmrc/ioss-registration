@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.iossregistration.services
 
-import akka.actor.ActorSystem
-import akka.pattern.after
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.pattern.after
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationStatus
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 
