@@ -26,7 +26,6 @@ case class EtmpExclusionDetails(
                                  partyType: String = "NETP",
                                  exclusionRequestDate: Option[LocalDate],
                                  identificationValidityDate: Option[LocalDate],
-                                 intExclusionRequestDate: Option[LocalDate],
                                  newMemberState: Option[EtmpNewMemberState]
                                )
 
