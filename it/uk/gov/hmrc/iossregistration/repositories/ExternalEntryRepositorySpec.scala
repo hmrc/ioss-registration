@@ -108,7 +108,6 @@ class ExternalEntryRepositorySpec
 
       val result = repository.get(answers.userId).futureValue
 
-
       val expectedAnswer = answers.copy(lastUpdated = answers.lastUpdated.truncatedTo(ChronoUnit.MILLIS))
       result.value mustEqual expectedAnswer
     }
@@ -134,6 +133,9 @@ class ExternalEntryRepositorySpec
       val result = repository.clear(answers.userId).futureValue
 
       result mustEqual true
+
+      val currentAnswers = repository.get(answers.userId).futureValue
+      currentAnswers must not be defined
     }
   }
 }

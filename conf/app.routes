@@ -18,4 +18,6 @@ GET         /save-for-later/delete                            uk.gov.hmrc.iossre
 
 POST        /amend                                            uk.gov.hmrc.iossregistration.controllers.RegistrationController.amend()
 
+GET         /accounts                                         uk.gov.hmrc.iossregistration.controllers.RegistrationController.getAccounts
+
 POST        /process/bounce                                   uk.gov.hmrc.iossregistration.controllers.external.EventController.processBouncedEmailEvent()

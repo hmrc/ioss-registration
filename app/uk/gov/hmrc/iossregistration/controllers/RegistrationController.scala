@@ -172,4 +172,12 @@ case class RegistrationController @Inject()(
             Future.successful(InternalServerError(Json.toJson(s"Internal server error when amending")))
         }
   }
+
+  def getAccounts: Action[AnyContent] = cc.authAndRequireIoss().async {
+    implicit request =>
+      enrolmentsConnector.es2(request.userId).map {
+        case Right(enrolments) => Ok(Json.toJson(enrolments))
+        case Left(e) => InternalServerError(e.body)
+      }
+  }
 }

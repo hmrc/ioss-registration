@@ -109,6 +109,9 @@ class RegistrationStatusRepositorySpec extends AnyFreeSpec
       val result = repository.delete(registrationStatus.subscriptionId).futureValue
 
       result mustEqual true
+
+      val currentAnswers = repository.get(registrationStatus.subscriptionId).futureValue
+      currentAnswers must not be defined
     }
   }
 }

@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.iossregistration.connectors
 
-import play.api.http.Status.CREATED
-import play.api.libs.json.JsSuccess
+import play.api.http.Status.{CREATED, NO_CONTENT, OK}
+import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.models.TaxEnrolmentErrorResponse
+import uk.gov.hmrc.iossregistration.models.{ErrorResponse, InvalidJson, TaxEnrolmentErrorResponse, UnexpectedResponseStatus}
+import uk.gov.hmrc.iossregistration.models.enrolments.EACDEnrolments
 
 object EnrolmentsHttpParser extends Logging {
 
@@ -48,6 +49,33 @@ object EnrolmentsHttpParser extends Logging {
                   TaxEnrolmentErrorResponse(s"UNEXPECTED_$status", response.body)
                 )
             }
+          }
+      }
+    }
+  }
+
+  type ES2EnrolmentResultsResponse = Either[ErrorResponse, EACDEnrolments]
+
+  implicit object QueryEnrolmentResultsResponseReads extends HttpReads[ES2EnrolmentResultsResponse] {
+    override def read(method: String, url: String, response: HttpResponse): ES2EnrolmentResultsResponse = {
+      response.status match {
+        case OK => response.json.validate[EACDEnrolments] match {
+          case JsSuccess(es2Response, _) => Right(es2Response)
+          case JsError(errors) =>
+            logger.error(s"Failed trying to parse JSON $errors. JSON was ${response.json}")
+            Left(InvalidJson)
+        }
+        case NO_CONTENT => Right(EACDEnrolments(Seq.empty))
+        case status =>
+          logger.info(s"Response received from enrolments: ${response.status} with body ${response.body}")
+          if (response.body.isEmpty) {
+            Left(
+              UnexpectedResponseStatus(status, "The response body was empty")
+            )
+          } else {
+            Left(
+              UnexpectedResponseStatus(status, response.body)
+            )
           }
       }
     }
