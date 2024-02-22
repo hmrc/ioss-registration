@@ -229,7 +229,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "must return OK and a registration when one is found" in {
 
       val mockService = mock[RegistrationService]
-      when(mockService.get()(any(), any())) thenReturn RegistrationData.registrationWrapper.toFuture
+      when(mockService.get(any(), any())(any())) thenReturn RegistrationData.registrationWrapper.toFuture
 
       val app =
         applicationBuilder
@@ -248,7 +248,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "must return INTERNAL_SERVER_ERROR when a registration connector response with Error" in {
 
       val mockService = mock[RegistrationService]
-      when(mockService.get()(any(), any())) thenReturn Future.failed(EtmpException("Error Occurred"))
+      when(mockService.get(any(), any())(any())) thenReturn Future.failed(EtmpException("Error Occurred"))
 
       val app =
         applicationBuilder
