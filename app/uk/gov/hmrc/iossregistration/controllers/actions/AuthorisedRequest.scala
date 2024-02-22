@@ -17,10 +17,11 @@
 package uk.gov.hmrc.iossregistration.controllers.actions
 
 import play.api.mvc.{Request, WrappedRequest}
+import uk.gov.hmrc.auth.core.retrieve.Credentials
 import uk.gov.hmrc.domain.Vrn
 
-case class AuthorisedRequest[A](request: Request[A], userId: String, vrn: Option[Vrn], iossNumber: Option[String]) extends WrappedRequest[A](request)
+case class AuthorisedRequest[A](request: Request[A], credentials: Credentials, userId: String, vrn: Option[Vrn], iossNumber: Option[String]) extends WrappedRequest[A](request)
 
-case class AuthorisedMandatoryVrnRequest[A](request: Request[A], userId: String, vrn: Vrn, iossNumber: Option[String]) extends WrappedRequest[A](request)
+case class AuthorisedMandatoryVrnRequest[A](request: Request[A], credentials: Credentials, userId: String, vrn: Vrn, iossNumber: Option[String]) extends WrappedRequest[A](request)
 
-case class AuthorisedMandatoryIossRequest[A](request: Request[A], userId: String, vrn: Vrn, iossNumber: String) extends WrappedRequest[A](request)
+case class AuthorisedMandatoryIossRequest[A](request: Request[A], credentials: Credentials, userId: String, vrn: Vrn, iossNumber: String) extends WrappedRequest[A](request)

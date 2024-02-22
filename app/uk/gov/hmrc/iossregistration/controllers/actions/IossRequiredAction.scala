@@ -33,7 +33,7 @@ class IossRequiredAction @Inject()(implicit val executionContext: ExecutionConte
         logger.info("insufficient IOSS enrolments")
         Future.successful(Left(Unauthorized))
       case Some(iossNumber) =>
-        Future.successful(Right(AuthorisedMandatoryIossRequest(request.request, request.userId, request.vrn, iossNumber)))
+        Future.successful(Right(AuthorisedMandatoryIossRequest(request.request, request.credentials, request.userId, request.vrn, iossNumber)))
     }
   }
 }
