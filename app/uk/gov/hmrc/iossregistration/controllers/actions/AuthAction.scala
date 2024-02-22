@@ -60,7 +60,7 @@ class AuthActionImpl @Inject()(
 
       case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == User =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
-        val futureMaybeIossNumber = findIossFromEnrolments(enrolments, internalId)
+        val futureMaybeIossNumber = findIossFromEnrolments(enrolments, credentials.providerId)
 
         for {
           maybeIossNumber <- futureMaybeIossNumber
@@ -73,7 +73,7 @@ class AuthActionImpl @Inject()(
       case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Individual) ~ confidence ~ _ =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
         if (confidence >= ConfidenceLevel.L200) {
-          val futureMaybeIossNumber = findIossFromEnrolments(enrolments, internalId)
+          val futureMaybeIossNumber = findIossFromEnrolments(enrolments, credentials.providerId)
           for {
             maybeIossNumber <- futureMaybeIossNumber
             result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber))
@@ -101,14 +101,14 @@ class AuthActionImpl @Inject()(
           enrolment.identifiers.find(_.key == "VATRegNo").map(e => Vrn(e.value))
       }
 
-  private def findIossFromEnrolments(enrolments: Enrolments, internalId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+  private def findIossFromEnrolments(enrolments: Enrolments, userId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     enrolments.enrolments.find(_.key == "HMRC-IOSS-ORG")
       .flatMap {
         enrolment =>
           enrolment.identifiers.find(_.key == "IOSSNumber").map(_.value)
       } match {
       case Some(_) =>
-        accountService.getLatestAccount(internalId)
+        accountService.getLatestAccount(userId)
       case a => a.toFuture
     }
 }
