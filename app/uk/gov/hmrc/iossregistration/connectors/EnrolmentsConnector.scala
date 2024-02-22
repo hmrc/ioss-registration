@@ -48,7 +48,7 @@ class EnrolmentsConnector @Inject()(
 
   def es2(userId: String)(implicit hc: HeaderCarrier): Future[ES2EnrolmentResultsResponse] = {
     httpClient.GET[ES2EnrolmentResultsResponse](
-      s"${enrolmentProxyConfig.baseUrl}users/$userId/enrolments?service=HMRC-IOSS-ORG"
+      s"${enrolmentProxyConfig.baseUrl}enrolment-store/users/$userId/enrolments?service=HMRC-IOSS-ORG"
     )
   }
 

@@ -93,7 +93,7 @@ class EnrolmentsConnectorSpec extends BaseSpec with WireMockHelper {
         .build()
 
     val userId = "12345678902124"
-    val url = s"/${basePath}users/$userId/enrolments?service=HMRC-IOSS-ORG"
+    val url = s"/${basePath}enrolment-store/users/$userId/enrolments?service=HMRC-IOSS-ORG"
 
     "must return with the model from processing the json when the server returns OK" in {
 
