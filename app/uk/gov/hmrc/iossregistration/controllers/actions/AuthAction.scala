@@ -25,6 +25,8 @@ import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.iossregistration.logging.Logging
+import uk.gov.hmrc.iossregistration.services.AccountService
+import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
@@ -34,7 +36,8 @@ trait AuthAction extends ActionBuilder[AuthorisedRequest, AnyContent] with Actio
 
 class AuthActionImpl @Inject()(
                                 override val authConnector: AuthConnector,
-                                val parser: BodyParsers.Default
+                                val parser: BodyParsers.Default,
+                                accountService: AccountService
                               )
                               (implicit val executionContext: ExecutionContext)
   extends AuthAction with AuthorisedFunctions with Logging {
@@ -56,17 +59,24 @@ class AuthActionImpl @Inject()(
 
       case Some(internalId) ~ enrolments ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == User =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
-        val maybeIossNumber = findIossFromEnrolments(enrolments)
-        block(AuthorisedRequest(request, internalId, maybeVrn, maybeIossNumber))
+        val futureMaybeIossNumber = findIossFromEnrolments(enrolments, internalId)
+
+        for {
+          maybeIossNumber <- futureMaybeIossNumber
+          result <- block(AuthorisedRequest(request, internalId, maybeVrn, maybeIossNumber))
+        } yield result
 
       case _ ~ _ ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == Assistant =>
         throw UnsupportedCredentialRole("Unsupported credential role")
 
       case Some(internalId) ~ enrolments ~ Some(Individual) ~ confidence ~ _ =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
-        val maybeIossNumber = findIossFromEnrolments(enrolments)
         if (confidence >= ConfidenceLevel.L200) {
-          block(AuthorisedRequest(request, internalId, maybeVrn, maybeIossNumber))
+          val futureMaybeIossNumber = findIossFromEnrolments(enrolments, internalId)
+          for {
+            maybeIossNumber <- futureMaybeIossNumber
+            result <- block(AuthorisedRequest(request, internalId, maybeVrn, maybeIossNumber))
+          } yield result
         } else {
           throw InsufficientConfidenceLevel("Insufficient confidence level")
         }
@@ -90,10 +100,14 @@ class AuthActionImpl @Inject()(
           enrolment.identifiers.find(_.key == "VATRegNo").map(e => Vrn(e.value))
       }
 
-  private def findIossFromEnrolments(enrolments: Enrolments): Option[String] =
+  private def findIossFromEnrolments(enrolments: Enrolments, internalId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     enrolments.enrolments.find(_.key == "HMRC-IOSS-ORG")
       .flatMap {
         enrolment =>
           enrolment.identifiers.find(_.key == "IOSSNumber").map(_.value)
-      }
+      } match {
+      case Some(_) =>
+        accountService.getLatestAccount(internalId)
+      case a => a.toFuture
+    }
 }

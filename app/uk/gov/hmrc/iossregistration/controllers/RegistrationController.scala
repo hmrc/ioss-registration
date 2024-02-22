@@ -19,10 +19,11 @@ package uk.gov.hmrc.iossregistration.controllers
 import uk.gov.hmrc.iossregistration.logging.Logging
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Result}
+import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
-import uk.gov.hmrc.iossregistration.controllers.actions.{AuthenticatedControllerComponents, AuthorisedMandatoryVrnRequest}
+import uk.gov.hmrc.iossregistration.controllers.actions.{AuthenticatedControllerComponents, AuthorisedMandatoryIossRequest, AuthorisedMandatoryVrnRequest}
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpAmendRegistrationRequestAuditModel, EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
 import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
@@ -120,13 +121,22 @@ case class RegistrationController @Inject()(
 
   def get(): Action[AnyContent] = cc.authAndRequireIoss().async {
     implicit request =>
-      (registrationService.get().map { registration =>
-        Ok(Json.toJson(registration))
-      }).recover {
-        case exception =>
-          logger.error(exception.getMessage, exception)
-          InternalServerError(exception.getMessage)
-      }
+      getRegistrationAndReturnResult(request.iossNumber, request.vrn)
+  }
+
+  def getRegistration(iossNumber: String): Action[AnyContent] = cc.authAndRequireIoss().async {
+    implicit request =>
+      getRegistrationAndReturnResult(iossNumber, request.vrn)
+  }
+
+  private def getRegistrationAndReturnResult(iossNumber: String, vrn: Vrn)(implicit hc: HeaderCarrier): Future[Result] = {
+    registrationService.get(iossNumber, vrn).map { registration =>
+      Ok(Json.toJson(registration))
+    }.recover {
+      case exception =>
+        logger.error(exception.getMessage, exception)
+        InternalServerError(exception.getMessage)
+    }
   }
 
   def amend(): Action[EtmpAmendRegistrationRequest] = cc.authAndRequireVat()(parse.json[EtmpAmendRegistrationRequest]).async {
