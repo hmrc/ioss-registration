@@ -41,6 +41,7 @@ class VatRequiredActionSpec extends BaseSpec {
         val action = new Harness()
         val request = FakeRequest(GET, "/test/url?k=session-id")
         val result = action.callRefine(AuthorisedRequest(request,
+          testCredentials,
           userId,
           None,
           None
@@ -54,12 +55,13 @@ class VatRequiredActionSpec extends BaseSpec {
         val action = new Harness()
         val request = FakeRequest(GET, "/test/url?k=session-id")
         val result = action.callRefine(AuthorisedRequest(request,
+          testCredentials,
           userId,
           Some(vrn),
           None
         )).futureValue
 
-        val expectResult = AuthorisedMandatoryVrnRequest(request, userId, vrn, None)
+        val expectResult = AuthorisedMandatoryVrnRequest(request, testCredentials, userId, vrn, None)
 
         result mustBe Right(expectResult)
       }
@@ -72,6 +74,7 @@ class VatRequiredActionSpec extends BaseSpec {
         val action = new Harness()
         val request = FakeRequest(GET, "/test/url?k=session-id")
         val result = action.callRefine(AuthorisedRequest(request,
+          testCredentials,
           userId,
           None,
           None

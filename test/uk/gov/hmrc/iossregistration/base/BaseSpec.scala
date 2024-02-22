@@ -23,6 +23,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import uk.gov.hmrc.auth.core.retrieve.Credentials
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthAction, FakeAuthAction}
 import uk.gov.hmrc.iossregistration.generators.Generators
@@ -56,6 +57,7 @@ trait BaseSpec
       .overrides(bind[AuthAction].to[FakeAuthAction])
 
   val userId: String = "12345-userId"
+  val testCredentials: Credentials = Credentials(userId, "GGW")
 
   val vatCustomerInfo: VatCustomerInfo =
     VatCustomerInfo(

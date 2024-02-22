@@ -23,7 +23,7 @@ import scala.concurrent.Future
 class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
-  implicit private lazy val ar: AuthorisedMandatoryIossRequest[AnyContent] = AuthorisedMandatoryIossRequest(FakeRequest(), userId, vrn, iossNumber)
+  implicit private lazy val ar: AuthorisedMandatoryIossRequest[AnyContent] = AuthorisedMandatoryIossRequest(FakeRequest(), testCredentials, userId, vrn, iossNumber)
 
   private val mockRegistrationConnector: RegistrationConnector = mock[RegistrationConnector]
   private val mockGetVatInfoConnector: GetVatInfoConnector = mock[GetVatInfoConnector]

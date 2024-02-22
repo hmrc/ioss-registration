@@ -41,6 +41,7 @@ class IossRequiredActionSpec extends BaseSpec {
         val action = new Harness()
         val request = FakeRequest(GET, "/test/url?k=session-id")
         val result = action.callRefine(AuthorisedMandatoryVrnRequest(request,
+          testCredentials,
           userId,
           vrn,
           None
@@ -54,12 +55,13 @@ class IossRequiredActionSpec extends BaseSpec {
         val action = new Harness()
         val request = FakeRequest(GET, "/test/url?k=session-id")
         val result = action.callRefine(AuthorisedMandatoryVrnRequest(request,
+          testCredentials,
           userId,
           vrn,
           Some(iossNumber)
         )).futureValue
 
-        val expectResult = AuthorisedMandatoryIossRequest(request, userId, vrn, iossNumber)
+        val expectResult = AuthorisedMandatoryIossRequest(request, testCredentials, userId, vrn, iossNumber)
 
         result mustBe Right(expectResult)
       }

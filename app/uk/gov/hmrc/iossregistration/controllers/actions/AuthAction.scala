@@ -51,31 +51,32 @@ class AuthActionImpl @Inject()(
         (AffinityGroup.Individual or AffinityGroup.Organisation) and
         CredentialStrength(CredentialStrength.strong)
     ).retrieve(
+      Retrievals.credentials and
       Retrievals.internalId and
         Retrievals.allEnrolments and
         Retrievals.affinityGroup and
         Retrievals.confidenceLevel and
         Retrievals.credentialRole) {
 
-      case Some(internalId) ~ enrolments ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == User =>
+      case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == User =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
         val futureMaybeIossNumber = findIossFromEnrolments(enrolments, internalId)
 
         for {
           maybeIossNumber <- futureMaybeIossNumber
-          result <- block(AuthorisedRequest(request, internalId, maybeVrn, maybeIossNumber))
+          result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber))
         } yield result
 
-      case _ ~ _ ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == Assistant =>
+      case _ ~ _ ~ _ ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == Assistant =>
         throw UnsupportedCredentialRole("Unsupported credential role")
 
-      case Some(internalId) ~ enrolments ~ Some(Individual) ~ confidence ~ _ =>
+      case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Individual) ~ confidence ~ _ =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
         if (confidence >= ConfidenceLevel.L200) {
           val futureMaybeIossNumber = findIossFromEnrolments(enrolments, internalId)
           for {
             maybeIossNumber <- futureMaybeIossNumber
-            result <- block(AuthorisedRequest(request, internalId, maybeVrn, maybeIossNumber))
+            result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber))
           } yield result
         } else {
           throw InsufficientConfidenceLevel("Insufficient confidence level")
