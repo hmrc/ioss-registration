@@ -97,7 +97,7 @@ class EnrolmentsConnectorSpec extends BaseSpec with WireMockHelper {
 
     "must return with the model from processing the json when the server returns OK" in {
 
-      val expectedResponse = EACDEnrolments(Seq(EACDEnrolment("HMRC-IOSS-ORG", "Activated", Some(LocalDateTime.of(2017, 7, 1, 9, 52)), Seq(EACDIdentifiers("IOSSNumber", "IM9001234567")))))
+      val expectedResponse = EACDEnrolments(Seq(EACDEnrolment("HMRC-IOSS-ORG", "Activated", Some(LocalDateTime.of(2024, 2, 21, 10, 47, 46, 2000000)), Seq(EACDIdentifiers("IOSSNumber", "IM9001234567")))))
 
       val jsonString =
         """{
@@ -105,7 +105,7 @@ class EnrolmentsConnectorSpec extends BaseSpec with WireMockHelper {
           |    {
           |      "service": "HMRC-IOSS-ORG",
           |      "state": "Activated",
-          |      "activationDate": "2017-07-01 09:52:00.000Z",
+          |      "activationDate": "2024-02-21 10:47:46.002",
           |      "identifiers": [
           |        {
           |          "key": "IOSSNumber",
