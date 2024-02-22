@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.iossregistration.services
 
+import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, RegistrationConnector}
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.CreateEtmpRegistrationResponse
-import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryIossRequest
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
@@ -36,10 +36,10 @@ class RegistrationService @Inject()(
   def createRegistration(etmpRegistrationRequest: EtmpRegistrationRequest): Future[CreateEtmpRegistrationResponse] =
     registrationConnector.createRegistration(etmpRegistrationRequest)
 
-  def get()(implicit request: AuthorisedMandatoryIossRequest[_], headerCarrier: HeaderCarrier): Future[RegistrationWrapper] = {
+  def get(iossNumber: String, vrn: Vrn)(implicit headerCarrier: HeaderCarrier): Future[RegistrationWrapper] = {
     for {
-      etmpDisplayRegistrationResponse <- registrationConnector.get(request.iossNumber)
-      vatInfoResponse <- getVatInfoConnector.getVatCustomerDetails(request.vrn)
+      etmpDisplayRegistrationResponse <- registrationConnector.get(iossNumber)
+      vatInfoResponse <- getVatInfoConnector.getVatCustomerDetails(vrn)
     } yield {
       (etmpDisplayRegistrationResponse, vatInfoResponse) match {
         case (Right(etmpDisplayRegistration), Right(vatInfo)) =>

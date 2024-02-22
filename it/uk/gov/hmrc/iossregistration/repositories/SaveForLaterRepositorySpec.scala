@@ -164,6 +164,9 @@ class SaveForLaterRepositorySpec
       val result = repository.clear(answers.vrn).futureValue
 
       result mustEqual true
+
+      val currentAnswers = repository.get(answers.vrn).futureValue
+      currentAnswers must not be defined
     }
   }
 }

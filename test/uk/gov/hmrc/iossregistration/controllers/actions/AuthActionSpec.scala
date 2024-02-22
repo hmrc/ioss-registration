@@ -29,6 +29,7 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{~, Retrieval}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.base.BaseSpec
+import uk.gov.hmrc.iossregistration.services.AccountService
 import uk.gov.hmrc.iossregistration.testutils.TestAuthRetrievals._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,6 +46,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
   }
 
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  val mockAccountService: AccountService = mock[AccountService]
 
   override def beforeEach(): Unit = {
     Mockito.reset(mockAuthConnector)
@@ -64,7 +66,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
           when(mockAuthConnector.authorise[RetrievalsType](any(), any())(any(), any()))
             .thenReturn(Future.successful(Some("id") ~ vatEnrolment ~ Some(Organisation) ~ ConfidenceLevel.L50 ~ Some(User)))
 
-          val action = new AuthActionImpl(mockAuthConnector, bodyParsers)
+          val action = new AuthActionImpl(mockAuthConnector, bodyParsers, mockAccountService)
           val controller = new Harness(action)
           val result = controller.onPageLoad()(FakeRequest())
 
@@ -85,7 +87,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
           when(mockAuthConnector.authorise[RetrievalsType](any(), any())(any(), any()))
             .thenReturn(Future.successful(Some("id") ~ vatEnrolment2 ~ Some(Organisation) ~ ConfidenceLevel.L50 ~ Some(User)))
 
-          val action = new AuthActionImpl(mockAuthConnector, bodyParsers)
+          val action = new AuthActionImpl(mockAuthConnector, bodyParsers, mockAccountService)
           val controller = new Harness(action)
           val result = controller.onPageLoad()(FakeRequest())
 
@@ -106,7 +108,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
           when(mockAuthConnector.authorise[RetrievalsType](any(), any())(any(), any()))
             .thenReturn(Future.successful(Some("id") ~ vatEnrolment ~ Some(Individual) ~ ConfidenceLevel.L200 ~ None))
 
-          val action = new AuthActionImpl(mockAuthConnector, bodyParsers)
+          val action = new AuthActionImpl(mockAuthConnector, bodyParsers, mockAccountService)
           val controller = new Harness(action)
           val result = controller.onPageLoad()(FakeRequest())
 
@@ -127,7 +129,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
           when(mockAuthConnector.authorise[RetrievalsType](any(), any())(any(), any()))
             .thenReturn(Future.successful(Some("id") ~ vatEnrolment ~ Some(Organisation) ~ ConfidenceLevel.L50 ~ Some(Assistant)))
 
-          val action = new AuthActionImpl(mockAuthConnector, bodyParsers)
+          val action = new AuthActionImpl(mockAuthConnector, bodyParsers, mockAccountService)
           val controller = new Harness(action)
           val result = controller.onPageLoad()(FakeRequest())
 
@@ -148,7 +150,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
           when(mockAuthConnector.authorise[RetrievalsType](any(), any())(any(), any()))
             .thenReturn(Future.successful(Some("id") ~ vatEnrolment ~ Some(Individual) ~ ConfidenceLevel.L50 ~ None))
 
-          val action = new AuthActionImpl(mockAuthConnector, bodyParsers)
+          val action = new AuthActionImpl(mockAuthConnector, bodyParsers, mockAccountService)
           val controller = new Harness(action)
           val result = controller.onPageLoad()(FakeRequest())
 
@@ -166,7 +168,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
 
-          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new MissingBearerToken), bodyParsers)
+          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new MissingBearerToken), bodyParsers, mockAccountService)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad()(FakeRequest())
 
@@ -184,7 +186,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
 
-          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new BearerTokenExpired), bodyParsers)
+          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new BearerTokenExpired), bodyParsers, mockAccountService)
           val controller = new Harness(authAction)
           val request    = FakeRequest(GET, "/foo")
           val result = controller.onPageLoad()(request)
@@ -203,7 +205,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
 
-          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new UnsupportedAuthProvider), bodyParsers)
+          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new UnsupportedAuthProvider), bodyParsers, mockAccountService)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad()(FakeRequest())
 
@@ -221,7 +223,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
 
-          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new UnsupportedAffinityGroup), bodyParsers)
+          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new UnsupportedAffinityGroup), bodyParsers, mockAccountService)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad()(FakeRequest())
 
@@ -239,7 +241,7 @@ class AuthActionSpec extends BaseSpec with BeforeAndAfterEach {
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
 
-          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new IncorrectCredentialStrength), bodyParsers)
+          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new IncorrectCredentialStrength), bodyParsers, mockAccountService)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad()(FakeRequest())
 

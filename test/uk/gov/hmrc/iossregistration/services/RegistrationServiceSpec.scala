@@ -65,7 +65,7 @@ class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
     "must return registration when both connectors return right" in {
       when(mockRegistrationConnector.get(any())) thenReturn Right(displayRegistration).toFuture
       when(mockGetVatInfoConnector.getVatCustomerDetails(any())(any())) thenReturn Future.successful(Right(vatCustomerInfo))
-      registrationService.get().futureValue mustBe registrationWrapper
+      registrationService.get(iossNumber, vrn).futureValue mustBe registrationWrapper
       verify(mockRegistrationConnector, times(1)).get(iossNumber)
       verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(Vrn("123456789"))
     }
@@ -73,7 +73,7 @@ class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
     "must return Some(registration) when both connectors return right" in {
       when(mockRegistrationConnector.get(any())) thenReturn Right(displayRegistration).toFuture
       when(mockGetVatInfoConnector.getVatCustomerDetails(any())(any())) thenReturn Right(vatCustomerInfo).toFuture
-      registrationService.get().futureValue mustBe registrationWrapper
+      registrationService.get(iossNumber, vrn).futureValue mustBe registrationWrapper
       verify(mockRegistrationConnector, times(1)).get(iossNumber)
       verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(Vrn("123456789"))
     }
@@ -81,7 +81,7 @@ class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
     "must return an exception when no customer VAT details are found" in {
       when(mockRegistrationConnector.get(any())) thenReturn Right(displayRegistration).toFuture
       when(mockGetVatInfoConnector.getVatCustomerDetails(any())(any())) thenReturn Future.successful(Left(NotFound))
-      whenReady(registrationService.get().failed) {
+      whenReady(registrationService.get(iossNumber, vrn).failed) {
         exp => exp mustBe a[Exception]
       }
       verify(mockRegistrationConnector, times(1)).get(iossNumber)
@@ -91,7 +91,7 @@ class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
     "must return an ETMP Exception when the Registration Connector returns Left(error)" in {
       when(mockRegistrationConnector.get(any())) thenReturn Future.failed(EtmpException("Error occurred"))
-      whenReady(registrationService.get().failed) {
+      whenReady(registrationService.get(iossNumber, vrn).failed) {
         exp => exp mustBe EtmpException(s"Error occurred")
       }
       verify(mockRegistrationConnector, times(1)).get(iossNumber)

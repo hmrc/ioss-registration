@@ -17,7 +17,6 @@
 package uk.gov.hmrc.iossregistration.connectors
 
 import play.api.http.HeaderNames.AUTHORIZATION
-import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpErrorFunctions, HttpException}
 import uk.gov.hmrc.iossregistration.config.CoreValidationConfig
 import uk.gov.hmrc.iossregistration.connectors.ValidateCoreRegistrationHttpParser.{ValidateCoreRegistrationReads, ValidateCoreRegistrationResponse}
@@ -51,7 +50,7 @@ class ValidateCoreRegistrationConnector @Inject()(
       case (key, _) => key.matches(AUTHORIZATION)
     }
 
-    logger.info(s"Sending request to EIS with headers $headersWithoutAuth and request ${Json.toJson(coreRegistrationRequest)}")
+    logger.info(s"Sending request to EIS with headers $headersWithoutAuth")
     val url = s"$baseUrl"
     httpClient.POST[CoreRegistrationRequest, ValidateCoreRegistrationResponse](
       url,

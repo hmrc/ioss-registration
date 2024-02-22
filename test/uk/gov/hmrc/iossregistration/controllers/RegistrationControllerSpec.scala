@@ -17,7 +17,8 @@ import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryVrnRe
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
 import uk.gov.hmrc.iossregistration.models.etmp.amend.AmendRegistrationResponse
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentResponse, EtmpRegistrationStatus}
-import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus, ServiceUnavailable}
+import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus, ServiceUnavailable, UnexpectedResponseStatus}
+import uk.gov.hmrc.iossregistration.models.enrolments.{EACDEnrolment, EACDEnrolments, EACDIdentifiers}
 import uk.gov.hmrc.iossregistration.repositories.InsertResult.InsertSucceeded
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
@@ -228,7 +229,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "must return OK and a registration when one is found" in {
 
       val mockService = mock[RegistrationService]
-      when(mockService.get()(any(), any())) thenReturn RegistrationData.registrationWrapper.toFuture
+      when(mockService.get(any(), any())(any())) thenReturn RegistrationData.registrationWrapper.toFuture
 
       val app =
         applicationBuilder
@@ -247,7 +248,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "must return INTERNAL_SERVER_ERROR when a registration connector response with Error" in {
 
       val mockService = mock[RegistrationService]
-      when(mockService.get()(any(), any())) thenReturn Future.failed(EtmpException("Error Occurred"))
+      when(mockService.get(any(), any())(any())) thenReturn Future.failed(EtmpException("Error Occurred"))
 
       val app =
         applicationBuilder
@@ -334,6 +335,46 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = route(app, request).value
 
         status(result) mustEqual BAD_REQUEST
+      }
+    }
+  }
+
+  "getAccount" - {
+
+    "must return OK and a registration when one is found" in {
+
+      val eacdEnrolments = EACDEnrolments(Seq(EACDEnrolment("HMRC-IOSS-ORG", "Activated", Some(LocalDateTime.of(2017, 7, 1, 9, 52)), Seq(EACDIdentifiers("IOSSNumber", "IM9001234567")))))
+
+      when(mockEnrolmentsConnector.es2(any())(any())) thenReturn Right(eacdEnrolments).toFuture
+
+      val app =
+        applicationBuilder
+          .overrides(bind[EnrolmentsConnector].toInstance(mockEnrolmentsConnector))
+          .build()
+
+      running(app) {
+        val request = FakeRequest(GET, routes.RegistrationController.getAccounts.url)
+        val result = route(app, request).value
+
+        status(result) mustEqual OK
+        contentAsJson(result) mustEqual Json.toJson(eacdEnrolments)
+      }
+    }
+
+    "must return INTERNAL_SERVER_ERROR when a enrolments connector response with Error" in {
+
+      when(mockEnrolmentsConnector.es2(any())(any())) thenReturn Left(UnexpectedResponseStatus(INTERNAL_SERVER_ERROR, "Error occurred")).toFuture
+
+      val app =
+        applicationBuilder
+          .overrides(bind[EnrolmentsConnector].toInstance(mockEnrolmentsConnector))
+          .build()
+
+      running(app) {
+        val request = FakeRequest(GET, routes.RegistrationController.getAccounts.url)
+        val result = route(app, request).value
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
       }
     }
   }

@@ -5,6 +5,7 @@ POST        /validate-core-registration                       uk.gov.hmrc.iossre
 GET         /vat-information                                  uk.gov.hmrc.iossregistration.controllers.VatInfoController.get()
 
 GET         /registration                                     uk.gov.hmrc.iossregistration.controllers.RegistrationController.get()
+GET         /registration/:iossNumber                         uk.gov.hmrc.iossregistration.controllers.RegistrationController.getRegistration(iossNumber: String)
 POST        /create-registration                              uk.gov.hmrc.iossregistration.controllers.RegistrationController.createRegistration()
 
 POST        /authorised/accept/confirm/:subscriptionId        uk.gov.hmrc.iossregistration.controllers.EnrolmentsSubscriptionController.authoriseEnrolment(subscriptionId: String)
@@ -17,5 +18,7 @@ GET         /save-for-later                                   uk.gov.hmrc.iossre
 GET         /save-for-later/delete                            uk.gov.hmrc.iossregistration.controllers.SaveForLaterController.delete()
 
 POST        /amend                                            uk.gov.hmrc.iossregistration.controllers.RegistrationController.amend()
+
+GET         /accounts                                         uk.gov.hmrc.iossregistration.controllers.RegistrationController.getAccounts
 
 POST        /process/bounce                                   uk.gov.hmrc.iossregistration.controllers.external.EventController.processBouncedEmailEvent()

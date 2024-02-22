@@ -18,7 +18,8 @@ package uk.gov.hmrc.iossregistration.connectors
 
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpErrorFunctions, HttpResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.iossregistration.config.EnrolmentsConfig
+import uk.gov.hmrc.iossregistration.config.{EnrolmentProxyConfig, TaxEnrolmentsConfig}
+import uk.gov.hmrc.iossregistration.connectors.EnrolmentsHttpParser.{ES2EnrolmentResultsResponse, QueryEnrolmentResultsResponseReads}
 import uk.gov.hmrc.iossregistration.controllers.routes
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.enrolments.SubscriberRequest
@@ -28,7 +29,8 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EnrolmentsConnector @Inject()(
-                                     enrolments: EnrolmentsConfig,
+                                     taxEnrolmentsConfig: TaxEnrolmentsConfig,
+                                     enrolmentProxyConfig: EnrolmentProxyConfig,
                                      httpClient: HttpClient
                                    )
                                    (implicit ec: ExecutionContext) extends HttpErrorFunctions with Logging {
@@ -37,11 +39,17 @@ class EnrolmentsConnector @Inject()(
     val etmpId = UUID.randomUUID().toString
 
     httpClient.PUT[SubscriberRequest, HttpResponse](
-      s"${enrolments.baseUrl}subscriptions/$subscriptionId/subscriber",
-      SubscriberRequest(enrolments.iossEnrolmentKey,
-        s"${enrolments.callbackBaseUrl}${routes.EnrolmentsSubscriptionController.authoriseEnrolment(subscriptionId).url}",
+      s"${taxEnrolmentsConfig.baseUrl}subscriptions/$subscriptionId/subscriber",
+      SubscriberRequest(taxEnrolmentsConfig.iossEnrolmentKey,
+        s"${taxEnrolmentsConfig.callbackBaseUrl}${routes.EnrolmentsSubscriptionController.authoriseEnrolment(subscriptionId).url}",
         etmpId
       ))
+  }
+
+  def es2(userId: String)(implicit hc: HeaderCarrier): Future[ES2EnrolmentResultsResponse] = {
+    httpClient.GET[ES2EnrolmentResultsResponse](
+      s"${enrolmentProxyConfig.baseUrl}users/$userId/enrolments?service=HMRC-IOSS-ORG"
+    )
   }
 
 }

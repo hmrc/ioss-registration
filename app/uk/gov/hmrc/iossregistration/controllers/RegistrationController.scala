@@ -16,17 +16,18 @@
 
 package uk.gov.hmrc.iossregistration.controllers
 
-import uk.gov.hmrc.iossregistration.logging.Logging
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Result}
+import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthenticatedControllerComponents, AuthorisedMandatoryVrnRequest}
-import uk.gov.hmrc.iossregistration.models.audit.{EtmpAmendRegistrationRequestAuditModel, EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
-import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.audit.{EtmpAmendRegistrationRequestAuditModel, EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
@@ -120,13 +121,22 @@ case class RegistrationController @Inject()(
 
   def get(): Action[AnyContent] = cc.authAndRequireIoss().async {
     implicit request =>
-      (registrationService.get().map { registration =>
-        Ok(Json.toJson(registration))
-      }).recover {
-        case exception =>
-          logger.error(exception.getMessage, exception)
-          InternalServerError(exception.getMessage)
-      }
+      getRegistrationAndReturnResult(request.iossNumber, request.vrn)
+  }
+
+  def getRegistration(iossNumber: String): Action[AnyContent] = cc.authAndRequireIoss().async {
+    implicit request =>
+      getRegistrationAndReturnResult(iossNumber, request.vrn)
+  }
+
+  private def getRegistrationAndReturnResult(iossNumber: String, vrn: Vrn)(implicit hc: HeaderCarrier): Future[Result] = {
+    registrationService.get(iossNumber, vrn).map { registration =>
+      Ok(Json.toJson(registration))
+    }.recover {
+      case exception =>
+        logger.error(exception.getMessage, exception)
+        InternalServerError(exception.getMessage)
+    }
   }
 
   def amend(): Action[EtmpAmendRegistrationRequest] = cc.authAndRequireVat()(parse.json[EtmpAmendRegistrationRequest]).async {
@@ -171,5 +181,13 @@ case class RegistrationController @Inject()(
             ))
             Future.successful(InternalServerError(Json.toJson(s"Internal server error when amending")))
         }
+  }
+
+  def getAccounts: Action[AnyContent] = cc.authAndRequireIoss().async {
+    implicit request =>
+      enrolmentsConnector.es2(request.userId).map {
+        case Right(enrolments) => Ok(Json.toJson(enrolments))
+        case Left(e) => InternalServerError(e.body)
+      }
   }
 }
