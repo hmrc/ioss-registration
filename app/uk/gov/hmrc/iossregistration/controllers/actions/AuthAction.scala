@@ -101,14 +101,14 @@ class AuthActionImpl @Inject()(
           enrolment.identifiers.find(_.key == "VATRegNo").map(e => Vrn(e.value))
       }
 
-  private def findIossFromEnrolments(enrolments: Enrolments, userId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    enrolments.enrolments.find(_.key == "HMRC-IOSS-ORG")
-      .flatMap {
-        enrolment =>
-          enrolment.identifiers.find(_.key == "IOSSNumber").map(_.value)
-      } match {
-      case Some(_) =>
+  private def findIossFromEnrolments(enrolments: Enrolments, userId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    val filteredIossNumbers = enrolments.enrolments.filter(_.key == "HMRC-IOSS-ORG").flatMap(_.identifiers.filter(_.key == "IOSSNumber").map(_.value)).toSeq
+
+    filteredIossNumbers match {
+      case firstEnrolment :: Nil => Some(firstEnrolment).toFuture
+      case multipleEnrolments if multipleEnrolments.nonEmpty =>
         accountService.getLatestAccount(userId)
-      case a => a.toFuture
+      case _ => None.toFuture
     }
+  }
 }
