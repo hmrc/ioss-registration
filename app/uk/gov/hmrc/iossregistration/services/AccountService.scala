@@ -35,7 +35,7 @@ class AccountService @Inject()(
           .filter(_.activationDate.isDefined)
           .maxBy(_.activationDate.get)
           .identifiers
-          .find(_.key == appConfig.iossEnrolment)
+          .find(_.key == "IOSSNumber")
           .map(_.value)
       case Left(_) => None
     }
