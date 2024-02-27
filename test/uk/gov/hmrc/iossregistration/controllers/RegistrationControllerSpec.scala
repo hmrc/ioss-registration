@@ -378,4 +378,44 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
       }
     }
   }
+
+  "getAccount(credId)" - {
+
+    "must return OK and a registration when one is found" in {
+
+      val eacdEnrolments = EACDEnrolments(Seq(EACDEnrolment("HMRC-IOSS-ORG", "Activated", Some(LocalDateTime.of(2017, 7, 1, 9, 52)), Seq(EACDIdentifiers("IOSSNumber", "IM9001234567")))))
+
+      when(mockEnrolmentsConnector.es2(any())(any())) thenReturn Right(eacdEnrolments).toFuture
+
+      val app =
+        applicationBuilder
+          .overrides(bind[EnrolmentsConnector].toInstance(mockEnrolmentsConnector))
+          .build()
+
+      running(app) {
+        val request = FakeRequest(GET, routes.RegistrationController.getAccountsForCredId(userId).url)
+        val result = route(app, request).value
+
+        status(result) mustEqual OK
+        contentAsJson(result) mustEqual Json.toJson(eacdEnrolments)
+      }
+    }
+
+    "must return INTERNAL_SERVER_ERROR when a enrolments connector response with Error" in {
+
+      when(mockEnrolmentsConnector.es2(any())(any())) thenReturn Left(UnexpectedResponseStatus(INTERNAL_SERVER_ERROR, "Error occurred")).toFuture
+
+      val app =
+        applicationBuilder
+          .overrides(bind[EnrolmentsConnector].toInstance(mockEnrolmentsConnector))
+          .build()
+
+      running(app) {
+        val request = FakeRequest(GET, routes.RegistrationController.getAccountsForCredId(userId).url)
+        val result = route(app, request).value
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
+      }
+    }
+  }
 }

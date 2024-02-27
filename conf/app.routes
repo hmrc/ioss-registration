@@ -20,5 +20,6 @@ GET         /save-for-later/delete                            uk.gov.hmrc.iossre
 POST        /amend                                            uk.gov.hmrc.iossregistration.controllers.RegistrationController.amend()
 
 GET         /accounts                                         uk.gov.hmrc.iossregistration.controllers.RegistrationController.getAccounts
+GET         /accounts/:credId                                 uk.gov.hmrc.iossregistration.controllers.RegistrationController.getAccountsForCredId(credId: String)
 
 POST        /process/bounce                                   uk.gov.hmrc.iossregistration.controllers.external.EventController.processBouncedEmailEvent()

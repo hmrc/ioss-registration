@@ -190,4 +190,12 @@ case class RegistrationController @Inject()(
         case Left(e) => InternalServerError(e.body)
       }
   }
+
+  def getAccountsForCredId(credId: String): Action[AnyContent] = Action.async {
+    implicit request =>
+      enrolmentsConnector.es2(credId).map {
+        case Right(enrolments) => Ok(Json.toJson(enrolments))
+        case Left(e) => InternalServerError(e.body)
+      }
+  }
 }
