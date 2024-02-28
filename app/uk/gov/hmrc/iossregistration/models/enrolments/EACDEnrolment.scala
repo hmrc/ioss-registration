@@ -25,13 +25,14 @@ import java.time.format.DateTimeFormatter
 case class EACDEnrolment(service: String, state: String, activationDate: Option[LocalDateTime], identifiers: Seq[EACDIdentifiers])
 
 object EACDEnrolment {
-  private val dateTimeEACDFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+  private val dateTimeEACDFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+  private val dateTimeOutwardFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
 
   val reads: Reads[EACDEnrolment] = {
     (
       (__ \ "service").read[String] and
         (__ \ "state").read[String] and
-        (__ \ "activationDate").readNullable[String].map(_.map(t => LocalDateTime.parse(t, dateTimeEACDFormat))) and
+        (__ \ "activationDate").readNullable[String].map(_.map(t => LocalDateTime.parse(t.split("\\.").head, dateTimeEACDFormat))) and // TODO VEIOSS-575
         (__ \ "identifiers").read[Seq[EACDIdentifiers]]
       )((service, state, activationDate, identifiers) => EACDEnrolment(service, state, activationDate, identifiers))
   }
@@ -40,7 +41,7 @@ object EACDEnrolment {
     (
       (__ \ "service").write[String] and
         (__ \ "state").write[String] and
-        (__ \ "activationDate").writeNullable[String].contramap[Option[LocalDateTime]](_.map(t => t.format(dateTimeEACDFormat))) and
+        (__ \ "activationDate").writeNullable[String].contramap[Option[LocalDateTime]](_.map(t => t.format(dateTimeOutwardFormat))) and
         (__ \ "identifiers").write[Seq[EACDIdentifiers]]
       )(unlift(EACDEnrolment.unapply))
   }
