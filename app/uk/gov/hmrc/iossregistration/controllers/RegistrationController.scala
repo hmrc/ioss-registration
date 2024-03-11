@@ -26,6 +26,7 @@ import uk.gov.hmrc.iossregistration.controllers.actions.{AuthenticatedController
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpAmendRegistrationRequestAuditModel, EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
+import uk.gov.hmrc.iossregistration.models.enrolments.FallbackEnrolment
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
@@ -33,7 +34,7 @@ import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService,
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import java.time.Clock
+import java.time.{Clock, LocalDateTime}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -60,24 +61,58 @@ case class RegistrationController @Inject()(
               successResponse = Created(Json.toJson(etmpEnrolmentResponse)))
           }
         case Left(EtmpEnrolmentError(EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode, body)) =>
-          auditService.audit(EtmpRegistrationRequestAuditModel.build(
-            EtmpRegistrationAuditType.CreateRegistration, request.body, None, Some(body), SubmissionResult.Duplicate)
-          )
-          logger.error(
-            s"Business Partner already has an active IOSS Subscription for this regime with error code ${EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode}" +
-              s"with message body $body"
-          )
-          Conflict(Json.toJson(
-            s"Business Partner already has an active IOSS Subscription for this regime with error code ${EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode}" +
-              s"with message body $body"
-          )).toFuture
+          attemptFallbackEnrolment(request.vrn).getOrElse {
+            auditService.audit(EtmpRegistrationRequestAuditModel.build(
+              EtmpRegistrationAuditType.CreateRegistration, request.body, None, Some(body), SubmissionResult.Duplicate)
+            )
+            logger.error(
+              s"Business Partner already has an active IOSS Subscription for this regime with error code ${EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode}" +
+                s"with message body $body"
+            )
+            Conflict(Json.toJson(
+              s"Business Partner already has an active IOSS Subscription for this regime with error code ${EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode}" +
+                s"with message body $body"
+            )).toFuture
+          }
         case Left(error) =>
-          auditService.audit(EtmpRegistrationRequestAuditModel.build(
-            EtmpRegistrationAuditType.CreateRegistration, request.body, None, Some(error.body), SubmissionResult.Failure)
-          )
-          logger.error(s"Internal server error ${error.body}")
-          InternalServerError(Json.toJson(s"Internal server error ${error.body}")).toFuture
+          attemptFallbackEnrolment(request.vrn).getOrElse {
+            auditService.audit(EtmpRegistrationRequestAuditModel.build(
+              EtmpRegistrationAuditType.CreateRegistration, request.body, None, Some(error.body), SubmissionResult.Failure)
+            )
+            logger.error(s"Internal server error ${error.body}")
+            InternalServerError(Json.toJson(s"Internal server error ${error.body}")).toFuture
+          }
       }
+  }
+
+  private def attemptFallbackEnrolment(vrn: Vrn)
+                                      (implicit hc: HeaderCarrier, request: AuthorisedMandatoryVrnRequest[EtmpRegistrationRequest]): Option[Future[Result]] = {
+    if(appConfig.fallbackEnrolmentsEnable) {
+      val fallbackEnrolments = appConfig.fallbackEnrolments
+
+      logger.warn("Attempting fallback enrolment")
+
+      fallbackEnrolments.find(_.vrn == vrn).map { fallbackEnrolment =>
+        logger.info("Fallback enrolment found")
+        enrollRegistration(fallbackEnrolment.formBundleNumber).map { etmpRegistrationStatus =>
+          logger.info("Successfully enrolled via fallback enrolment")
+          val fallbackEtmpEnrolmentResponse = EtmpEnrolmentResponse(
+            processingDateTime = LocalDateTime.now(clock),
+            formBundleNumber = fallbackEnrolment.formBundleNumber,
+            vrn = vrn.vrn,
+            iossReference = fallbackEnrolment.iossNumber,
+            businessPartner = "unknown"
+          )
+          auditRegistrationEvent(
+            formBundleNumber = fallbackEnrolment.formBundleNumber,
+            etmpEnrolmentResponse = fallbackEtmpEnrolmentResponse,
+            etmpRegistrationStatus = etmpRegistrationStatus,
+            successResponse = Created(Json.toJson(fallbackEtmpEnrolmentResponse)))
+        }
+      }
+    } else {
+      None
+    }
   }
 
   private def enrollRegistration(formBundleNumber: String)
@@ -110,7 +145,6 @@ case class RegistrationController @Inject()(
           EtmpRegistrationAuditType.CreateRegistration, request.body, Some(etmpEnrolmentResponse), None, SubmissionResult.Success)
         )
         logger.info("Successfully created registration and enrolment")
-        //  Created(Json.toJson(response))
         successResponse
       case registrationStatus: EtmpRegistrationStatus =>
         logger.error(s"Failed to add enrolment, got registration status $registrationStatus")
