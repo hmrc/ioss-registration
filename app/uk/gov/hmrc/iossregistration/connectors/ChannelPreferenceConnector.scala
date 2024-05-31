@@ -17,8 +17,10 @@
 package uk.gov.hmrc.iossregistration.connectors
 
 import play.api.http.HeaderNames
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpErrorFunctions, HttpResponse}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpErrorFunctions, HttpResponse, StringContextOps}
 import uk.gov.hmrc.iossregistration.config.ChannelPreferenceConfig
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.etmp.channelPreference.ChannelPreferenceRequest
@@ -27,10 +29,10 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ChannelPreferenceConnector  @Inject()(
-                                             channelPreferenceConfig: ChannelPreferenceConfig,
-                                             httpClient: HttpClient
-                                           )(implicit ec: ExecutionContext) extends HttpErrorFunctions with Logging {
+class ChannelPreferenceConnector @Inject()(
+                                            channelPreferenceConfig: ChannelPreferenceConfig,
+                                            httpClientV2: HttpClientV2
+                                          )(implicit ec: ExecutionContext) extends HttpErrorFunctions with Logging {
   private val XCorrelationId = "X-Correlation-Id"
 
   private def headers(correlationId: String): Seq[(String, String)] = Seq(
@@ -40,13 +42,11 @@ class ChannelPreferenceConnector  @Inject()(
   )
 
   def updatePreferences(channelPreference: ChannelPreferenceRequest)(implicit headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val url = s"${channelPreferenceConfig.baseUrl}income-tax/customer/IOSS/contact-preference"
-    val correlationId = UUID.randomUUID().toString
-    httpClient.PUT[ChannelPreferenceRequest, HttpResponse](
-      url = url,
-      body = channelPreference,
-      headers = headers(correlationId)
-    ).map( resp => resp)
+    val correlationId = UUID.randomUUID.toString
+    httpClientV2.put(url"${channelPreferenceConfig.baseUrl}income-tax/customer/IOSS/contact-preference")
+      .withBody(Json.toJson(channelPreference))
+      .setHeader(headers(correlationId): _*)
+      .execute[HttpResponse]
   }
 
 }
