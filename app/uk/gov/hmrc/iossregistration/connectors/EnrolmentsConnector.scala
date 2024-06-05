@@ -16,8 +16,10 @@
 
 package uk.gov.hmrc.iossregistration.connectors
 
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpErrorFunctions, HttpResponse}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpErrorFunctions, HttpResponse, StringContextOps}
 import uk.gov.hmrc.iossregistration.config.{EnrolmentProxyConfig, TaxEnrolmentsConfig}
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsHttpParser.{ES2EnrolmentResultsResponse, QueryEnrolmentResultsResponseReads}
 import uk.gov.hmrc.iossregistration.controllers.routes
@@ -31,25 +33,25 @@ import scala.concurrent.{ExecutionContext, Future}
 class EnrolmentsConnector @Inject()(
                                      taxEnrolmentsConfig: TaxEnrolmentsConfig,
                                      enrolmentProxyConfig: EnrolmentProxyConfig,
-                                     httpClient: HttpClient
+                                     httpClientV2: HttpClientV2
                                    )
                                    (implicit ec: ExecutionContext) extends HttpErrorFunctions with Logging {
 
   def confirmEnrolment(subscriptionId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val etmpId = UUID.randomUUID().toString
+    val etmpId = UUID.randomUUID.toString
 
-    httpClient.PUT[SubscriberRequest, HttpResponse](
-      s"${taxEnrolmentsConfig.baseUrl}subscriptions/$subscriptionId/subscriber",
-      SubscriberRequest(taxEnrolmentsConfig.iossEnrolmentKey,
-        s"${taxEnrolmentsConfig.callbackBaseUrl}${routes.EnrolmentsSubscriptionController.authoriseEnrolment(subscriptionId).url}",
-        etmpId
-      ))
+    httpClientV2.put(url"${taxEnrolmentsConfig.baseUrl}subscriptions/$subscriptionId/subscriber")
+      .withBody(Json.toJson(
+        SubscriberRequest(taxEnrolmentsConfig.iossEnrolmentKey,
+          s"${taxEnrolmentsConfig.callbackBaseUrl}${routes.EnrolmentsSubscriptionController.authoriseEnrolment(subscriptionId).url}",
+          etmpId
+        )
+      )).execute[HttpResponse]
   }
 
   def es2(userId: String)(implicit hc: HeaderCarrier): Future[ES2EnrolmentResultsResponse] = {
-    httpClient.GET[ES2EnrolmentResultsResponse](
-      s"${enrolmentProxyConfig.baseUrl}enrolment-store/users/$userId/enrolments?service=HMRC-IOSS-ORG"
-    )
+    httpClientV2.get(
+      url"${enrolmentProxyConfig.baseUrl}enrolment-store/users/$userId/enrolments?service=HMRC-IOSS-ORG"
+    ).execute[ES2EnrolmentResultsResponse]
   }
-
 }

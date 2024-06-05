@@ -4,14 +4,14 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.Application
 import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.base.BaseSpec
-import uk.gov.hmrc.iossregistration.models.{TaxEnrolmentErrorResponse, UnexpectedResponseStatus}
 import uk.gov.hmrc.iossregistration.models.enrolments.{EACDEnrolment, EACDEnrolments, EACDIdentifiers}
+import uk.gov.hmrc.iossregistration.models.{TaxEnrolmentErrorResponse, UnexpectedResponseStatus}
 
-import java.time.{LocalDateTime, ZoneId, ZoneOffset}
+import java.time.LocalDateTime
 
 class EnrolmentsConnectorSpec extends BaseSpec with WireMockHelper {
 

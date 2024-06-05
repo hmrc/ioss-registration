@@ -20,19 +20,19 @@ import play.api.libs.json.JsValue
 import play.api.mvc.Action
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthenticatedControllerComponents
 import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.models.enrolments.EnrolmentStatus
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus
+import uk.gov.hmrc.iossregistration.models.enrolments.EnrolmentStatus
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationStatus
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class EnrolmentsSubscriptionController @Inject()(
                                                   cc: AuthenticatedControllerComponents,
                                                   registrationStatusRepository: RegistrationStatusRepository,
-                                                )(implicit ec: ExecutionContext) extends BackendController(cc) with Logging {
+                                                ) extends BackendController(cc) with Logging {
 
   def authoriseEnrolment(subscriptionId: String): Action[JsValue] =
     Action.async(parse.json) {

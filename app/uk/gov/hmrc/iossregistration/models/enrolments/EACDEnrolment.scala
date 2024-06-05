@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.iossregistration.models.enrolments
 
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-import java.time.{Instant, LocalDateTime}
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 case class EACDEnrolment(service: String, state: String, activationDate: Option[LocalDateTime], identifiers: Seq[EACDIdentifiers])
