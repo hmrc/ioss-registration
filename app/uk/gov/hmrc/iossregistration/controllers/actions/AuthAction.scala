@@ -52,13 +52,13 @@ class AuthActionImpl @Inject()(
         CredentialStrength(CredentialStrength.strong)
     ).retrieve(
       Retrievals.credentials and
-      Retrievals.internalId and
+        Retrievals.internalId and
         Retrievals.allEnrolments and
         Retrievals.affinityGroup and
-        Retrievals.confidenceLevel and
-        Retrievals.credentialRole) {
+        Retrievals.confidenceLevel
+    ) {
 
-      case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == User =>
+      case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Organisation) ~ _ =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
         val futureMaybeIossNumber = findIossFromEnrolments(enrolments, credentials.providerId)
 
@@ -67,10 +67,7 @@ class AuthActionImpl @Inject()(
           result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber))
         } yield result
 
-      case _ ~ _ ~ _ ~ Some(Organisation) ~ _ ~ Some(credentialRole) if credentialRole == Assistant =>
-        throw UnsupportedCredentialRole("Unsupported credential role")
-
-      case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Individual) ~ confidence ~ _ =>
+      case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Individual) ~ confidence =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
         if (confidence >= ConfidenceLevel.L200) {
           val futureMaybeIossNumber = findIossFromEnrolments(enrolments, credentials.providerId)
