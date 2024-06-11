@@ -24,11 +24,10 @@ import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthenticatedControllerComponents, AuthorisedMandatoryVrnRequest}
 import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpAmendRegistrationRequestAuditModel, EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
-import uk.gov.hmrc.iossregistration.models.enrolments.FallbackEnrolment
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
+import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 import uk.gov.hmrc.iossregistration.services.{AuditService, RegistrationService, RetryService}
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
@@ -87,7 +86,7 @@ case class RegistrationController @Inject()(
 
   private def attemptFallbackEnrolment(vrn: Vrn)
                                       (implicit hc: HeaderCarrier, request: AuthorisedMandatoryVrnRequest[EtmpRegistrationRequest]): Option[Future[Result]] = {
-    if(appConfig.fallbackEnrolmentsEnable) {
+    if (appConfig.fallbackEnrolmentsEnable) {
       val fallbackEnrolments = appConfig.fallbackEnrolments
 
       logger.warn("Attempting fallback enrolment")
