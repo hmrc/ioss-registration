@@ -10,27 +10,27 @@ import java.time.LocalDateTime
 
 class EtmpEnrolmentErrorResponseSpec extends BaseSpec {
 
-  private val processingDate = eisDateTimeFormatter.format(LocalDateTime.now())
-  private val code = Gen.listOfN(3, Gen.numChar).map(_.mkString).sample.value
-  private val text = arbitrary[String].sample.value
+  private val processingDate = LocalDateTime.now().toString
+  private val errorCode = Gen.listOfN(3, Gen.numChar).map(_.mkString).sample.value
+  private val errorMessage = arbitrary[String].sample.value
 
   "EtmpEnrolmentErrorResponse" - {
 
     "must serialise/deserialse to and from EtmpEnrolmentErrorResponse" in {
 
       val json = Json.obj(
-        "errors" -> Json.obj(
-          "processingDate" -> processingDate,
-          "code" -> code,
-          "text" -> text
+        "errorDetail" -> Json.obj(
+          "timestamp" -> processingDate,
+          "errorCode" -> errorCode,
+          "errorMessage" -> errorMessage
         )
       )
 
       val expectedResult: EtmpEnrolmentErrorResponse = EtmpEnrolmentErrorResponse(
         EtmpErrorDetail(
-          processingDate = processingDate,
-          code = code,
-          text = text
+          timestamp = processingDate,
+          errorCode = Some(errorCode),
+          errorMessage = Some(errorMessage)
         )
       )
 

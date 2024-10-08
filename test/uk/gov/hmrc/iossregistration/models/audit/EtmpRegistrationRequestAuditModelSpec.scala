@@ -34,10 +34,10 @@ class EtmpRegistrationRequestAuditModelSpec extends BaseSpec {
 
   private val etmpEnrolmentErrorResponse: EtmpEnrolmentErrorResponse =
     EtmpEnrolmentErrorResponse(
-      errors = EtmpErrorDetail(
-        processingDate = LocalDateTime.now(stubClock).format(eisDateTimeFormatter),
-        code = "123",
-        text = "error"
+      errorDetail = EtmpErrorDetail(
+        timestamp = LocalDateTime.now(stubClock).format(eisDateTimeFormatter),
+        errorCode = Some("123"),
+        errorMessage = Some("error")
       )
     )
 

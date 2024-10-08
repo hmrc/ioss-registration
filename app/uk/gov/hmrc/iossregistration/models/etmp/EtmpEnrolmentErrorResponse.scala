@@ -18,9 +18,9 @@ package uk.gov.hmrc.iossregistration.models.etmp
 
 import play.api.libs.json.{Json, OFormat}
 
-case class EtmpEnrolmentErrorResponse(errors: EtmpErrorDetail)
+case class EtmpEnrolmentErrorResponse(errorDetail: EtmpErrorDetail)
 
-case class EtmpErrorDetail(processingDate: String, code: String, text: String)
+case class EtmpErrorDetail(timestamp: String, errorCode: Option[String], errorMessage: Option[String])
 
 object EtmpEnrolmentErrorResponse {
   implicit val format: OFormat[EtmpEnrolmentErrorResponse] = Json.format[EtmpEnrolmentErrorResponse]
