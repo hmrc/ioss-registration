@@ -273,7 +273,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
       val requestJson = Json.stringify(Json.toJson(etmpRegistrationRequest))
 
-      val errorResponse = EtmpEnrolmentErrorResponse(EtmpErrorDetail(LocalDateTime.now(stubClock).format(eisDateTimeFormatter), "123", "error"))
+      val errorResponse = EtmpEnrolmentErrorResponse(EtmpErrorDetail(LocalDateTime.now(stubClock).format(eisDateTimeFormatter), Some("123"), Some("error")))
 
       server.stubFor(
         post(urlEqualTo(createRegistrationUrl))

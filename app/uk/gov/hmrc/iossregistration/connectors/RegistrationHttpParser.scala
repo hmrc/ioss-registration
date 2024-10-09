@@ -46,7 +46,10 @@ object RegistrationHttpParser extends BaseHttpParser {
           if (response.body.nonEmpty) {
             response.json.validate[EtmpEnrolmentErrorResponse] match {
               case JsSuccess(enrolmentErrorResponse, _) =>
-                Left(EtmpEnrolmentError(enrolmentErrorResponse.errors.code, enrolmentErrorResponse.errors.text))
+                Left(EtmpEnrolmentError(
+                  code = enrolmentErrorResponse.errorDetail.errorCode.getOrElse("No error code"),
+                  body = enrolmentErrorResponse.errorDetail.errorMessage.getOrElse("No error message")
+                ))
               case JsError(errors) =>
                 logger.error(s"Failed trying to parse JSON with status $status and body ${response.body} json parse error: $errors")
                 Left(UnexpectedResponseStatus(status, s"Unexpected response from ${serviceName}, received status $status"))
