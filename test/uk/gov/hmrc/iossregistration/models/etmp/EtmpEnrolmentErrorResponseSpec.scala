@@ -4,7 +4,6 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.iossregistration.base.BaseSpec
-import uk.gov.hmrc.iossregistration.models.binders.Format.eisDateTimeFormatter
 
 import java.time.LocalDateTime
 
