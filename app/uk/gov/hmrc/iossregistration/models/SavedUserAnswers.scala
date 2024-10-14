@@ -18,7 +18,6 @@ package uk.gov.hmrc.iossregistration.models
 
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Vrn
-import uk.gov.hmrc.iossregistration.crypto.EncryptedValue
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
@@ -35,10 +34,9 @@ object SavedUserAnswers {
 }
 
 
-
 case class EncryptedSavedUserAnswers(
                                       vrn: Vrn,
-                                      data: EncryptedValue,
+                                      data: String,
                                       lastUpdated: Instant
                                     )
 
@@ -50,7 +48,7 @@ object EncryptedSavedUserAnswers {
 
     (
       (__ \ "vrn").read[Vrn] and
-        (__ \ "data").read[EncryptedValue] and
+        (__ \ "data").read[String] and
         (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
       )(EncryptedSavedUserAnswers.apply _)
   }
@@ -61,7 +59,7 @@ object EncryptedSavedUserAnswers {
 
     (
       (__ \ "vrn").write[Vrn] and
-        (__ \ "data").write[EncryptedValue] and
+        (__ \ "data").write[String] and
         (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
       )(unlift(EncryptedSavedUserAnswers.unapply))
   }

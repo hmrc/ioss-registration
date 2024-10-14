@@ -64,20 +64,18 @@ class SaveForLaterRepository @Inject()(
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
-  private val encryptionKey = appConfig.encryptionKey
-
   private def byVrn(vrn: Vrn): Bson =
     Filters.equal("vrn", toBson(vrn))
 
   def set(savedUserAnswers: SavedUserAnswers): Future[SavedUserAnswers] = {
 
-    val encryptedAnswers = encryptor.encryptAnswers(savedUserAnswers, savedUserAnswers.vrn, encryptionKey)
+    val encryptedAnswers = encryptor.encryptAnswers(savedUserAnswers, savedUserAnswers.vrn)
 
     collection
       .replaceOne(
-        filter      = byVrn(savedUserAnswers.vrn),
+        filter = byVrn(savedUserAnswers.vrn),
         replacement = encryptedAnswers,
-        options     = ReplaceOptions().upsert(true)
+        options = ReplaceOptions().upsert(true)
       )
       .toFuture()
       .map(_ => savedUserAnswers)
@@ -90,7 +88,7 @@ class SaveForLaterRepository @Inject()(
       ).headOption()
       .map(_.map {
         answers =>
-          encryptor.decryptAnswers(answers, answers.vrn, encryptionKey)
+          encryptor.decryptAnswers(answers, answers.vrn)
       })
 
   def clear(vrn: Vrn): Future[Boolean] =

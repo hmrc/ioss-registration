@@ -19,17 +19,18 @@ package uk.gov.hmrc.iossregistration.crypto
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.models._
+import uk.gov.hmrc.iossregistration.services.crypto.EncryptionService
 
 import javax.inject.Inject
 
 
 class SavedUserAnswersEncryptor @Inject()(
-                                           crypto: SecureGCMCipher
+                                           encryptionService: EncryptionService
                                          ) {
 
-  def encryptAnswers(answers: SavedUserAnswers, vrn: Vrn, key: String): EncryptedSavedUserAnswers = {
-    def encryptAnswerValue(answerValue: String): EncryptedValue =
-      crypto.encrypt(answerValue, vrn.vrn, key)
+  def encryptAnswers(answers: SavedUserAnswers, vrn: Vrn): EncryptedSavedUserAnswers = {
+    def encryptAnswerValue(answerValue: String): String =
+      encryptionService.encryptField(answerValue)
 
     EncryptedSavedUserAnswers(
       vrn = vrn,
@@ -38,8 +39,8 @@ class SavedUserAnswersEncryptor @Inject()(
     )
   }
 
-  def decryptAnswers(encryptedAnswers: EncryptedSavedUserAnswers, vrn: Vrn, key: String): SavedUserAnswers = {
-    def decryptValue(encryptedValue: EncryptedValue): String = crypto.decrypt(encryptedValue, vrn.vrn, key)
+  def decryptAnswers(encryptedAnswers: EncryptedSavedUserAnswers, vrn: Vrn): SavedUserAnswers = {
+    def decryptValue(encryptedValue: String): String = encryptionService.decryptField(encryptedValue)
 
     SavedUserAnswers(
       vrn = vrn,
