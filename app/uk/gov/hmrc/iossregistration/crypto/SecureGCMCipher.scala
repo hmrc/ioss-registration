@@ -18,7 +18,7 @@ package uk.gov.hmrc.iossregistration.crypto
 
 import play.api.libs.json.{Json, OFormat}
 
-import java.security.{InvalidAlgorithmParameterException, InvalidKeyException, NoSuchAlgorithmException, SecureRandom}
+import java.security.{InvalidKeyException, NoSuchAlgorithmException, SecureRandom}
 import java.util.Base64
 import javax.crypto._
 import javax.crypto.spec.{GCMParameterSpec, SecretKeySpec}
@@ -46,15 +46,15 @@ class SecureGCMCipher @Inject()() {
   def decrypt(valueToDecrypt: EncryptedValue, associatedText: String, aesKey: String): String = {
 
     val initialisationVector = Base64.getDecoder.decode(valueToDecrypt.nonce)
-    val gcmParameterSpec     = new GCMParameterSpec(TAG_BIT_LENGTH, initialisationVector)
-    val secretKey            = validateSecretKey(aesKey, METHOD_DECRYPT)
+    val gcmParameterSpec = new GCMParameterSpec(TAG_BIT_LENGTH, initialisationVector)
+    val secretKey = validateSecretKey(aesKey, METHOD_DECRYPT)
 
     decryptCipherText(valueToDecrypt.value, validateAssociatedText(associatedText, METHOD_DECRYPT), gcmParameterSpec, secretKey)
   }
 
   private def validateSecretKey(key: String, method: String): SecretKey = Try {
     val decodedKey = Base64.getDecoder.decode(key)
-    new SecretKeySpec(decodedKey, 0 , decodedKey.length, ALGORITHM_KEY)
+    new SecretKeySpec(decodedKey, 0, decodedKey.length, ALGORITHM_KEY)
   } match {
     case Success(secretKey) => secretKey
     case Failure(ex) => throw new EncryptionDecryptionException(method, "The key provided is invalid", ex.getMessage)
@@ -84,15 +84,8 @@ class SecureGCMCipher @Inject()() {
   private def processCipherTextFailure(ex: Throwable, method: String): Throwable = ex match {
     case e: NoSuchAlgorithmException => throw new EncryptionDecryptionException(method, "Algorithm being requested is not available in this environment",
       e.getMessage)
-    case e: NoSuchPaddingException => throw new EncryptionDecryptionException(method, "Padding Scheme being requested is not available this environment",
-      e.getMessage)
     case e: InvalidKeyException => throw new EncryptionDecryptionException(method, "Key being used is not valid." +
       " It could be due to invalid encoding, wrong length or uninitialized", e.getMessage)
-    case e: InvalidAlgorithmParameterException => throw new EncryptionDecryptionException(method, "Algorithm parameters being specified are not valid",
-      e.getMessage)
-    case e: IllegalStateException => throw new EncryptionDecryptionException(method, "Cipher is in an illegal state", e.getMessage)
-    case e: UnsupportedOperationException => throw new EncryptionDecryptionException(method, "Provider might not be supporting this method", e.getMessage)
-    case e: IllegalBlockSizeException => throw new EncryptionDecryptionException(method, "Error occurred due to block size", e.getMessage)
     case e: BadPaddingException => throw new EncryptionDecryptionException(method, "Error occurred due to padding scheme", e.getMessage)
     case _ => throw new EncryptionDecryptionException(method, "Unexpected exception", ex.getMessage)
   }

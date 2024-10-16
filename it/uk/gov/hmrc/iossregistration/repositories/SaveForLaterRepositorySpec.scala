@@ -84,7 +84,6 @@ class SaveForLaterRepositorySpec
   when(mockEncryptionService.encryptField(any())) thenReturn "encryptedText"
   when(mockEncryptionService.decryptField(any())) thenReturn arbitrarySavedUserAnswers.arbitrary.sample.value.data.toString()
 
-  // TODO -> Need separate tests for new and legacy
   ".set savedAnswers" - {
 
     "must insert saved answers for different VRNs" in {
