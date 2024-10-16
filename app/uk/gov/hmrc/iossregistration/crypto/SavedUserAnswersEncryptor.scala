@@ -18,6 +18,7 @@ package uk.gov.hmrc.iossregistration.crypto
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Vrn
+import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.services.crypto.EncryptionService
 
@@ -25,22 +26,35 @@ import javax.inject.Inject
 
 
 class SavedUserAnswersEncryptor @Inject()(
-                                           encryptionService: EncryptionService
+                                           appConfig: AppConfig,
+                                           encryptionService: EncryptionService,
+                                           secureGCMCipher: SecureGCMCipher
                                          ) {
 
-  def encryptAnswers(answers: SavedUserAnswers, vrn: Vrn): EncryptedSavedUserAnswers = {
-    def encryptAnswerValue(answerValue: String): String =
-      encryptionService.encryptField(answerValue)
+  protected val key: String = appConfig.encryptionKey
 
-    EncryptedSavedUserAnswers(
+  def encryptAnswers(answers: SavedUserAnswers, vrn: Vrn): NewEncryptedSavedUserAnswers = {
+    def encryptAnswerValue(answerValue: String): String = encryptionService.encryptField(answerValue)
+
+    NewEncryptedSavedUserAnswers(
       vrn = vrn,
       data = encryptAnswerValue(answers.data.toString),
       lastUpdated = answers.lastUpdated
     )
   }
 
-  def decryptAnswers(encryptedAnswers: EncryptedSavedUserAnswers, vrn: Vrn): SavedUserAnswers = {
+  def decryptAnswers(encryptedAnswers: NewEncryptedSavedUserAnswers, vrn: Vrn): SavedUserAnswers = {
     def decryptValue(encryptedValue: String): String = encryptionService.decryptField(encryptedValue)
+
+    SavedUserAnswers(
+      vrn = vrn,
+      data = Json.parse(decryptValue(encryptedAnswers.data)),
+      lastUpdated = encryptedAnswers.lastUpdated
+    )
+  }
+
+  def decryptLegacyAnswers(encryptedAnswers: LegacyEncryptedSavedUserAnswers, vrn: Vrn): SavedUserAnswers = {
+    def decryptValue(encryptedValue: EncryptedValue): String = secureGCMCipher.decrypt(encryptedValue, vrn.vrn, key)
 
     SavedUserAnswers(
       vrn = vrn,

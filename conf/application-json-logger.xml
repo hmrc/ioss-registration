@@ -5,7 +5,7 @@
         <encoder class="uk.gov.hmrc.play.logging.JsonEncoder"/>
     </appender>
 
-
+<!--    TODO - These loggers need to go into app conf somewhere.-->
     <logger name="application.uk.gov.hmrc.iossregistration.connectors.GetVatInfoConnector" level="INFO"/>
 
     <logger name="application.uk.gov.hmrc.iossregistration.services.RegistrationServiceEtmpImpl" level="INFO"/>

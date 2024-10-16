@@ -23,7 +23,7 @@ import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.crypto.SavedUserAnswersEncryptor
 import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.models.{EncryptedSavedUserAnswers, SavedUserAnswers}
+import uk.gov.hmrc.iossregistration.models.{EncryptedSavedUserAnswers, LegacyEncryptedSavedUserAnswers, NewEncryptedSavedUserAnswers, SavedUserAnswers}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -87,8 +87,10 @@ class SaveForLaterRepository @Inject()(
         byVrn(vrn)
       ).headOption()
       .map(_.map {
-        answers =>
-          encryptor.decryptAnswers(answers, answers.vrn)
+        case l: LegacyEncryptedSavedUserAnswers =>
+          encryptor.decryptLegacyAnswers(l, l.vrn)
+        case n: NewEncryptedSavedUserAnswers =>
+          encryptor.decryptAnswers(n, n.vrn)
       })
 
   def clear(vrn: Vrn): Future[Boolean] =

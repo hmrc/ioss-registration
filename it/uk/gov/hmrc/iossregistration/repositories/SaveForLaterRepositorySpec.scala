@@ -28,8 +28,8 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.config.AppConfig
-import uk.gov.hmrc.iossregistration.crypto.SavedUserAnswersEncryptor
-import uk.gov.hmrc.iossregistration.models.{EncryptedSavedUserAnswers, SavedUserAnswers}
+import uk.gov.hmrc.iossregistration.crypto.{SavedUserAnswersEncryptor, SecureGCMCipher}
+import uk.gov.hmrc.iossregistration.models.{EncryptedSavedUserAnswers, LegacyEncryptedSavedUserAnswers, NewEncryptedSavedUserAnswers, SavedUserAnswers}
 import uk.gov.hmrc.iossregistration.services.crypto.EncryptionService
 import uk.gov.hmrc.mongo.test.{CleanMongoCollectionSupport, DefaultPlayMongoRepositorySupport}
 
@@ -47,8 +47,9 @@ class SaveForLaterRepositorySpec
     with OptionValues {
 
   private val appConfig = mock[AppConfig]
+  private val mockSecureGcmCipher: SecureGCMCipher = mock[SecureGCMCipher]
   private val mockEncryptionService: EncryptionService = mock[EncryptionService]
-  private val encryptor = new SavedUserAnswersEncryptor(mockEncryptionService)
+  private val encryptor = new SavedUserAnswersEncryptor(appConfig, mockEncryptionService, mockSecureGcmCipher)
 
   private val instant = Instant.now
   private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
@@ -83,6 +84,7 @@ class SaveForLaterRepositorySpec
   when(mockEncryptionService.encryptField(any())) thenReturn "encryptedText"
   when(mockEncryptionService.decryptField(any())) thenReturn arbitrarySavedUserAnswers.arbitrary.sample.value.data.toString()
 
+  // TODO -> Need separate tests for new and legacy
   ".set savedAnswers" - {
 
     "must insert saved answers for different VRNs" in {
@@ -105,13 +107,12 @@ class SaveForLaterRepositorySpec
       val insertReturn2 = repository.set(answers2).futureValue
       val databaseRecords = findAll().futureValue
       val decryptedDatabaseRecords =
-        databaseRecords.map(e => encryptor.decryptAnswers(e, e.vrn))
+        databaseRecords.map(e => determineEncryptionType(e))
 
       insertResult1 mustBe (answers1)
       insertReturn2 mustBe (answers2)
       decryptedDatabaseRecords must contain theSameElementsAs Seq(answers1, answers2)
     }
-
 
     "must replace saved answers with the same VRN" in {
 
@@ -124,7 +125,7 @@ class SaveForLaterRepositorySpec
       insertResult2 mustBe answers2
 
       val decryptedDatabaseRecords =
-        findAll().futureValue.map(e => encryptor.decryptAnswers(e, e.vrn))
+        findAll().futureValue.map(e => determineEncryptionType(e))
 
       decryptedDatabaseRecords must contain only answers2
     }
@@ -171,6 +172,16 @@ class SaveForLaterRepositorySpec
 
       val currentAnswers = repository.get(answers.vrn).futureValue
       currentAnswers must not be defined
+    }
+  }
+
+  private def determineEncryptionType(answers: EncryptedSavedUserAnswers): SavedUserAnswers = {
+    answers match {
+      case l: LegacyEncryptedSavedUserAnswers =>
+        encryptor.decryptLegacyAnswers(l, l.vrn)
+      case n: NewEncryptedSavedUserAnswers =>
+        encryptor.decryptAnswers(n, n.vrn)
+      case _ => throw new IllegalArgumentException("Not a valid EncryptedSavedUserAnswers type.")
     }
   }
 }
