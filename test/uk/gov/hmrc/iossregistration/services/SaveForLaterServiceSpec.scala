@@ -22,7 +22,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import java.time.{Clock, Instant, ZoneId}
 import scala.concurrent.Future
 
-
 class SaveForLaterServiceSpec
   extends AnyFreeSpec
     with Matchers

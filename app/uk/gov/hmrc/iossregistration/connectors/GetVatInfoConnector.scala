@@ -49,9 +49,9 @@ class GetVatInfoConnector @Inject()(
       .setHeader(headers(UUID.randomUUID.toString): _*)
       .execute[VatCustomerInfoResponse]
       .recover {
-      case e: GatewayTimeoutException =>
-        logger.error(s"Request timeout from Get vat info: $e", e)
-        Left(GatewayTimeout)
-    }
+        case e: GatewayTimeoutException =>
+          logger.error(s"Request timeout from Get vat info: $e", e)
+          Left(GatewayTimeout)
+      }
   }
 }

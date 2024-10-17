@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.iossregistration.config
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.iossregistration.models.enrolments.FallbackEnrolment
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AppConfig @Inject()(config: Configuration) {
@@ -34,11 +35,9 @@ class AppConfig @Inject()(config: Configuration) {
   val externalEntryJourneyStartReturnUrl: String = config.get[String]("features.externalEntry.urls.journeyStart")
   val externalEntryNoMoreWelshReturnUrl: String = config.get[String]("features.externalEntry.urls.noMoreWelshJourneyStart")
 
-  val encryptionKey: String = config.get[String]("mongodb.encryption.key")
   val cacheTtl: Int = config.get[Int]("mongodb.timeToLiveInDays")
-
-  val iossEnrolment: String = config.get[String]("iossEnrolmentKey")
 
   val fallbackEnrolmentsEnable: Boolean = config.get[Boolean]("features.fallbackEnrolments.enabled")
   val fallbackEnrolments: Seq[FallbackEnrolment] = config.get[Seq[FallbackEnrolment]]("features.fallbackEnrolments.enrolments")
+  val encryptionKey: String = config.get[String]("mongodb.encryption.key")
 }
