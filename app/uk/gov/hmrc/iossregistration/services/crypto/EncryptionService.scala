@@ -22,7 +22,7 @@ import uk.gov.hmrc.crypto.{Crypted, Decrypter, Encrypter, PlainText, SymmetricCr
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-case class EncryptionService @Inject()(
+class EncryptionService @Inject()(
                                         configuration: Configuration
                                       ) {
 

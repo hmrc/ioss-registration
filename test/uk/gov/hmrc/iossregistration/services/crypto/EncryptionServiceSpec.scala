@@ -18,7 +18,7 @@ class EncryptionServiceSpec extends BaseSpec {
 
         val configuration: Configuration = application.configuration
 
-        val service: EncryptionService = EncryptionService(configuration)
+        val service: EncryptionService = new EncryptionService(configuration)
 
         val result = service.encryptField(textToEncrypt)
 
@@ -37,7 +37,7 @@ class EncryptionServiceSpec extends BaseSpec {
 
         val configuration: Configuration = application.configuration
 
-        val service: EncryptionService = EncryptionService(configuration)
+        val service: EncryptionService = new EncryptionService(configuration)
 
         val encryptedValue = service.encryptField(textToEncrypt)
 
@@ -58,7 +58,7 @@ class EncryptionServiceSpec extends BaseSpec {
 
         val configuration: Configuration = application.configuration
 
-        val service: EncryptionService = EncryptionService(configuration)
+        val service: EncryptionService = new EncryptionService(configuration)
 
         val invalidEncryptedValue = service.encryptField(textToEncrypt) + "any"
 

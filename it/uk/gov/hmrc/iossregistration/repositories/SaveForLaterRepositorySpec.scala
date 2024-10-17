@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.iossregistration.repositories
 
+import com.typesafe.config.Config
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalacheck.Arbitrary.arbitrary
@@ -25,6 +26,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.config.AppConfig
@@ -46,10 +48,13 @@ class SaveForLaterRepositorySpec
     with IntegrationPatience
     with OptionValues {
 
-  private val appConfig = mock[AppConfig]
-  private val mockSecureGcmCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private val mockEncryptionService: EncryptionService = mock[EncryptionService]
-  private val encryptor = new SavedUserAnswersEncryptor(appConfig, mockEncryptionService, mockSecureGcmCipher)
+  private val mockAppConfig = mock[AppConfig]
+  private val mockConfiguration = mock[Configuration]
+  private val mockConfig = mock[Config]
+  private val secureGcmCipher: SecureGCMCipher = new SecureGCMCipher
+  private val encryptionService: EncryptionService = new EncryptionService(mockConfiguration)
+  private val encryptor = new SavedUserAnswersEncryptor(mockAppConfig, encryptionService, secureGcmCipher)
+  private val secretKey: String = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
 
   private val instant = Instant.now
   private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
@@ -78,11 +83,12 @@ class SaveForLaterRepositorySpec
     new SaveForLaterRepository(
       mongoComponent = mongoComponent,
       encryptor = encryptor,
-      appConfig = appConfig
+      appConfig = mockAppConfig
     )
 
-  when(mockEncryptionService.encryptField(any())) thenReturn "encryptedText"
-  when(mockEncryptionService.decryptField(any())) thenReturn arbitrarySavedUserAnswers.arbitrary.sample.value.data.toString()
+  when(mockConfiguration.underlying) thenReturn mockConfig
+  when(mockConfig.getString(any())) thenReturn secretKey
+  when(mockAppConfig.encryptionKey) thenReturn secretKey
 
   ".set savedAnswers" - {
 
@@ -134,8 +140,6 @@ class SaveForLaterRepositorySpec
 
     "must return Saved answers record when one exists for this VRN" in {
 
-      when(mockEncryptionService.encryptField(any())) thenReturn ""
-
       val answers1 = arbitrary[SavedUserAnswers].sample.value
 
       val answers = answers1.copy(lastUpdated = Instant.now(stubClock).truncatedTo(ChronoUnit.MILLIS))
@@ -184,4 +188,6 @@ class SaveForLaterRepositorySpec
     }
   }
 }
+
+
 
