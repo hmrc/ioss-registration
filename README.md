@@ -7,65 +7,32 @@ Frontend: https://github.com/hmrc/ioss-registration-frontend
 
 Stub: https://github.com/hmrc/ioss-registration-stub
 
+For more details on the Import One Stop Shop Registration service, including how to use the application, please refer
+to the instructions in the ioss-registration-frontend repository.
+
 Requirements
 ------------
 
 This service is written in [Scala](http://www.scala-lang.org/) and [Play](http://playframework.com/), so needs at least a [JRE] to run.
 
-## Run the application
+## Run the application locally via Service Manager
 
-To update from Nexus and start all services from the RELEASE version instead of snapshot
 ```
-sm --start IMPORT_ONE_STOP_SHOP_ALL
+sm2 --start IMPORT_ONE_STOP_SHOP_ALL
 ```
 
-### To run the application locally execute the following:
+### To run the application locally from the repository, execute the following:
 ```
-sm --stop IOSS_REGISTRATION
+sm2 --stop IOSS_REGISTRATION
 ```
 and
 ```
-sbt run
+sbt run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes
 ```
 
-### Using the application
-To log in using the Authority Wizard provide "continue url", "affinity group" and "enrolments" as follows:
+### Running correct version of mongo
+Mongo 6 with a replica set is required to run the service. Please refer to the MDTP Handbook for instructions on how to run this
 
-![image](https://github.com/hmrc/ioss-registration/assets/36073378/81b753d0-05e5-4f2c-b4ec-a3d834b4c299)
-
-![image](https://user-images.githubusercontent.com/48218839/145842926-c318cb10-70c3-4186-a839-b1928c8e2625.png)
-
-The VRN can be any 9-digit number.
-
-To successfully register go through the journey providing the answers as follows:
-
-1.
-![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/f56bd082-60c3-42e8-8036-5503b8ed844e)
-
-2.
-![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/7db67246-ffae-4591-b4e1-1205e6c5fb78)
-
-3.
-![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/ad366c1b-b922-4dcd-bda5-6678a51bc281)
-
-4.
-![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/f73d60c6-912a-4b90-add2-fa5ac5aff5c1)
-
-5.
-![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/27a2e705-17e8-4c6b-847a-215c3c7285b1)
-
-6.
-![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/50b9ef63-26de-40c7-9e12-30af04c9a03e)
-
-Or alternatively from step 5 above:
-5.
-![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/1d5d89b1-e1c0-4507-8077-347ffd7018af)
-
-6.
-![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/b8dc83d5-71f4-4a9d-b390-b262af02d13b)
-
-7.
-![image](https://github.com/hmrc/ioss-registration-frontend/assets/36073378/50b9ef63-26de-40c7-9e12-30af04c9a03e)
 
 Unit and Integration Tests
 ------------
