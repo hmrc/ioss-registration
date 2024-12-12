@@ -79,7 +79,7 @@ class SaveForLaterRepositorySpec
       )
     }
 
-  override protected val repository =
+  override protected val repository: SaveForLaterRepository =
     new SaveForLaterRepository(
       mongoComponent = mongoComponent,
       encryptor = encryptor,

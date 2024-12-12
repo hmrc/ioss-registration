@@ -2,6 +2,7 @@ package uk.gov.hmrc.iossregistration.services
 
 import org.apache.pekko.actor.ActorSystem
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus

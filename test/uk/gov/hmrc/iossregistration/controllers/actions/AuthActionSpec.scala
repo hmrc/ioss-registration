@@ -19,18 +19,19 @@ package uk.gov.hmrc.iossregistration.controllers.actions
 import com.google.inject.Inject
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.{~, Credentials, Retrieval}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.services.AccountService
-import uk.gov.hmrc.iossregistration.testutils.TestAuthRetrievals._
+import uk.gov.hmrc.iossregistration.testutils.TestAuthRetrievals.*
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -2,6 +2,7 @@ package uk.gov.hmrc.iossregistration.services
 
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.scalatest.BeforeAndAfterEach
+import org.mockito.Mockito._
 import play.api.test.Helpers.running
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier

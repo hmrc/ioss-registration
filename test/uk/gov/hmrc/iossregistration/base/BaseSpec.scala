@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.iossregistration.base
 
-import org.mockito.MockitoSugar
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.auth.core.retrieve.Credentials
@@ -29,7 +29,7 @@ import uk.gov.hmrc.iossregistration.controllers.actions.{AuthAction, FakeAuthAct
 import uk.gov.hmrc.iossregistration.generators.Generators
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
 import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendCustomerIdentification, EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationRequest}
-import uk.gov.hmrc.iossregistration.models.etmp._
+import uk.gov.hmrc.iossregistration.models.etmp.*
 import uk.gov.hmrc.iossregistration.models.{Bic, DesAddress, Iban}
 
 import java.time.format.DateTimeFormatter

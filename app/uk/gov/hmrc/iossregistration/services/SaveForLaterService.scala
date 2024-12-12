@@ -63,7 +63,7 @@ class SaveForLaterService @Inject()(
   }
 
   private def getVatCustomerInfo(vrn: Vrn)(implicit hc: HeaderCarrier): Future[VatCustomerInfo] = {
-    getVatInfoConnector.getVatCustomerDetails(vrn).flatMap { errorOrResult: VatCustomerInfoResponse =>
+    getVatInfoConnector.getVatCustomerDetails(vrn).flatMap { (errorOrResult: VatCustomerInfoResponse) =>
       errorOrResult match {
         case Right(vatCustomerInfo) => Future.successful(vatCustomerInfo)
         case Left(errorResponse: ErrorResponse) => Future.failed(new RuntimeException(s"$errorResponse was returned for $vrn"))

@@ -1,12 +1,11 @@
 package uk.gov.hmrc.iossregistration.controllers.external
 
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchersSugar.eqTo
-import play.api.http.Status.NO_CONTENT
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import play.api.inject
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models.external.{Event, EventData}
 import uk.gov.hmrc.iossregistration.services.ChannelPreferenceService
@@ -63,7 +62,7 @@ class EventControllerSpec extends BaseSpec {
         val result = route(application, request).value
         status(result) mustBe BAD_REQUEST
 
-        verifyZeroInteractions(mockChannelPreferenceService)
+        verifyNoInteractions(mockChannelPreferenceService)
       }
     }
 
