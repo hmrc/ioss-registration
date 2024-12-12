@@ -1,6 +1,7 @@
 package uk.gov.hmrc.iossregistration.crypto
 
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.libs.json.Json
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.config.AppConfig

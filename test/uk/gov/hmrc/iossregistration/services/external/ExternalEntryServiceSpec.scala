@@ -2,6 +2,7 @@ package uk.gov.hmrc.iossregistration.services.external
 
 import org.mockito.ArgumentMatchers.any
 import org.scalatest.BeforeAndAfterEach
+import org.mockito.Mockito._
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.models.external.{ExternalEntry, ExternalRequest, ExternalResponse}

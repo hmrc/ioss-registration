@@ -1,7 +1,7 @@
 package uk.gov.hmrc.iossregistration.testutils
 
 import org.scalacheck.Gen
-import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{__, OWrites}
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models.binders.Format.dateTimeFormatter
@@ -59,7 +59,7 @@ object DisplayRegistrationData extends BaseSpec {
         (__ \ "contactDetails" \ "unusableStatus").write[Boolean] and
         (__ \ "nonCompliantReturns").writeNullable[String] and
         (__ \ "nonCompliantPayments").writeNullable[String]
-      )(unlift(EtmpDisplaySchemeDetails.unapply))
+      )(etmpDisplaySchemeDetails => Tuple.fromProductTyped(etmpDisplaySchemeDetails))
   }
 
 }

@@ -18,6 +18,7 @@ package uk.gov.hmrc.iossregistration.connectors
 
 import play.api.http.HeaderNames._
 import play.api.libs.json.Json
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException, StringContextOps}
 import uk.gov.hmrc.iossregistration.config.{AmendRegistrationConfig, CreateRegistrationConfig, DisplayRegistrationConfig}

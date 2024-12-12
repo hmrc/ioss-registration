@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.iossregistration.repositories
 
-import org.mockito.MockitoSugar
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationStatus
@@ -39,7 +39,7 @@ class RegistrationStatusRepositorySpec extends AnyFreeSpec
   with MockitoSugar {
 
   private val appConfig = mock[AppConfig]
-  protected val repository =
+  protected val repository: RegistrationStatusRepository =
     new RegistrationStatusRepository(
       mongoComponent = mongoComponent,
       appConfig = appConfig
