@@ -30,7 +30,7 @@ import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.config.AppConfig
-import uk.gov.hmrc.iossregistration.crypto.{SavedUserAnswersEncryptor, SecureGCMCipher}
+import uk.gov.hmrc.iossregistration.crypto.{SavedUserAnswersEncryptor, AesGCMCrypto}
 import uk.gov.hmrc.iossregistration.models.{EncryptedSavedUserAnswers, LegacyEncryptedSavedUserAnswers, NewEncryptedSavedUserAnswers, SavedUserAnswers}
 import uk.gov.hmrc.iossregistration.services.crypto.EncryptionService
 import uk.gov.hmrc.mongo.test.{CleanMongoCollectionSupport, DefaultPlayMongoRepositorySupport}
@@ -51,7 +51,7 @@ class SaveForLaterRepositorySpec
   private val mockAppConfig = mock[AppConfig]
   private val mockConfiguration = mock[Configuration]
   private val mockConfig = mock[Config]
-  private val secureGcmCipher: SecureGCMCipher = new SecureGCMCipher
+  private val secureGcmCipher: AesGCMCrypto = new AesGCMCrypto
   private val encryptionService: EncryptionService = new EncryptionService(mockConfiguration)
   private val encryptor = new SavedUserAnswersEncryptor(mockAppConfig, encryptionService, secureGcmCipher)
   private val secretKey: String = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
@@ -79,7 +79,7 @@ class SaveForLaterRepositorySpec
       )
     }
 
-  override protected val repository =
+  override protected val repository: SaveForLaterRepository =
     new SaveForLaterRepository(
       mongoComponent = mongoComponent,
       encryptor = encryptor,

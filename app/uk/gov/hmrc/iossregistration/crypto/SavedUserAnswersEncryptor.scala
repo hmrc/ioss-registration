@@ -28,7 +28,7 @@ import javax.inject.Inject
 class SavedUserAnswersEncryptor @Inject()(
                                            appConfig: AppConfig,
                                            encryptionService: EncryptionService,
-                                           secureGCMCipher: SecureGCMCipher
+                                           secureGCMCipher: AesGCMCrypto
                                          ) {
 
   protected val key: String = appConfig.encryptionKey
