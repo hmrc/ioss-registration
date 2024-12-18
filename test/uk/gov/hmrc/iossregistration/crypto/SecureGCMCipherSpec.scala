@@ -5,7 +5,7 @@ import org.scalatest.matchers.must.Matchers
 
 import java.util.Base64
 
-class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
+class AesGCMCryptoSpec extends AnyFreeSpec with Matchers {
 
   private val encrypter = new AesGCMCrypto
   private val secretKey = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
