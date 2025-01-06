@@ -55,7 +55,7 @@ class RegistrationService @Inject()(
           throw EtmpException(s"There was an error getting Registration from ETMP: ${displayError.body}")
         case (_, Left(vatInfoError)) =>
           logger.error(s"There was an error getting vat info from ETMP: ${vatInfoError.body}")
-          throw EtmpException(s"There was an error getting  vat info from ETMP: ${vatInfoError.body}")
+          throw EtmpException(s"There was an error getting vat info from ETMP: ${vatInfoError.body}")
       }
     }
   }
