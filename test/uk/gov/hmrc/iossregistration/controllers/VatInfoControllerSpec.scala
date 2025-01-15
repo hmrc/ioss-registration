@@ -1,16 +1,16 @@
 package uk.gov.hmrc.iossregistration.controllers
 
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalacheck.Gen
-import play.api.http.Status.OK
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.GetVatInfoConnector
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
-import uk.gov.hmrc.iossregistration.models._
+import uk.gov.hmrc.iossregistration.models.*
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 
 import java.time.LocalDate

@@ -26,16 +26,16 @@ class AppConfig @Inject()(config: Configuration) {
 
   val appName: String = config.get[String]("appName")
 
-  val registrationStatusTtl: Int = config.get[Int]("mongodb.timeToLiveInHours")
+  val registrationStatusTtl: Long = config.get[Long]("mongodb.timeToLiveInHours")
 
   val maxRetryCount: Int = config.get[Int]("features.maxRetryCount")
   val delay: Int = config.get[Int]("features.delay")
 
-  val externalEntryTtlDays: Int = config.get[Int]("features.externalEntry.ttlInDays")
+  val externalEntryTtlDays: Long = config.get[Long]("features.externalEntry.ttlInDays")
   val externalEntryJourneyStartReturnUrl: String = config.get[String]("features.externalEntry.urls.journeyStart")
   val externalEntryNoMoreWelshReturnUrl: String = config.get[String]("features.externalEntry.urls.noMoreWelshJourneyStart")
 
-  val cacheTtl: Int = config.get[Int]("mongodb.timeToLiveInDays")
+  val cacheTtl: Long = config.get[Long]("mongodb.timeToLiveInDays")
 
   val fallbackEnrolmentsEnable: Boolean = config.get[Boolean]("features.fallbackEnrolments.enabled")
   val fallbackEnrolments: Seq[FallbackEnrolment] = config.get[Seq[FallbackEnrolment]]("features.fallbackEnrolments.enrolments")

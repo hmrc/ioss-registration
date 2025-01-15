@@ -1,6 +1,7 @@
 package uk.gov.hmrc.iossregistration.crypto
 
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.libs.json.Json
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.config.AppConfig
@@ -11,7 +12,7 @@ class SavedUserAnswersEncryptorSpec extends BaseSpec {
 
   private val mockAppConfig: AppConfig = mock[AppConfig]
   private val mockEncryptionService: EncryptionService = mock[EncryptionService]
-  private val mockSecureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
+  private val mockSecureGCMCipher: AesGCMCrypto = mock[AesGCMCrypto]
 
   private val savedUserAnswers: SavedUserAnswers = arbitrarySavedUserAnswers.arbitrary.sample.value
   private val encryptedValue: String = "encryptedValue"

@@ -1,12 +1,12 @@
 package uk.gov.hmrc.iossregistration.controllers.external
 
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito._
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import play.api.http.Status.{BAD_REQUEST, OK}
 import play.api.inject
 import play.api.libs.json.{JsNull, Json}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.generators.Generators
 import uk.gov.hmrc.iossregistration.models.external.{ExternalEntryUrlResponse, ExternalRequest, ExternalResponse}

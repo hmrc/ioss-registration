@@ -17,14 +17,12 @@
 package uk.gov.hmrc.iossregistration.services
 
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AccountService @Inject()(
-                                appConfig: AppConfig,
                                 enrolmentsConnector: EnrolmentsConnector
                               )(implicit ec: ExecutionContext) {
 

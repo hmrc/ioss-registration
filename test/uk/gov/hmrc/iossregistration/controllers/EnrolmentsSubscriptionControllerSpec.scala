@@ -1,10 +1,11 @@
 package uk.gov.hmrc.iossregistration.controllers
 
+import org.mockito.Mockito.reset
 import org.scalatest.BeforeAndAfterEach
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 
