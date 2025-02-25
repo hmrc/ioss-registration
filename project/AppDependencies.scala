@@ -3,8 +3,8 @@ import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapVersion = "9.5.0"
-  private val hmrcMongoVersion = "2.2.0"
+  private val bootstrapVersion = "9.9.0"
+  private val hmrcMongoVersion = "2.5.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"             %% "bootstrap-backend-play-30"  % bootstrapVersion,
@@ -16,6 +16,6 @@ object AppDependencies {
     "uk.gov.hmrc"             %% "bootstrap-test-play-30"     % bootstrapVersion,
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-30"    % hmrcMongoVersion,
     "org.scalatestplus"       %% "scalacheck-1-15"            % "3.2.11.0",
-    "org.scalacheck"          %% "scalacheck"                 % "1.18.0"
+    "org.scalacheck"          %% "scalacheck"                 % "1.18.1"
   ).map(_ % "test, it")
 }
