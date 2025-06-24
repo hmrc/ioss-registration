@@ -16,7 +16,6 @@ lazy val microservice = Project("ioss-registration", file("."))
   .settings(integrationTestSettings(): _*)
   .configs(Test)
   .settings(inConfig(Test)(testSettings): _*)
-  .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
   .settings(scalacOptions += "-Wconf:msg=Flag.*repeatedly:s")
 
