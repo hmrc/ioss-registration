@@ -162,6 +162,17 @@ case class RegistrationController @Inject()(
       getRegistrationAndReturnResult(iossNumber, request.vrn)
   }
 
+  def getIossRegistration(iossNumber: String): Action[AnyContent] = cc.authAndRequireIntermediary().async {
+    implicit request =>
+      registrationService.get(iossNumber).map { registration =>
+        Ok(Json.toJson(registration))
+      }.recover {
+        case exception =>
+          logger.error(exception.getMessage, exception)
+          InternalServerError(exception.getMessage)
+      }
+  }
+
   private def getRegistrationAndReturnResult(iossNumber: String, vrn: Vrn)(implicit hc: HeaderCarrier): Future[Result] = {
     registrationService.get(iossNumber, vrn).map { registration =>
       Ok(Json.toJson(registration))

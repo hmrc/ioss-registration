@@ -6,6 +6,7 @@ GET         /vat-information                                  uk.gov.hmrc.iossre
 
 GET         /registration                                     uk.gov.hmrc.iossregistration.controllers.RegistrationController.get()
 GET         /registration/:iossNumber                         uk.gov.hmrc.iossregistration.controllers.RegistrationController.getRegistration(iossNumber: String)
+GET         /registration-as-intermediary/:iossNumber         uk.gov.hmrc.iossregistration.controllers.RegistrationController.getIossRegistration(iossNumber: String)
 POST        /create-registration                              uk.gov.hmrc.iossregistration.controllers.RegistrationController.createRegistration()
 
 POST        /authorised/accept/confirm/:subscriptionId        uk.gov.hmrc.iossregistration.controllers.EnrolmentsSubscriptionController.authoriseEnrolment(subscriptionId: String)

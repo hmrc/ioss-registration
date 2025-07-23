@@ -96,7 +96,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = route(app, request).value
 
         implicit val dataRequest: AuthorisedMandatoryVrnRequest[AnyContentAsJson] =
-          AuthorisedMandatoryVrnRequest(request, testCredentials, "id", vrn, None)
+          AuthorisedMandatoryVrnRequest(request, testCredentials, "id", vrn, None, None)
 
         val expectedAuditEvent = EtmpRegistrationRequestAuditModel.build(
           etmpRegistrationAuditType = EtmpRegistrationAuditType.CreateRegistration,
@@ -170,7 +170,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = route(app, request).value
 
         implicit val dataRequest: AuthorisedMandatoryVrnRequest[AnyContentAsJson] =
-          AuthorisedMandatoryVrnRequest(request, testCredentials, "id", vrn, None)
+          AuthorisedMandatoryVrnRequest(request, testCredentials, "id", vrn, None, None)
 
         val expectedAuditEvent = EtmpRegistrationRequestAuditModel.build(
           etmpRegistrationAuditType = EtmpRegistrationAuditType.CreateRegistration,
@@ -207,7 +207,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = route(app, request).value
 
         implicit val dataRequest: AuthorisedMandatoryVrnRequest[AnyContentAsJson] =
-          AuthorisedMandatoryVrnRequest(request, testCredentials, "id", vrn, None)
+          AuthorisedMandatoryVrnRequest(request, testCredentials, "id", vrn, None, None)
 
         val expectedAuditEvent = EtmpRegistrationRequestAuditModel.build(
           etmpRegistrationAuditType = EtmpRegistrationAuditType.CreateRegistration,
@@ -257,6 +257,51 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       running(app) {
         val request = FakeRequest(GET, routes.RegistrationController.get().url)
+        val result = route(app, request).value
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "getIossRegistration" - {
+
+    "must return OK and a registration when one is found" in {
+
+      val mockService = mock[RegistrationService]
+      val iossNumber = "IM900123456789"
+
+      when(mockService.get(any())(any())) thenReturn RegistrationData.displayRegistration.toFuture
+
+      val app =
+        applicationBuilder
+          .overrides(bind[RegistrationService].toInstance(mockService))
+          .build()
+
+      running(app) {
+        val request = FakeRequest(GET, routes.RegistrationController.getIossRegistration(iossNumber).url)
+        val result = route(app, request).value
+
+        status(result) mustEqual OK
+        contentAsJson(result) mustEqual Json.toJson(RegistrationData.displayRegistration)
+      }
+    }
+
+    "must return INTERNAL_SERVER_ERROR when a registration connector response with Error" in {
+
+      val mockService = mock[RegistrationService]
+      val iossNumber = "IM900123456789"
+
+      when(mockService.get(any())(any())) thenReturn Future.failed(EtmpException("Error Occurred"))
+
+      val app =
+        applicationBuilder
+          .overrides(bind[RegistrationService].toInstance(mockService))
+          .build()
+
+      running(app) {
+        val request = FakeRequest(GET, routes.RegistrationController.getIossRegistration(iossNumber).url)
+          .withJsonBody(Json.toJson(RegistrationData.displayRegistration))
         val result = route(app, request).value
 
         status(result) mustEqual INTERNAL_SERVER_ERROR

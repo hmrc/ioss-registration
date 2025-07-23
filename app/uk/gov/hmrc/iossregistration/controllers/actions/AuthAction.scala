@@ -61,19 +61,21 @@ class AuthActionImpl @Inject()(
       case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Organisation) ~ _ =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
         val futureMaybeIossNumber = findIossFromEnrolments(enrolments, credentials.providerId)
+        val maybeIntermediary = findIntermediaryNumberFromEnrolments(enrolments)
 
         for {
           maybeIossNumber <- futureMaybeIossNumber
-          result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber))
+          result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber, maybeIntermediary))
         } yield result
 
       case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Individual) ~ confidence =>
         val maybeVrn = findVrnFromEnrolments(enrolments)
+        val maybeIntermediary = findIntermediaryNumberFromEnrolments(enrolments)
         if (confidence >= ConfidenceLevel.L200) {
           val futureMaybeIossNumber = findIossFromEnrolments(enrolments, credentials.providerId)
           for {
             maybeIossNumber <- futureMaybeIossNumber
-            result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber))
+            result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber, maybeIntermediary))
           } yield result
         } else {
           throw InsufficientConfidenceLevel("Insufficient confidence level")
@@ -107,5 +109,11 @@ class AuthActionImpl @Inject()(
         accountService.getLatestAccount(userId)
       case _ => None.toFuture
     }
+  }
+
+  private def findIntermediaryNumberFromEnrolments(enrolments: Enrolments): Option[String] = {
+    enrolments.enrolments
+      .find(_.key == "HMRC-IOSS-INT")
+      .flatMap(_.identifiers.find(id => id.key == "IntNumber" && id.value.nonEmpty).map(_.value))
   }
 }

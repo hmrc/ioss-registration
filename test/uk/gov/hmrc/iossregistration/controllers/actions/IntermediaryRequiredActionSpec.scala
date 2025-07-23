@@ -19,31 +19,33 @@ package uk.gov.hmrc.iossregistration.controllers.actions
 import play.api.mvc.Result
 import play.api.mvc.Results.Unauthorized
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class VatRequiredActionSpec extends BaseSpec {
+class IntermediaryRequiredActionSpec extends BaseSpec {
 
-  class Harness() extends VatRequiredAction {
+  private val intermediaryNumber = "IM900123456789"
 
-    def callRefine[A](request: AuthorisedRequest[A]): Future[Either[Result, AuthorisedMandatoryVrnRequest[A]]] = refine(request)
+  class Harness() extends IntermediaryRequiredAction {
+
+    def callRefine[A](request: AuthorisedMandatoryVrnRequest[A]): Future[Either[Result, AuthorisedMandatoryIntermediaryRequest[A]]] = refine(request)
   }
 
-  "Vat Required Action" - {
+  "Intermediary Required Action" - {
 
-    "when the user has logged in as an Organisation Admin with strong credentials but no vat enrolment" - {
+    "when the user has logged in as an Organisation Admin with strong credentials but intermediary enrolment" - {
 
       "must return Unauthorized" in {
 
         val action = new Harness()
         val request = FakeRequest(GET, "/test/url?k=session-id")
-        val result = action.callRefine(AuthorisedRequest(request,
+        val result = action.callRefine(AuthorisedMandatoryVrnRequest(request,
           testCredentials,
           userId,
-          None,
+          vrn,
           None,
           None
         )).futureValue
@@ -55,37 +57,20 @@ class VatRequiredActionSpec extends BaseSpec {
 
         val action = new Harness()
         val request = FakeRequest(GET, "/test/url?k=session-id")
-        val result = action.callRefine(AuthorisedRequest(request,
+        val result = action.callRefine(AuthorisedMandatoryVrnRequest(request,
           testCredentials,
           userId,
-          Some(vrn),
+          vrn,
           None,
-          None
+          Some(intermediaryNumber)
         )).futureValue
 
-        val expectResult = AuthorisedMandatoryVrnRequest(request, testCredentials, userId, vrn, None, None)
+        val expectResult = AuthorisedMandatoryIntermediaryRequest(request, testCredentials, userId, vrn, None, intermediaryNumber)
 
         result mustBe Right(expectResult)
       }
     }
 
-    "when the user has logged in as an Individual without a VAT enrolment" - {
-
-      "must be redirected to the insufficient Enrolments page" in {
-
-        val action = new Harness()
-        val request = FakeRequest(GET, "/test/url?k=session-id")
-        val result = action.callRefine(AuthorisedRequest(request,
-          testCredentials,
-          userId,
-          None,
-          None,
-          None
-        )).futureValue
-
-        result mustBe Left(Unauthorized)
-      }
-    }
   }
 
 }

@@ -22,7 +22,7 @@ import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, Registratio
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.CreateEtmpRegistrationResponse
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
-import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationRequest
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpDisplayRegistration, EtmpRegistrationRequest}
 import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
 
 import javax.inject.Inject
@@ -59,6 +59,16 @@ class RegistrationService @Inject()(
       }
     }
   }
+  
+  def get(iossNumber: String)(implicit headerCarrier: HeaderCarrier): Future[EtmpDisplayRegistration] = {
+    
+      registrationConnector.get(iossNumber).map {
+        case Right(etmpDisplayRegistration) => etmpDisplayRegistration
+        case Left(displayError) =>
+          logger.error(s"There was an error getting Registration from ETMP: ${displayError.body}")
+          throw EtmpException(s"There was an error getting Registration from ETMP: ${displayError.body}")
+      }
+    }
 
   def amendRegistration(etmpRegistrationRequest: EtmpAmendRegistrationRequest): Future[Either[Throwable, AmendRegistrationResponse]] = {
     registrationConnector.amendRegistration(etmpRegistrationRequest).flatMap {
