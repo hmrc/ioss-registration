@@ -44,6 +44,7 @@ class IossRequiredActionSpec extends BaseSpec {
           testCredentials,
           userId,
           vrn,
+          None,
           None
         )).futureValue
 
@@ -58,7 +59,8 @@ class IossRequiredActionSpec extends BaseSpec {
           testCredentials,
           userId,
           vrn,
-          Some(iossNumber)
+          Some(iossNumber),
+          None
         )).futureValue
 
         val expectResult = AuthorisedMandatoryIossRequest(request, testCredentials, userId, vrn, iossNumber)
