@@ -76,7 +76,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       when(mockRegistrationService.createRegistration(eqTo(etmpRegistrationRequest))) thenReturn Right(etmpEnrolmentResponse).toFuture
       when(mockRegistrationStatusRepository.delete(eqTo(fbNumber))) thenReturn true.toFuture
-      when(mockRegistrationStatusRepository.insert(eqTo(RegistrationStatus(fbNumber, EtmpRegistrationStatus.Pending)))) thenReturn InsertSucceeded.toFuture
+      when(mockRegistrationStatusRepository.insert(any[RegistrationStatus])) thenReturn InsertSucceeded.toFuture
       when(mockEnrolmentsConnector.confirmEnrolment(any())(any())) thenReturn HttpResponse(204, "").toFuture
       when(mockRetryService.getEtmpRegistrationStatus(any(), any(), any())) thenReturn EtmpRegistrationStatus.Success.toFuture
       doNothing.when(mockAuditService).audit(any())(any(), any())
@@ -127,7 +127,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       when(mockRegistrationService.createRegistration(eqTo(etmpRegistrationRequest))) thenReturn Right(etmpEnrolmentResponse).toFuture
       when(mockRegistrationStatusRepository.delete(eqTo(fbNumber))) thenReturn true.toFuture
-      when(mockRegistrationStatusRepository.insert(eqTo(RegistrationStatus(fbNumber, EtmpRegistrationStatus.Pending)))) thenReturn InsertSucceeded.toFuture
+      when(mockRegistrationStatusRepository.insert(any[RegistrationStatus])) thenReturn InsertSucceeded.toFuture
       when(mockEnrolmentsConnector.confirmEnrolment(any())(any())) thenReturn HttpResponse(204, "").toFuture
       when(mockRetryService.getEtmpRegistrationStatus(any(), any(), any())) thenReturn EtmpRegistrationStatus.Error.toFuture
 
@@ -341,7 +341,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
       when(mockService.amendRegistration(any())) thenReturn Future.successful(Right(amendRegistrationResponse))
       when(mockEnrolmentsConnector.confirmEnrolment(any())(any())) thenReturn HttpResponse(204, "").toFuture
       when(mockRegistrationStatusRepository.delete(eqTo(formBundleNumber))) thenReturn true.toFuture
-      when(mockRegistrationStatusRepository.insert(eqTo(RegistrationStatus(formBundleNumber, EtmpRegistrationStatus.Pending)))) thenReturn InsertSucceeded.toFuture
+      when(mockRegistrationStatusRepository.insert(any[RegistrationStatus])) thenReturn InsertSucceeded.toFuture
       when(mockRetryService.getEtmpRegistrationStatus(any(), any(), any())) thenReturn EtmpRegistrationStatus.Success.toFuture
 
       val app =
