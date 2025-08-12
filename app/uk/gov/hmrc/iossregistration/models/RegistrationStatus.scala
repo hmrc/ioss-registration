@@ -16,15 +16,41 @@
 
 package uk.gov.hmrc.iossregistration.models
 
-import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationStatus
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import play.api.libs.json._
+
+import java.time.Instant
 
 case class RegistrationStatus(
                                subscriptionId: String,
-                               status: EtmpRegistrationStatus
+                               status: EtmpRegistrationStatus,
+                               lastUpdated: Instant = Instant.now
                              )
 
 object RegistrationStatus {
+
+  val reads: Reads[RegistrationStatus] = {
+
+    import play.api.libs.functional.syntax._
+
+    (
+      (__ \ "subscriptionId").read[String] and
+        (__ \ "status").read[EtmpRegistrationStatus] and
+        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
+      )(RegistrationStatus.apply _)
+  }
+
+  val writes: OWrites[RegistrationStatus] = {
+
+    import play.api.libs.functional.syntax._
+
+    (
+      (__ \ "subscriptionId").write[String] and
+        (__ \ "status").write[EtmpRegistrationStatus] and
+        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
+      )(registrationStatus => Tuple.fromProductTyped(registrationStatus))
+  }
 
   implicit val format: OFormat[RegistrationStatus] = Json.format[RegistrationStatus]
 
