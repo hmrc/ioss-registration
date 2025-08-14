@@ -51,7 +51,7 @@ class RegistrationStatusRepository @Inject()(
       IndexModel (
         Indexes.ascending("lastUpdated"),
         IndexOptions()
-          .name("lastUpdatesIdx")
+          .name("lastUpdatedIdx")
           .expireAfter(appConfig.registrationStatusTtl, TimeUnit.HOURS)
 
       )
