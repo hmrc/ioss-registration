@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.iossregistration.repositories
 
-import org.mongodb.scala.bson.conversions.Bson
+import org.mongodb.scala.bson.conversions._
 import org.mongodb.scala.model._
-import org.mongodb.scala.ObservableFuture
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus
@@ -48,6 +47,11 @@ class RegistrationStatusRepository @Inject()(
         IndexOptions()
           .name("subscriptionIdIndex")
           .unique(true)
+      ),
+      IndexModel (
+        Indexes.ascending("lastUpdated"),
+        IndexOptions()
+          .name("lastUpdatedIdx")
           .expireAfter(appConfig.registrationStatusTtl, TimeUnit.HOURS)
 
       )
