@@ -116,4 +116,48 @@ class RegistrationStatusRepositorySpec extends AnyFreeSpec
       currentAnswers must not be defined
     }
   }
+
+  ".findAll" - {
+
+    "must return all records with a lastUpdated within the last hour" in {
+
+      val futureRegistrationStatus: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId", lastUpdated = Instant.now().minus(5, ChronoUnit.HOURS))
+
+      insert(registrationStatus).futureValue
+      insert(futureRegistrationStatus).futureValue
+
+      val result = repository.findAll().futureValue
+
+      result.size mustEqual 1
+    }
+
+    "must return no record if none within the last hour" in {
+
+      val futureRegistrationStatus5Hours: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId1", lastUpdated = Instant.now().minus(5, ChronoUnit.HOURS))
+      val futureRegistrationStatus7Hours: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId2", lastUpdated = Instant.now().minus(7, ChronoUnit.HOURS))
+      val futureRegistrationStatus9Hours: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId3", lastUpdated = Instant.now().minus(9, ChronoUnit.HOURS))
+
+      insert(futureRegistrationStatus5Hours).futureValue
+      insert(futureRegistrationStatus7Hours).futureValue
+      insert(futureRegistrationStatus9Hours).futureValue
+
+      val result = repository.findAll().futureValue
+
+      result.size mustEqual 0
+    }
+    "must return all record if all within the last hour" in {
+
+      val registrationStatusNow: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId1")
+      val registrationStatusNow2: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId2")
+      val registrationStatusRecent: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId3", lastUpdated = Instant.now().minus(5, ChronoUnit.MINUTES))
+
+      insert(registrationStatusNow).futureValue
+      insert(registrationStatusNow2).futureValue
+      insert(registrationStatusRecent).futureValue
+
+      val result = repository.findAll().futureValue
+
+      result.size mustEqual 3
+    }
+  }
 }

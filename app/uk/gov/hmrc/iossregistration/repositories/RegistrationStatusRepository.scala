@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.iossregistration.repositories
 
-import org.mongodb.scala.bson.conversions._
-import org.mongodb.scala.model._
+import org.mongodb.scala.bson.conversions.*
+import org.mongodb.scala.model.*
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus
@@ -26,6 +26,7 @@ import uk.gov.hmrc.iossregistration.repositories.MongoErrors.Duplicate
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.MongoComponent
 
+import java.time.{Duration, Instant}
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -93,4 +94,15 @@ class RegistrationStatusRepository @Inject()(
       .deleteOne(bySubscriptionId(subscriptionId))
       .toFuture()
       .map(_ => true)
+
+  def findAll(): Future[Seq[RegistrationStatus]] = {
+    collection
+      .find()
+      .toFuture()
+      .map(_.filter
+        (regStatus =>
+          Instant.now().minus(Duration.ofHours(1)).isBefore(regStatus.lastUpdated)
+        )
+      )
+  }  
 }
