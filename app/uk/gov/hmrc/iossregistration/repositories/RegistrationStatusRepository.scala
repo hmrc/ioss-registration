@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.iossregistration.repositories
 
-import org.mongodb.scala.bson.conversions._
-import org.mongodb.scala.model._
+import org.mongodb.scala.bson.conversions.*
+import org.mongodb.scala.model.*
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus
 import uk.gov.hmrc.iossregistration.repositories.InsertResult.{AlreadyExists, InsertSucceeded}
 import uk.gov.hmrc.iossregistration.repositories.MongoErrors.Duplicate
-import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
@@ -36,19 +36,19 @@ class RegistrationStatusRepository @Inject()(
                                               mongoComponent: MongoComponent,
                                               appConfig: AppConfig
                                             )(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[RegistrationStatus] (
+  extends PlayMongoRepository[RegistrationStatus](
     collectionName = "registration-status",
     mongoComponent = mongoComponent,
-    domainFormat   = RegistrationStatus.format,
+    domainFormat = RegistrationStatus.format,
     replaceIndexes = true,
-    indexes        = Seq(
+    indexes = Seq(
       IndexModel(
         Indexes.ascending("subscriptionId"),
         IndexOptions()
           .name("subscriptionIdIndex")
           .unique(true)
       ),
-      IndexModel (
+      IndexModel(
         Indexes.ascending("lastUpdated"),
         IndexOptions()
           .name("lastUpdatedIdx")
@@ -93,4 +93,5 @@ class RegistrationStatusRepository @Inject()(
       .deleteOne(bySubscriptionId(subscriptionId))
       .toFuture()
       .map(_ => true)
+  
 }
