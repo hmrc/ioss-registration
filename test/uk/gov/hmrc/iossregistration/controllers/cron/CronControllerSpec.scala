@@ -24,7 +24,7 @@ class CronControllerSpec extends AnyFreeSpec with MockitoSugar with Matchers {
 
   "CronController" - {
 
-    "should run twice and stop when the feature switch is true" in {
+    "should run once and stop when the feature switch is true" in {
       when(mockAppConfig.lastUpdatedFeatureSwitch).thenReturn(true)
 
       val mockCronService = mock[CronService]
@@ -41,23 +41,20 @@ class CronControllerSpec extends AnyFreeSpec with MockitoSugar with Matchers {
       new CronController(
         system = testSystem,
         cronService = mockCronService,
-        initialDelay = 0.seconds,
-        interval = 10.millis,
-        mockAppConfig)
+        mockAppConfig,
+        initialDelay = 0.seconds)
 
       Thread.sleep(1000)
 
-      verify(mockCronService, times(2)).fixExpiryDates()
+      verify(mockCronService, times(1)).fixExpiryDates()
       logs must not be empty
-      logs.get(0).getMessage mustEqual "Implementing TTL: 20 documents were read as last updated now and set to current date & time."
-      logs.get(1).getMessage mustEqual "Implementing TTL: 20 documents were read as last updated now and set to current date & time."
-      logs.get(2).getMessage mustEqual "The TTL updating job has run twice. Scheduler cancelled."
+      logs.get(0).getMessage mustEqual "Implementing TTL: 20 documents were read as last updated Instant.now and set to current date & time."
 
       logger.detachAppender(listAppender)
       testSystem.terminate()
     }
 
-    "should run twice and stop when the feature switch is false" in {
+    "should not run when the feature switch is false" in {
       when(mockAppConfig.lastUpdatedFeatureSwitch).thenReturn(false)
 
       val mockCronService = mock[CronService]
@@ -75,9 +72,8 @@ class CronControllerSpec extends AnyFreeSpec with MockitoSugar with Matchers {
       new CronController(
         system = testSystem,
         cronService = mockCronService,
-        initialDelay = 0.seconds,
-        interval = 10.millis,
-        mockAppConfig)
+        mockAppConfig,
+        initialDelay = 0.seconds)
 
       Thread.sleep(1000)
 

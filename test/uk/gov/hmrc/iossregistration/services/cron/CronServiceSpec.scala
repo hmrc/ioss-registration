@@ -29,17 +29,17 @@ class CronServiceSpec extends AnyFreeSpec with MockitoSugar with Matchers {
   }
 
   val findAllReturns: Future[Seq[RegistrationStatus]] = Future.successful(Seq(makeRegistrationStatus("1"), makeRegistrationStatus("2"), makeRegistrationStatus("3")))
+  ".CronService" - {
+    "should call the repository setting documents and returning the number of documents changed" in {
 
-  "this is a test" in {
+      when(repository.fixAllDocuments()).thenReturn(findAllReturns)
 
-    when(repository.findAll()).thenReturn(findAllReturns)
+      when(repository.set(any())).thenReturn(Future.successful(makeRegistrationStatus("1")))
 
-    when(repository.set(any())).thenReturn(Future.successful(makeRegistrationStatus("1")))
+      val result = testCronService.fixExpiryDates().futureValue
 
-    val result = testCronService.fixExpiryDates().futureValue
-    
-    verify(repository, times(1)).findAll()
-    verify(repository, times(3)).set(any())
-    result mustBe findAllReturns.futureValue.size
+      verify(repository, times(1)).fixAllDocuments()
+      result mustBe findAllReturns.futureValue.size
+    }
   }
 }

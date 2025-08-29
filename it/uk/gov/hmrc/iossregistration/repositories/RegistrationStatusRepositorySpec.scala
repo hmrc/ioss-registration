@@ -117,21 +117,18 @@ class RegistrationStatusRepositorySpec extends AnyFreeSpec
     }
   }
 
-  ".findAll" - {
+  ".fixAllDocuments" - {
 
-    "must return all records with a lastUpdated within the last hour" in {
-
-      val futureRegistrationStatus: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId", lastUpdated = Instant.now().minus(5, ChronoUnit.HOURS))
+    "must find and set all records with a lastUpdated now (factoring in potential computation time)" in {
 
       insert(registrationStatus).futureValue
-      insert(futureRegistrationStatus).futureValue
 
-      val result = repository.findAll().futureValue
+      val result = repository.fixAllDocuments().futureValue
 
       result.size mustEqual 1
     }
 
-    "must return no record if none within the last hour" in {
+    "must return no record if none LastUpdated now" in {
 
       val futureRegistrationStatus5Hours: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId1", lastUpdated = Instant.now().minus(5, ChronoUnit.HOURS))
       val futureRegistrationStatus7Hours: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId2", lastUpdated = Instant.now().minus(7, ChronoUnit.HOURS))
@@ -141,23 +138,30 @@ class RegistrationStatusRepositorySpec extends AnyFreeSpec
       insert(futureRegistrationStatus7Hours).futureValue
       insert(futureRegistrationStatus9Hours).futureValue
 
-      val result = repository.findAll().futureValue
+      val result = repository.fixAllDocuments().futureValue
 
       result.size mustEqual 0
     }
-    "must return all record if all within the last hour" in {
+    "must return and set all records that have lastUpdated as Instant.now() (factoring in potential computation time)" in {
 
       val registrationStatusNow: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId1")
       val registrationStatusNow2: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId2")
-      val registrationStatusRecent: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId3", lastUpdated = Instant.now().minus(5, ChronoUnit.MINUTES))
+      val registrationStatusRecent: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId3", lastUpdated = Instant.now().minus(10, ChronoUnit.MILLIS))
+      val registrationStatusEarlier: RegistrationStatus = registrationStatus.copy(subscriptionId = "uniqueId4", lastUpdated = Instant.now().minus(10, ChronoUnit.SECONDS))
 
       insert(registrationStatusNow).futureValue
       insert(registrationStatusNow2).futureValue
       insert(registrationStatusRecent).futureValue
+      insert(registrationStatusEarlier).futureValue
 
-      val result = repository.findAll().futureValue
+      val roundedNow = Instant.now().truncatedTo(ChronoUnit.SECONDS)
+      val result = repository.fixAllDocuments().futureValue
 
       result.size mustEqual 3
+      result.foreach{result =>
+        result._1.lastUpdated.truncatedTo(ChronoUnit.SECONDS) mustEqual roundedNow
+        result._2.wasAcknowledged() mustBe true
+      }
     }
   }
 }

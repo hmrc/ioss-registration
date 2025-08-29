@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.iossregistration.controllers.cron
 
-import org.apache.pekko.actor.{ActorSystem, Cancellable}
+import org.apache.pekko.actor.ActorSystem
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.services.cron.CronService
@@ -29,32 +29,19 @@ import scala.concurrent.duration.*
 class CronController @Inject()(
                                 system: ActorSystem,
                                 cronService: CronService,
+                                appConfig: AppConfig,
                                 initialDelay: FiniteDuration = 10.seconds,
-                                interval: FiniteDuration = 5.hours,
-                                appConfig: AppConfig
                               )(implicit ec: ExecutionContext) extends Logging {
-  
-  private var runCount: Int = 0
 
-  private val cancellable: Cancellable =
-    system.scheduler.scheduleAtFixedRate(
-      initialDelay = initialDelay,
-      interval = interval
-    ) { () =>
-      if (appConfig.lastUpdatedFeatureSwitch) {
-        cronService.fixExpiryDates().map { entriesChanged =>
-          runCount += 1
-          logger.info(s"Implementing TTL: $entriesChanged documents were read as last updated now and set to current date & time.")
-
-          if (runCount >= 2) {
-            logger.info("The TTL updating job has run twice. Scheduler cancelled.")
-            cancellable.cancel()
-          }
-        }
-      } else {
-        logger.info("ExpiryScheduler disabled; not starting.")
-        cancellable.cancel()
+  system.scheduler.scheduleOnce(
+    delay = initialDelay
+  ) {
+    if (appConfig.lastUpdatedFeatureSwitch) {
+      cronService.fixExpiryDates().map { entriesChanged =>
+        logger.info(s"Implementing TTL: $entriesChanged documents were read as last updated Instant.now and set to current date & time.")
       }
+    } else {
+      logger.info("ExpiryScheduler disabled; not starting.")
     }
-    
+  }
 }

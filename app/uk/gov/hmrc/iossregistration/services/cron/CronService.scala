@@ -27,11 +27,8 @@ class CronService @Inject()(
                            )(implicit ec: ExecutionContext) {
 
   def fixExpiryDates(): Future[Int] = {
-    registrationStatusRepository.findAll().map { seqEntries =>
-      seqEntries.foreach { doc =>
-        registrationStatusRepository.set(doc)
-      }
-      seqEntries.size
+    registrationStatusRepository.fixAllDocuments().map { fixedDocuments =>
+      fixedDocuments.size
     }
   }
 }
