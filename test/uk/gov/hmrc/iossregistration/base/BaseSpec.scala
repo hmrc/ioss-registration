@@ -77,7 +77,7 @@ trait BaseSpec
 
   val registrationRequest: EtmpRegistrationRequest = EtmpRegistrationRequest(
     administration = EtmpAdministration(EtmpMessageType.IOSSSubscriptionCreate),
-    customerIdentification = EtmpCustomerIdentification(EtmpIdType.VRN, vrn.vrn),
+    customerIdentification = EtmpCustomerIdentification(vrn),
     tradingNames = Seq(
       EtmpTradingName(tradingName = "Some Trading Name"),
       EtmpTradingName(tradingName = "Some Other Trading Name")
