@@ -17,11 +17,11 @@
 package uk.gov.hmrc.iossregistration.config
 
 import play.api.Configuration
-import play.api.http.HeaderNames._
+import play.api.http.HeaderNames.*
 import play.api.http.MimeTypes
 import uk.gov.hmrc.iossregistration.models.binders.Format
 
-import java.time.{Clock, LocalDateTime}
+import java.time.{Clock, LocalDateTime, ZoneOffset}
 import javax.inject.Inject
 
 class CoreValidationConfig @Inject()(config: Configuration, clock: Clock) {
@@ -36,7 +36,7 @@ class CoreValidationConfig @Inject()(config: Configuration, clock: Clock) {
     X_FORWARDED_HOST -> "MDTP",
     CONTENT_TYPE -> MimeTypes.JSON,
     ACCEPT -> MimeTypes.JSON,
-    DATE -> Format.eisDateTimeFormatter.format(LocalDateTime.now(clock)),
+    DATE -> Format.eisDateTimeFormatter.format(LocalDateTime.now(clock).atOffset(ZoneOffset.UTC)),
     AUTHORIZATION -> s"Bearer $authorizationToken"
   )
 
