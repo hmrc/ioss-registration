@@ -9,7 +9,7 @@ import uk.gov.hmrc.iossregistration.models.binders.Format.eisDateTimeFormatter
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpErrorDetail, EtmpRegistrationRequest}
 import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpRegistrationRequest
 
-import java.time.{LocalDateTime, ZoneOffset}
+import java.time.LocalDateTime
 
 class EtmpRegistrationRequestAuditModelSpec extends BaseSpec {
 
@@ -35,7 +35,7 @@ class EtmpRegistrationRequestAuditModelSpec extends BaseSpec {
   private val etmpEnrolmentErrorResponse: EtmpEnrolmentErrorResponse =
     EtmpEnrolmentErrorResponse(
       errorDetail = EtmpErrorDetail(
-        timestamp = LocalDateTime.now(stubClock).atOffset(ZoneOffset.UTC).format(eisDateTimeFormatter),
+        timestamp = LocalDateTime.now(stubClock).format(eisDateTimeFormatter),
         errorCode = Some("123"),
         errorMessage = Some("error")
       )

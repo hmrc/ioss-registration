@@ -1,26 +1,26 @@
 package uk.gov.hmrc.iossregistration.connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.client.WireMock._
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.time.{Seconds, Span}
 import play.api.Application
 import play.api.http.HeaderNames.{AUTHORIZATION, CONTENT_TYPE}
 import play.api.http.MimeTypes
-import play.api.http.Status.*
+import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers.running
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.serviceName
-import uk.gov.hmrc.iossregistration.models.*
+import uk.gov.hmrc.iossregistration.models._
 import uk.gov.hmrc.iossregistration.models.binders.Format.eisDateTimeFormatter
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpErrorDetail}
 import uk.gov.hmrc.iossregistration.models.etmp.amend.AmendRegistrationResponse
 import uk.gov.hmrc.iossregistration.testutils.DisplayRegistrationData.{arbitraryDisplayRegistration, optionalDisplayRegistration, writesEtmpSchemeDetails}
 import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpRegistrationRequest
 
-import java.time.{LocalDate, LocalDateTime, ZoneOffset}
+import java.time.{LocalDate, LocalDateTime}
 
 class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
@@ -273,7 +273,7 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
       val requestJson = Json.stringify(Json.toJson(etmpRegistrationRequest))
 
-      val errorResponse = EtmpEnrolmentErrorResponse(EtmpErrorDetail(LocalDateTime.now(stubClock).atOffset(ZoneOffset.UTC).format(eisDateTimeFormatter), Some("123"), Some("error")))
+      val errorResponse = EtmpEnrolmentErrorResponse(EtmpErrorDetail(LocalDateTime.now(stubClock).format(eisDateTimeFormatter), Some("123"), Some("error")))
 
       server.stubFor(
         post(urlEqualTo(createRegistrationUrl))
