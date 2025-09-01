@@ -16,20 +16,24 @@
 
 package uk.gov.hmrc.iossregistration.models.etmp
 
-import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.domain.Vrn
+import uk.gov.hmrc.iossregistration.models.{Enumerable, WithName}
 
-case class EtmpCustomerIdentificationLegacy(vrn: Vrn)
+sealed trait EtmpIdType
 
-object EtmpCustomerIdentificationLegacy {
+object EtmpIdType extends Enumerable.Implicits {
 
-  implicit val format: OFormat[EtmpCustomerIdentificationLegacy] = Json.format[EtmpCustomerIdentificationLegacy]
+  case object VRN extends WithName("VRN") with EtmpIdType
+  case object NINO extends WithName("NINO") with EtmpIdType
+  case object UTR extends WithName("UTR") with EtmpIdType
+  case object FTR extends WithName("FTR") with EtmpIdType
+
+  val values: Seq[EtmpIdType] = Seq(
+    VRN,
+    NINO,
+    UTR,
+    FTR
+  )
+
+  implicit val enumerable: Enumerable[EtmpIdType] =
+    Enumerable(values.map(v => v.toString -> v): _*)
 }
-
-case class EtmpCustomerIdentification(idType: EtmpIdType, idValue: String)
-
-object EtmpCustomerIdentification {
-
-  implicit val format: OFormat[EtmpCustomerIdentification] = Json.format[EtmpCustomerIdentification]
-}
-
