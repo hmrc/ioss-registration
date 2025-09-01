@@ -28,7 +28,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.transaction.{TransactionConfiguration, Transactions}
 
-import java.time.{Duration, Instant}
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -99,10 +99,10 @@ class RegistrationStatusRepository @Inject()(
 
   private implicit val tc: TransactionConfiguration = TransactionConfiguration.strict
 
-  def fixAllDocuments(): Future[Seq[(RegistrationStatus, UpdateResult)]] = {
+  def fixAllDocuments(currentTime: Instant = Instant.now()): Future[Seq[(RegistrationStatus, UpdateResult)]] = {
     withSessionAndTransaction(session =>
       for {
-        searchResults: Seq[RegistrationStatus] <- collection.find.toFuture().map(_.filter(regStatus => Instant.now().minus(Duration.ofSeconds(2)).isBefore(regStatus.lastUpdated)))
+        searchResults: Seq[RegistrationStatus] <- collection.find.toFuture().map(_.filter(regStatus => currentTime == regStatus.lastUpdated || currentTime.isBefore(regStatus.lastUpdated)))
         futureResults: Seq[UpdateResult] <- Future.sequence(searchResults.map(document => collection.replaceOne(
             filter = bySubscriptionId(document.subscriptionId),
             replacement = document,

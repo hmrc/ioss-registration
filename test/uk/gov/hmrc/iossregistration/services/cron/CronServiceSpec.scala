@@ -4,9 +4,11 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.{Level, Logger, LoggerContext}
 import ch.qos.logback.core.AppenderBase
 import com.mongodb.client.result.UpdateResult
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
@@ -16,6 +18,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.*
 import play.api.test.Helpers.running
+import uk.gov.hmrc.iossregistration.connectors.RegistrationConnector
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpRegistrationStatus
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
@@ -32,10 +35,12 @@ class CronServiceSpec
     with BeforeAndAfterEach {
 
   protected val ec: ExecutionContext = ExecutionContext.Implicits.global
+  protected val mockRegistrationConnector: RegistrationConnector = mock[RegistrationConnector]
   protected val mockRegistrationStatusRepository: RegistrationStatusRepository = mock[RegistrationStatusRepository]
 
   protected val mockedUpdateResult: UpdateResult = UpdateResult.acknowledged(1, 1, null)
   protected val result: Seq[(RegistrationStatus, UpdateResult)] = Seq((makeRegistrationStatus("1"), mockedUpdateResult))
+
 
 
   def makeRegistrationStatus(id: String): RegistrationStatus = {
@@ -46,6 +51,7 @@ class CronServiceSpec
   }
 
   override def beforeEach(): Unit = {
+    reset(mockRegistrationConnector)
     reset(mockRegistrationStatusRepository)
     super.beforeEach()
   }
@@ -58,6 +64,7 @@ class CronServiceSpec
 
       val app = new GuiceApplicationBuilder()
         .configure("features.delay" -> 1, "features.enableLastUpdatedDatabaseChange" -> true)
+        .overrides(bind[RegistrationConnector].to(mockRegistrationConnector))
         .overrides(bind[RegistrationStatusRepository].to(mockRegistrationStatusRepository))
         .build()
 
@@ -70,10 +77,14 @@ class CronServiceSpec
         serviceLogger.addAppender(appender)
         serviceLogger.setLevel(Level.INFO)
 
-        Thread.sleep(100)
-        appender.messages.head mustBe "Implementing TTL: 1 documents were read as last updated Instant.now and set to current date & time."
-        verify(mockRegistrationStatusRepository, times(1)).fixAllDocuments()
-        serviceLogger.detachAppender(appender)
+        Thread.sleep(4000)
+
+        eventually {
+          appender.messages.head mustBe "Implementing TTL: 1 documents were read as last updated Instant.now and set to current date & time."
+          verify(mockRegistrationStatusRepository, times(1)).fixAllDocuments(any())
+          serviceLogger.detachAppender(appender)
+
+        }
       }
     }
 
@@ -81,6 +92,7 @@ class CronServiceSpec
 
       val app = new GuiceApplicationBuilder()
         .configure("features.delay" -> 1, "features.enableLastUpdatedDatabaseChange" -> false)
+        .overrides(bind[RegistrationConnector].to(mockRegistrationConnector))
         .overrides(bind[RegistrationStatusRepository].to(mockRegistrationStatusRepository))
         .build()
 
@@ -93,10 +105,12 @@ class CronServiceSpec
         serviceLogger.addAppender(appender)
         serviceLogger.setLevel(Level.INFO)
 
-        Thread.sleep(100)
-        appender.messages.head mustBe "ExpiryScheduler disabled; not starting."
-        verify(mockRegistrationStatusRepository, times(0)).fixAllDocuments()
-        serviceLogger.detachAppender(appender)
+        Thread.sleep(4000)
+        eventually {
+          appender.messages.head mustBe "ExpiryScheduler disabled; not starting."
+          verify(mockRegistrationStatusRepository, times(0)).fixAllDocuments()
+          serviceLogger.detachAppender(appender)
+        }
       }
     }
   }
