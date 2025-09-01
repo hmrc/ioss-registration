@@ -16,19 +16,34 @@
 
 package uk.gov.hmrc.iossregistration.services.cron
 
+import org.apache.pekko.actor.ActorSystem
+import uk.gov.hmrc.iossregistration.config.AppConfig
+import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
 
 import javax.inject.*
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.*
 
-@Singleton
-class CronService @Inject()(
-                             registrationStatusRepository: RegistrationStatusRepository
-                           )(implicit ec: ExecutionContext) {
+trait CronService
 
-  def fixExpiryDates(): Future[Int] = {
-    registrationStatusRepository.fixAllDocuments().map { fixedDocuments =>
-      fixedDocuments.size
+class CronServiceImpl @Inject()(
+                                 system: ActorSystem,
+                                 appConfig: AppConfig,
+                                 registrationStatusRepository: RegistrationStatusRepository
+                               )(implicit ec: ExecutionContext) extends Logging with CronService {
+
+  system.scheduler.scheduleOnce(
+    delay = appConfig.delay.microseconds
+  ) {
+    println(appConfig.lastUpdatedFeatureSwitch)
+    if (appConfig.lastUpdatedFeatureSwitch) {
+      println("the name of the logger in service is " + logger.getName)
+      registrationStatusRepository.fixAllDocuments().map { entriesChanged =>
+        logger.info(s"Implementing TTL: ${entriesChanged.size} documents were read as last updated Instant.now and set to current date & time.")
+      }
+    } else {
+      logger.info("ExpiryScheduler disabled; not starting.")
     }
   }
 }
