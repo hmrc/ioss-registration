@@ -107,7 +107,7 @@ trait Generators {
     Arbitrary {
       for {
         vrn <- arbitraryVrn.arbitrary
-      } yield EtmpCustomerIdentification(EtmpIdType.VRN, vrn.vrn)
+      } yield EtmpCustomerIdentification(vrn)
     }
 
   implicit lazy val arbitraryEtmpAdministration: Arbitrary[EtmpAdministration] =
