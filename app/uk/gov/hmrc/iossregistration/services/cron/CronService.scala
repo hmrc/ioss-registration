@@ -36,9 +36,7 @@ class CronServiceImpl @Inject()(
   system.scheduler.scheduleOnce(
     delay = appConfig.delay.microseconds
   ) {
-    println(appConfig.lastUpdatedFeatureSwitch)
     if (appConfig.lastUpdatedFeatureSwitch) {
-      println("the name of the logger in service is " + logger.getName)
       registrationStatusRepository.fixAllDocuments().map { entriesChanged =>
         logger.info(s"Implementing TTL: ${entriesChanged.size} documents were read as last updated Instant.now and set to current date & time.")
       }
