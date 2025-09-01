@@ -27,9 +27,7 @@ object Format {
     .withLocale(Locale.UK)
     .withZone(ZoneId.systemDefault())
 
-  val eisDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z")
-    .withLocale(Locale.UK)
-    .withZone(ZoneId.of("GMT"))
+  val eisDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.RFC_1123_DATE_TIME
 
   val enrolmentDateFormatter: DateTimeFormatter = DateTimeFormatter
     .ofPattern("yyyyMMdd")
