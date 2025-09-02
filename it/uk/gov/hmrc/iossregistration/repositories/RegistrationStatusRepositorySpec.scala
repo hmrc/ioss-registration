@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.iossregistration.repositories
 
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus
@@ -116,4 +116,5 @@ class RegistrationStatusRepositorySpec extends AnyFreeSpec
       currentAnswers must not be defined
     }
   }
+  
 }
