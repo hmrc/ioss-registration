@@ -39,6 +39,8 @@ class CronServiceImpl @Inject()(
     if (appConfig.lastUpdatedFeatureSwitch) {
       registrationStatusRepository.fixAllDocuments().map { entriesChanged =>
         logger.info(s"Implementing TTL: ${entriesChanged.size} documents were read as last updated Instant.now and set to current date & time.")
+      }.recover{
+        case e => logger.error(e.getMessage, e)
       }
     } else {
       logger.info("ExpiryScheduler disabled; not starting.")
