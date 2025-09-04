@@ -77,14 +77,12 @@ class CronServiceSpec
         serviceLogger.addAppender(appender)
         serviceLogger.setLevel(Level.INFO)
 
-        Thread.sleep(4000)
+        Thread.sleep(8000)
 
-        eventually {
           appender.messages.head mustBe "Implementing TTL: 1 documents were read as last updated Instant.now and set to current date & time."
           verify(mockRegistrationStatusRepository, times(1)).fixAllDocuments(any())
           serviceLogger.detachAppender(appender)
 
-        }
       }
     }
 
@@ -105,12 +103,10 @@ class CronServiceSpec
         serviceLogger.addAppender(appender)
         serviceLogger.setLevel(Level.INFO)
 
-        Thread.sleep(4000)
-        eventually {
+        Thread.sleep(8000)
           appender.messages.head mustBe "ExpiryScheduler disabled; not starting."
           verify(mockRegistrationStatusRepository, times(0)).fixAllDocuments()
           serviceLogger.detachAppender(appender)
-        }
       }
     }
   }
