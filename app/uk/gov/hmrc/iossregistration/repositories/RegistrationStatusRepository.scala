@@ -16,16 +16,19 @@
 
 package uk.gov.hmrc.iossregistration.repositories
 
-import org.mongodb.scala.bson.conversions._
-import org.mongodb.scala.model._
+import org.mongodb.scala.bson.conversions.*
+import org.mongodb.scala.model.*
+import org.mongodb.scala.result.UpdateResult
 import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.RegistrationStatus
 import uk.gov.hmrc.iossregistration.repositories.InsertResult.{AlreadyExists, InsertSucceeded}
 import uk.gov.hmrc.iossregistration.repositories.MongoErrors.Duplicate
-import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
+import uk.gov.hmrc.mongo.transaction.{TransactionConfiguration, Transactions}
 
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,22 +36,22 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RegistrationStatusRepository @Inject()(
-                                              mongoComponent: MongoComponent,
+                                              val mongoComponent: MongoComponent,
                                               appConfig: AppConfig
                                             )(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[RegistrationStatus] (
+  extends PlayMongoRepository[RegistrationStatus](
     collectionName = "registration-status",
     mongoComponent = mongoComponent,
-    domainFormat   = RegistrationStatus.format,
+    domainFormat = RegistrationStatus.format,
     replaceIndexes = true,
-    indexes        = Seq(
+    indexes = Seq(
       IndexModel(
         Indexes.ascending("subscriptionId"),
         IndexOptions()
           .name("subscriptionIdIndex")
           .unique(true)
       ),
-      IndexModel (
+      IndexModel(
         Indexes.ascending("lastUpdated"),
         IndexOptions()
           .name("lastUpdatedIdx")
@@ -56,7 +59,7 @@ class RegistrationStatusRepository @Inject()(
 
       )
     )
-  ) with Logging {
+  ) with Logging with Transactions {
 
   private def bySubscriptionId(subscriptionId: String): Bson = Filters.equal("subscriptionId", subscriptionId)
 
@@ -93,4 +96,21 @@ class RegistrationStatusRepository @Inject()(
       .deleteOne(bySubscriptionId(subscriptionId))
       .toFuture()
       .map(_ => true)
+
+  private implicit val tc: TransactionConfiguration = TransactionConfiguration.strict
+
+  def fixAllDocuments(currentTime: Instant = Instant.now()): Future[Seq[(RegistrationStatus, UpdateResult)]] = {
+    withSessionAndTransaction(session =>
+      for {
+        searchResults: Seq[RegistrationStatus] <- collection.find.toFuture().map(_.filter(regStatus => currentTime == regStatus.lastUpdated || currentTime.isBefore(regStatus.lastUpdated)))
+        futureResults: Seq[UpdateResult] <- Future.sequence(searchResults.map(document => collection.replaceOne(
+            filter = bySubscriptionId(document.subscriptionId),
+            replacement = document,
+            options = ReplaceOptions().upsert(true)
+          )
+          .toFuture())
+        )
+      } yield searchResults.zip(futureResults)
+    )
+  }
 }

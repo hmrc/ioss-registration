@@ -37,7 +37,7 @@ object RegistrationStatus {
     (
       (__ \ "subscriptionId").read[String] and
         (__ \ "status").read[EtmpRegistrationStatus] and
-        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
+        (__ \ "lastUpdated").readWithDefault[Instant](Instant.now())(MongoJavatimeFormats.instantFormat)
       )(RegistrationStatus.apply _)
   }
 
