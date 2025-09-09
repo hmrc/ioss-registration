@@ -40,4 +40,6 @@ class AppConfig @Inject()(config: Configuration) {
   val fallbackEnrolmentsEnable: Boolean = config.get[Boolean]("features.fallbackEnrolments.enabled")
   val fallbackEnrolments: Seq[FallbackEnrolment] = config.get[Seq[FallbackEnrolment]]("features.fallbackEnrolments.enrolments")
   val encryptionKey: String = config.get[String]("mongodb.encryption.key")
+
+  val lastUpdatedFeatureSwitch: Boolean = config.get[Boolean]("features.enableLastUpdatedDatabaseChange")
 }
