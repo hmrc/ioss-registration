@@ -103,11 +103,18 @@ trait Generators {
       } yield EtmpTradingName(tradingName)
     }
 
-  implicit lazy val arbitraryEtmpCustomerIdentification: Arbitrary[EtmpCustomerIdentification] =
+  implicit lazy val arbitraryEtmpCustomerIdentificationNew: Arbitrary[EtmpCustomerIdentificationNew] =
     Arbitrary {
       for {
         vrn <- arbitraryVrn.arbitrary
-      } yield EtmpCustomerIdentification(EtmpIdType.VRN, vrn.vrn)
+      } yield EtmpCustomerIdentificationNew(EtmpIdType.VRN, vrn.vrn)
+    }
+    
+  implicit lazy val arbitraryEtmpCustomerIdentificationLegacy: Arbitrary[EtmpCustomerIdentificationLegacy] =
+    Arbitrary {
+      for {
+        vrn <- arbitraryVrn.arbitrary
+      } yield EtmpCustomerIdentificationLegacy(vrn)
     }
 
   implicit lazy val arbitraryEtmpAdministration: Arbitrary[EtmpAdministration] =
