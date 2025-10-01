@@ -59,7 +59,7 @@ class RegistrationStatusRepository @Inject()(
 
       )
     )
-  ) with Logging with Transactions {
+  ) with Logging {
 
   private def bySubscriptionId(subscriptionId: String): Bson = Filters.equal("subscriptionId", subscriptionId)
 
@@ -96,21 +96,5 @@ class RegistrationStatusRepository @Inject()(
       .deleteOne(bySubscriptionId(subscriptionId))
       .toFuture()
       .map(_ => true)
-
-  private implicit val tc: TransactionConfiguration = TransactionConfiguration.strict
-
-  def fixAllDocuments(currentTime: Instant = Instant.now()): Future[Seq[(RegistrationStatus, UpdateResult)]] = {
-    withSessionAndTransaction(session =>
-      for {
-        searchResults: Seq[RegistrationStatus] <- collection.find.toFuture().map(_.filter(regStatus => currentTime == regStatus.lastUpdated || currentTime.isBefore(regStatus.lastUpdated)))
-        futureResults: Seq[UpdateResult] <- Future.sequence(searchResults.map(document => collection.replaceOne(
-            filter = bySubscriptionId(document.subscriptionId),
-            replacement = document,
-            options = ReplaceOptions().upsert(true)
-          )
-          .toFuture())
-        )
-      } yield searchResults.zip(futureResults)
-    )
-  }
+  
 }
