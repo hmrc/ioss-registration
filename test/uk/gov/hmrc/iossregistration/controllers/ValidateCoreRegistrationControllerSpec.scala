@@ -42,8 +42,7 @@ class ValidateCoreRegistrationControllerSpec extends BaseSpec {
         "FR",
         true,
         Seq(Match(
-          MatchType.FixedEstablishmentQuarantinedNETP,
-          "IM0987654321",
+          TraderId("IM0987654321"),
           Some("444444444"),
           "DE",
           Some(3),
