@@ -18,15 +18,33 @@ package uk.gov.hmrc.iossregistration.models.etmp.amend
 
 import play.api.libs.json.{Json, OFormat}
 
-case class EtmpAmendRegistrationChangeLog(
-                                           tradingNames: Boolean,
-                                           fixedEstablishments: Boolean,
-                                           contactDetails: Boolean,
-                                           bankDetails: Boolean,
-                                           reRegistration: Boolean
-                                  )
+trait EtmpAmendRegistrationChangeLog
 
-object EtmpAmendRegistrationChangeLog {
+case class EtmpAmendRegistrationChangeLogLegacy(
+                                                 tradingNames: Boolean,
+                                                 fixedEstablishments: Boolean,
+                                                 contactDetails: Boolean,
+                                                 bankDetails: Boolean,
+                                                 reRegistration: Boolean
+                                               ) extends EtmpAmendRegistrationChangeLog
 
-  implicit val format: OFormat[EtmpAmendRegistrationChangeLog] = Json.format[EtmpAmendRegistrationChangeLog]
+object EtmpAmendRegistrationChangeLogLegacy {
+
+  implicit val format: OFormat[EtmpAmendRegistrationChangeLogLegacy] = Json.format[EtmpAmendRegistrationChangeLogLegacy]
+
+}
+
+case class EtmpAmendRegistrationChangeLogNew(
+                                              tradingNames: Boolean,
+                                              fixedEstablishments: Boolean,
+                                              contactDetails: Boolean,
+                                              bankDetails: Boolean,
+                                              reRegistration: Boolean,
+                                              otherAddress: Boolean
+                                            ) extends EtmpAmendRegistrationChangeLog
+
+object EtmpAmendRegistrationChangeLogNew {
+
+  implicit val format: OFormat[EtmpAmendRegistrationChangeLogNew] = Json.format[EtmpAmendRegistrationChangeLogNew]
+
 }
