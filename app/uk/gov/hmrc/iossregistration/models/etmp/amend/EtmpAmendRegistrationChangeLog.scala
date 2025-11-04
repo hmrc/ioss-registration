@@ -16,9 +16,21 @@
 
 package uk.gov.hmrc.iossregistration.models.etmp.amend
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, OFormat, Reads, Writes}
 
 trait EtmpAmendRegistrationChangeLog
+
+object EtmpAmendRegistrationChangeLog {
+
+  implicit val reads: Reads[EtmpAmendRegistrationChangeLog] =
+    EtmpAmendRegistrationChangeLogNew.format.widen[EtmpAmendRegistrationChangeLog] orElse
+      EtmpAmendRegistrationChangeLogLegacy.format.widen[EtmpAmendRegistrationChangeLog]
+
+  implicit val writes: Writes[EtmpAmendRegistrationChangeLog] = Writes {
+    case earcln: EtmpAmendRegistrationChangeLogNew => Json.toJson(earcln)(EtmpAmendRegistrationChangeLogNew.format)
+    case earcll: EtmpAmendRegistrationChangeLogLegacy => Json.toJson(earcll)(EtmpAmendRegistrationChangeLogLegacy.format)
+  }
+}
 
 case class EtmpAmendRegistrationChangeLogLegacy(
                                                  tradingNames: Boolean,

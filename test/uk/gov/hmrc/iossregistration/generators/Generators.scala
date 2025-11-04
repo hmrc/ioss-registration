@@ -4,10 +4,10 @@ import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbitrary
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.domain.Vrn
-import uk.gov.hmrc.iossregistration.models._
+import uk.gov.hmrc.iossregistration.models.*
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
-import uk.gov.hmrc.iossregistration.models.etmp._
-import uk.gov.hmrc.iossregistration.models.etmp.amend.EtmpAmendRegistrationChangeLog
+import uk.gov.hmrc.iossregistration.models.etmp.*
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationChangeLogLegacy}
 import uk.gov.hmrc.iossregistration.models.requests.{SaveForLaterRequest, SaveForLaterResponse}
 
 import java.time.{Instant, LocalDate, LocalDateTime}
@@ -132,7 +132,7 @@ trait Generators {
         contactDetails <- arbitrary[Boolean]
         bankDetails <- arbitrary[Boolean]
         reRegistration <- arbitrary[Boolean]
-      } yield EtmpAmendRegistrationChangeLog(tradingNames, fixedEstablishments, contactDetails, bankDetails, reRegistration)
+      } yield EtmpAmendRegistrationChangeLogLegacy(tradingNames, fixedEstablishments, contactDetails, bankDetails, reRegistration)
     }
 
   implicit lazy val arbitrarySchemeType: Arbitrary[SchemeType] =

@@ -28,7 +28,7 @@ import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthAction, FakeAuthAction}
 import uk.gov.hmrc.iossregistration.generators.Generators
 import uk.gov.hmrc.iossregistration.models.des.VatCustomerInfo
-import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendCustomerIdentification, EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationRequest}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{EtmpAmendCustomerIdentification, EtmpAmendRegistrationChangeLog, EtmpAmendRegistrationChangeLogLegacy, EtmpAmendRegistrationRequest}
 import uk.gov.hmrc.iossregistration.models.etmp.*
 import uk.gov.hmrc.iossregistration.models.{Bic, DesAddress, Iban}
 
@@ -123,7 +123,7 @@ trait BaseSpec
 
   def etmpAmendRegistrationRequest(reRegistration: Boolean = false): EtmpAmendRegistrationRequest = amend.EtmpAmendRegistrationRequest(
     administration = registrationRequest.administration.copy(messageType = EtmpMessageType.IOSSSubscriptionAmend),
-    changeLog = EtmpAmendRegistrationChangeLog(
+    changeLog = EtmpAmendRegistrationChangeLogLegacy(
       tradingNames = true,
       fixedEstablishments = true,
       contactDetails = true,
