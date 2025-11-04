@@ -25,7 +25,7 @@ import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.{AuthenticatedControllerComponents, AuthorisedMandatoryVrnRequest}
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.models.audit.{EtmpAmendRegistrationRequestAuditModel, EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
-import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationChangeLogLegacy, EtmpAmendRegistrationChangeLogNew, EtmpAmendRegistrationRequest}
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpRegistrationRequest, EtmpRegistrationStatus}
 import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus}
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
@@ -197,8 +197,13 @@ case class RegistrationController @Inject()(
               None,
               SubmissionResult.Success
             ))
+            
+            val isReReg = etmpAmendRegistrationRequest.changeLog match {
+              case cl: EtmpAmendRegistrationChangeLogLegacy => cl.reRegistration
+              case cl: EtmpAmendRegistrationChangeLogNew => cl.reRegistration
+            }
 
-            if (etmpAmendRegistrationRequest.changeLog.reRegistration) {
+            if (isReReg) {
               enrollRegistration(amendRegistrationResponse.formBundleNumber).map {
                 case EtmpRegistrationStatus.Success =>
                   auditCall()
