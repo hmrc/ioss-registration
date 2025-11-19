@@ -49,6 +49,7 @@ class EtmpRegistrationRequestAuditModelSpec extends BaseSpec {
         etmpRegistrationAuditType = etmpRegistrationAuditType,
         etmpRegistrationRequest = arbitraryEtmpRegistrationRequest,
         etmpEnrolmentResponse = Some(etmpEnrolmentResponse),
+        etmpAmendResponse = None,
         errorResponse = None,
         submissionResult = submissionResultSuccess
       )
@@ -71,6 +72,7 @@ class EtmpRegistrationRequestAuditModelSpec extends BaseSpec {
         etmpRegistrationAuditType = etmpRegistrationAuditType,
         etmpRegistrationRequest = arbitraryEtmpRegistrationRequest,
         etmpEnrolmentResponse = None,
+        etmpAmendResponse = None,
         errorResponse = Some(Json.toJson(etmpEnrolmentErrorResponse).toString()),
         submissionResult = submissionResultFailure
       )
@@ -93,6 +95,7 @@ class EtmpRegistrationRequestAuditModelSpec extends BaseSpec {
         etmpRegistrationAuditType = etmpRegistrationAuditType,
         etmpRegistrationRequest = arbitraryEtmpRegistrationRequest,
         etmpEnrolmentResponse = None,
+        etmpAmendResponse = None,
         errorResponse = None,
         submissionResult = submissionResultDuplicate
       )
