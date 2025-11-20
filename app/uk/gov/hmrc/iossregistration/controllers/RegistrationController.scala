@@ -62,7 +62,7 @@ case class RegistrationController @Inject()(
         case Left(EtmpEnrolmentError(EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode, body)) =>
           attemptFallbackEnrolment(request.vrn).getOrElse {
             auditService.audit(EtmpRegistrationRequestAuditModel.build(
-              EtmpRegistrationAuditType.CreateRegistration, request.body, None, Some(body), SubmissionResult.Duplicate)
+              EtmpRegistrationAuditType.CreateRegistration, request.body, None, None, Some(body), SubmissionResult.Duplicate)
             )
             logger.error(
               s"Business Partner already has an active IOSS Subscription for this regime with error code ${EtmpEnrolmentErrorResponse.alreadyActiveSubscriptionErrorCode}" +
@@ -76,7 +76,7 @@ case class RegistrationController @Inject()(
         case Left(error) =>
           attemptFallbackEnrolment(request.vrn).getOrElse {
             auditService.audit(EtmpRegistrationRequestAuditModel.build(
-              EtmpRegistrationAuditType.CreateRegistration, request.body, None, Some(error.body), SubmissionResult.Failure)
+              EtmpRegistrationAuditType.CreateRegistration, request.body, None, None, Some(error.body), SubmissionResult.Failure)
             )
             logger.error(s"Internal server error ${error.body}")
             InternalServerError(Json.toJson(s"Internal server error ${error.body}")).toFuture
@@ -141,7 +141,7 @@ case class RegistrationController @Inject()(
     etmpRegistrationStatus match {
       case EtmpRegistrationStatus.Success =>
         auditService.audit(EtmpRegistrationRequestAuditModel.build(
-          EtmpRegistrationAuditType.CreateRegistration, request.body, Some(etmpEnrolmentResponse), None, SubmissionResult.Success)
+          EtmpRegistrationAuditType.CreateRegistration, request.body, Some(etmpEnrolmentResponse), None, None, SubmissionResult.Success)
         )
         logger.info("Successfully created registration and enrolment")
         successResponse
@@ -194,6 +194,7 @@ case class RegistrationController @Inject()(
               EtmpRegistrationAuditType.AmendRegistration,
               etmpAmendRegistrationRequest,
               None,
+              Some(amendRegistrationResponse),
               None,
               SubmissionResult.Success
             ))
@@ -224,6 +225,7 @@ case class RegistrationController @Inject()(
             auditService.audit(EtmpAmendRegistrationRequestAuditModel.build(
               EtmpRegistrationAuditType.AmendRegistration,
               etmpAmendRegistrationRequest,
+              None,
               None,
               None,
               SubmissionResult.Failure

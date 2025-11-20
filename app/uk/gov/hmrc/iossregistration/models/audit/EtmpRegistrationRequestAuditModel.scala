@@ -18,6 +18,7 @@ package uk.gov.hmrc.iossregistration.models.audit
 
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryVrnRequest
+import uk.gov.hmrc.iossregistration.models.etmp.amend.AmendRegistrationResponse
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentResponse, EtmpRegistrationRequest}
 
 case class EtmpRegistrationRequestAuditModel(
@@ -27,6 +28,7 @@ case class EtmpRegistrationRequestAuditModel(
                                               vrn: String,
                                               etmpRegistrationRequest: EtmpRegistrationRequest,
                                               etmpEnrolmentResponse: Option[EtmpEnrolmentResponse],
+                                              etmpAmendResponse: Option[AmendRegistrationResponse],
                                               errorResponse: Option[String],
                                               submissionResult: SubmissionResult
                                             ) extends JsonAuditModel {
@@ -42,6 +44,13 @@ case class EtmpRegistrationRequestAuditModel(
       Json.obj()
     }
 
+  private val etmpAmendResponseObj: JsObject =
+    if (etmpAmendResponse.isDefined) {
+      Json.obj("etmpAmendResponse" -> etmpAmendResponse)
+    } else {
+      Json.obj()
+    }
+    
   private val errorResponseObj: JsObject =
     if (errorResponse.isDefined) {
       Json.obj("errorResponse" -> errorResponse)
@@ -56,6 +65,7 @@ case class EtmpRegistrationRequestAuditModel(
     "etmpRegistrationRequest" -> Json.toJson(etmpRegistrationRequest),
     "submissionResult" -> Json.toJson(submissionResult)
   ) ++ etmpEnrolmentResponseObj ++
+    etmpAmendResponseObj ++
     errorResponseObj
 }
 
@@ -65,6 +75,7 @@ object EtmpRegistrationRequestAuditModel {
              etmpRegistrationAuditType: EtmpRegistrationAuditType,
              etmpRegistrationRequest: EtmpRegistrationRequest,
              etmpEnrolmentResponse: Option[EtmpEnrolmentResponse],
+             etmpAmendResponse: Option[AmendRegistrationResponse],
              errorResponse: Option[String],
              submissionResult: SubmissionResult
            )(implicit request: AuthorisedMandatoryVrnRequest[_]): EtmpRegistrationRequestAuditModel =
@@ -75,6 +86,7 @@ object EtmpRegistrationRequestAuditModel {
       vrn = request.vrn.vrn,
       etmpRegistrationRequest = etmpRegistrationRequest,
       etmpEnrolmentResponse = etmpEnrolmentResponse,
+      etmpAmendResponse = etmpAmendResponse,
       errorResponse = errorResponse,
       submissionResult = submissionResult
     )

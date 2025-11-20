@@ -1,7 +1,7 @@
 package uk.gov.hmrc.iossregistration.controllers
 
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.time.{Seconds, Span}
@@ -14,10 +14,10 @@ import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.EnrolmentsConnector
 import uk.gov.hmrc.iossregistration.controllers.actions.AuthorisedMandatoryVrnRequest
-import uk.gov.hmrc.iossregistration.models.audit.{EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
-import uk.gov.hmrc.iossregistration.models.etmp.amend.AmendRegistrationResponse
+import uk.gov.hmrc.iossregistration.models.audit.{EtmpAmendRegistrationRequestAuditModel, EtmpRegistrationAuditType, EtmpRegistrationRequestAuditModel, SubmissionResult}
+import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
 import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentResponse, EtmpRegistrationStatus}
-import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, RegistrationStatus, ServiceUnavailable, UnexpectedResponseStatus}
+import uk.gov.hmrc.iossregistration.models.{EtmpEnrolmentError, EtmpException, NotFound, RegistrationStatus, ServiceUnavailable, UnexpectedResponseStatus}
 import uk.gov.hmrc.iossregistration.models.enrolments.{EACDEnrolment, EACDEnrolments, EACDIdentifiers}
 import uk.gov.hmrc.iossregistration.repositories.InsertResult.InsertSucceeded
 import uk.gov.hmrc.iossregistration.repositories.RegistrationStatusRepository
@@ -38,6 +38,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
   private val mockAuditService: AuditService = mock[AuditService]
 
   private lazy val createRegistrationRoute: String = routes.RegistrationController.createRegistration().url
+  private lazy val amendRegistrationRoute: String = routes.RegistrationController.amend().url
 
   override def beforeEach(): Unit = {
     reset(mockRegistrationService)
@@ -102,6 +103,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
           etmpRegistrationAuditType = EtmpRegistrationAuditType.CreateRegistration,
           etmpRegistrationRequest = etmpRegistrationRequest,
           etmpEnrolmentResponse = Some(etmpEnrolmentResponse),
+          etmpAmendResponse = None,
           errorResponse = None,
           submissionResult = SubmissionResult.Success
         )
@@ -176,6 +178,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
           etmpRegistrationAuditType = EtmpRegistrationAuditType.CreateRegistration,
           etmpRegistrationRequest = etmpRegistrationRequest,
           etmpEnrolmentResponse = None,
+          etmpAmendResponse = None,
           errorResponse = Some(etmpEnrolmentError.body),
           submissionResult = SubmissionResult.Duplicate
         )
@@ -213,6 +216,7 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
           etmpRegistrationAuditType = EtmpRegistrationAuditType.CreateRegistration,
           etmpRegistrationRequest = etmpRegistrationRequest,
           etmpEnrolmentResponse = None,
+          etmpAmendResponse = None,
           errorResponse = Some(ServiceUnavailable.body),
           submissionResult = SubmissionResult.Failure
         )
@@ -380,6 +384,82 @@ class RegistrationControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = route(app, request).value
 
         status(result) mustEqual BAD_REQUEST
+      }
+    }
+
+    "must audit successfully when registration is amended" in {
+
+      val etmpAmendRegistrationRequest: EtmpAmendRegistrationRequest = RegistrationData.etmpAmendRegistrationRequest(reRegistration = false)
+      val responseJson = Json.toJson(amendRegistrationResponse)
+
+      when(mockRegistrationService.amendRegistration(any())) thenReturn Right(amendRegistrationResponse).toFuture
+      doNothing().when(mockAuditService).audit(any())(any(), any())
+
+      val app = applicationBuilder
+        .overrides(bind[RegistrationService].toInstance(mockRegistrationService))
+        .overrides(bind[AuditService].toInstance(mockAuditService))
+        .build()
+
+      running(app) {
+
+        val request =
+          FakeRequest(POST, amendRegistrationRoute)
+            .withJsonBody(Json.toJson(etmpAmendRegistrationRequest))
+
+        val result = route(app, request).value
+
+        implicit val dataRequest: AuthorisedMandatoryVrnRequest[AnyContentAsJson] =
+          AuthorisedMandatoryVrnRequest(request, testCredentials, "id", vrn, None, None)
+
+        val expectedAuditEvent = EtmpAmendRegistrationRequestAuditModel.build(
+          etmpRegistrationAuditType = EtmpRegistrationAuditType.AmendRegistration,
+          etmpRegistrationRequest = etmpAmendRegistrationRequest,
+          etmpEnrolmentResponse = None,
+          etmpAmendResponse = Some(amendRegistrationResponse),
+          errorResponse = None,
+          submissionResult = SubmissionResult.Success
+        )
+
+        status(result) `mustBe` OK
+        contentAsJson(result) `mustBe` responseJson
+        verify(mockAuditService, times(1)).audit(eqTo(expectedAuditEvent))(any(), any())
+      }
+    }
+
+    "must audit failure when amendRegistration fails" in {
+
+      val etmpAmendRegistrationRequest: EtmpAmendRegistrationRequest = RegistrationData.etmpAmendRegistrationRequest(reRegistration = false)
+
+      when(mockRegistrationService.amendRegistration(any())) thenReturn Left(NotFound).toFuture
+      doNothing().when(mockAuditService).audit(any())(any(), any())
+
+      val app = applicationBuilder
+        .overrides(bind[RegistrationService].toInstance(mockRegistrationService))
+        .overrides(bind[AuditService].toInstance(mockAuditService))
+        .build()
+
+      running(app) {
+
+        val request =
+          FakeRequest(POST, amendRegistrationRoute)
+            .withJsonBody(Json.toJson(etmpAmendRegistrationRequest))
+
+        val result = route(app, request).value
+
+        implicit val dataRequest: AuthorisedMandatoryVrnRequest[AnyContentAsJson] =
+          AuthorisedMandatoryVrnRequest(request, testCredentials, "id", vrn, None, None)
+
+        val expectedAuditEvent = EtmpAmendRegistrationRequestAuditModel.build(
+          etmpRegistrationAuditType = EtmpRegistrationAuditType.AmendRegistration,
+          etmpRegistrationRequest = etmpAmendRegistrationRequest,
+          etmpEnrolmentResponse = None,
+          etmpAmendResponse = None,
+          errorResponse = None,
+          submissionResult = SubmissionResult.Failure
+        )
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        verify(mockAuditService, times(1)).audit(eqTo(expectedAuditEvent))(any(), any())
       }
     }
   }
