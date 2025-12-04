@@ -157,11 +157,12 @@ case class RegistrationController @Inject()(
       getRegistrationAndReturnResult(request.iossNumber, request.vrn)
   }
 
-  def getRegistration(iossNumber: String): Action[AnyContent] = cc.authAndRequireIoss().async {
+  def getRegistration(iossNumber: String): Action[AnyContent] = cc.authAndRequireIoss(Some(iossNumber)).async {
     implicit request =>
       getRegistrationAndReturnResult(iossNumber, request.vrn)
   }
 
+  // TODO Remove and call above method instead
   def getIossRegistration(iossNumber: String): Action[AnyContent] = cc.authAndRequireIntermediary().async {
     implicit request =>
       registrationService.get(iossNumber).map { registration =>
