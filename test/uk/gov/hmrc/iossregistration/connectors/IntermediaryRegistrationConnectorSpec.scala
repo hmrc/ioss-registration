@@ -17,6 +17,8 @@
 package uk.gov.hmrc.iossregistration.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
+import models.RegistrationWrapper
+import models.enrolments.EACDEnrolments
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.Application
