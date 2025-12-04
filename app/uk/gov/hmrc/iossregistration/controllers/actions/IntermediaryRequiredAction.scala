@@ -23,6 +23,7 @@ import uk.gov.hmrc.iossregistration.logging.Logging
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
+// TODO Remove
 class IntermediaryRequiredAction @Inject()(implicit val executionContext: ExecutionContext)
   extends ActionRefiner[AuthorisedMandatoryVrnRequest, AuthorisedMandatoryIntermediaryRequest] with Logging {
 

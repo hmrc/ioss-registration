@@ -17,13 +17,14 @@
 package uk.gov.hmrc.iossregistration.controllers.actions
 
 import play.api.mvc.Results.Unauthorized
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
+import uk.gov.hmrc.iossregistration.config.AppConfig
 import uk.gov.hmrc.iossregistration.logging.Logging
 import uk.gov.hmrc.iossregistration.services.AccountService
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
@@ -37,9 +38,9 @@ trait AuthAction extends ActionBuilder[AuthorisedRequest, AnyContent] with Actio
 class AuthActionImpl @Inject()(
                                 override val authConnector: AuthConnector,
                                 val parser: BodyParsers.Default,
-                                accountService: AccountService
-                              )
-                              (implicit val executionContext: ExecutionContext)
+                                accountService: AccountService,
+                                config: AppConfig
+                              )(implicit val executionContext: ExecutionContext)
   extends AuthAction with AuthorisedFunctions with Logging {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
@@ -113,7 +114,7 @@ class AuthActionImpl @Inject()(
 
   private def findIntermediaryNumberFromEnrolments(enrolments: Enrolments): Option[String] = {
     enrolments.enrolments
-      .find(_.key == "HMRC-IOSS-INT")
+      .find(_.key == config.intermediaryEnrolment)
       .flatMap(_.identifiers.find(id => id.key == "IntNumber" && id.value.nonEmpty).map(_.value))
   }
 }
