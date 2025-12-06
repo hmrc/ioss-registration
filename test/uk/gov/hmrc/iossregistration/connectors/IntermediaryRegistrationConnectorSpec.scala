@@ -17,31 +17,30 @@
 package uk.gov.hmrc.iossregistration.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import models.RegistrationWrapper
-import models.enrolments.EACDEnrolments
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.iossregistration.base.BaseSpec
+import uk.gov.hmrc.iossregistration.models.etmp.intermediary.IntermediaryRegistrationWrapper
 
 class IntermediaryRegistrationConnectorSpec
-  extends SpecBase
+  extends BaseSpec
     with WireMockHelper
-    with ScalaCheckPropertyChecks
-    with Generators {
+    with ScalaCheckPropertyChecks {
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
   private def application: Application = {
-    applicationBuilder()
+    applicationBuilder
       .configure("microservice.services.ioss-intermediary-registration.port" -> server.port)
       .build()
   }
 
   ".get" - {
-    def url(intermediaryNumber: String) = s"/ioss-intermediary-registration/registration/$intermediaryNumber"
+    def url(intermediaryNumber: String) = s"/ioss-intermediary-registration/get-registration/$intermediaryNumber"
 
     "must return a registration when the server provides one" in {
 

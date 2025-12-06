@@ -19,15 +19,21 @@ package uk.gov.hmrc.iossregistration.controllers.actions
 import play.api.mvc.Result
 import play.api.mvc.Results.Unauthorized
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.iossregistration.base.BaseSpec
+import uk.gov.hmrc.iossregistration.config.AppConfig
+import uk.gov.hmrc.iossregistration.connectors.IntermediaryRegistrationConnector
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class IossRequiredActionSpec extends BaseSpec {
 
-  class Harness() extends IossRequiredAction {
+  class Harness() extends IossRequiredAction(
+    mock[IntermediaryRegistrationConnector],
+    mock[AppConfig],
+    None
+  ) {
 
     def callRefine[A](request: AuthorisedMandatoryVrnRequest[A]): Future[Either[Result, AuthorisedMandatoryIossRequest[A]]] = refine(request)
   }
