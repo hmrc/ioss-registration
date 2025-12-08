@@ -84,7 +84,7 @@ object RegistrationData extends BaseSpec {
   val displayRegistration: EtmpDisplayRegistration = EtmpDisplayRegistration(
     tradingNames = Seq(arbitrary[EtmpTradingName].sample.value),
     schemeDetails = etmpDisplaySchemeDetails,
-    bankDetails = etmpBankDetails,
+    bankDetails = Some(etmpBankDetails),
     exclusions = Seq(arbitrary[EtmpExclusion].sample.value),
     adminUse = adminUse
   )

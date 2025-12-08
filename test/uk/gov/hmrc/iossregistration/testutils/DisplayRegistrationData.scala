@@ -18,7 +18,7 @@ object DisplayRegistrationData extends BaseSpec {
     EtmpDisplayRegistration(
       tradingNames = Gen.listOfN(3, arbitraryEtmpTradingName.arbitrary).sample.value,
       schemeDetails = arbitraryEtmpDisplaySchemeDetails.arbitrary.sample.value,
-      bankDetails = arbitraryEtmpBankDetails.arbitrary.sample.value,
+      bankDetails = Some(arbitraryEtmpBankDetails.arbitrary.sample.value),
       exclusions = Gen.listOfN(2, arbitraryEtmpExclusion.arbitrary.sample.value).sample.value,
       adminUse = arbitraryAdminUse.arbitrary.sample.value
     )
@@ -38,11 +38,11 @@ object DisplayRegistrationData extends BaseSpec {
         None,
         None
       ),
-      bankDetails = EtmpBankDetails(
+      bankDetails = Some(EtmpBankDetails(
         accountName = "Bank Account Name",
         None,
         iban
-      ),
+      )),
       adminUse = EtmpAdminUse(Some(LocalDateTime.now(stubClock))),
       exclusions = Seq.empty
     )
