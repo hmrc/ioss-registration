@@ -36,11 +36,11 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
       nonCompliantReturns = None,
       nonCompliantPayments = None
     ),
-    bankDetails = EtmpBankDetails(
+    bankDetails = Some(EtmpBankDetails(
       accountName = "Mr Test",
       bic = Some(Bic("ABCDEF2A").get),
       iban = Iban("GB33BUKB20201555555555").toOption.get
-    ),
+    )),
     exclusions = Seq.empty,
     adminUse = EtmpAdminUse(Some(LocalDateTime.now(stubClock)))
   )

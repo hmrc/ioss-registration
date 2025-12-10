@@ -23,7 +23,7 @@ import uk.gov.hmrc.iossregistration.models.etmp.EtmpDisplaySchemeDetails.display
 case class EtmpDisplayRegistration(
                                     tradingNames: Seq[EtmpTradingName],
                                     schemeDetails: EtmpDisplaySchemeDetails,
-                                    bankDetails: EtmpBankDetails,
+                                    bankDetails: Option[EtmpBankDetails],
                                     exclusions: Seq[EtmpExclusion],
                                     adminUse: EtmpAdminUse
                                   )
@@ -36,7 +36,7 @@ object EtmpDisplayRegistration {
     (
       (__ \ "tradingNames").readNullable[Seq[EtmpTradingName]].map(_.getOrElse(List.empty)) and
         (__ \ "schemeDetails").read[EtmpDisplaySchemeDetails] and
-        (__ \ "bankDetails").read[EtmpBankDetails] and
+        (__ \ "bankDetails").readNullable[EtmpBankDetails] and
         (__ \ "exclusions").readNullable[Seq[EtmpExclusion]].map(_.getOrElse(List.empty)) and
         (__ \ "adminUse").read[EtmpAdminUse]
       )(EtmpDisplayRegistration.apply _)

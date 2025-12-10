@@ -6,12 +6,6 @@ import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpEuPreviousReg
 
 class EtmpPreviousEuRegistrationDetailsSpec extends BaseSpec {
 
-  private val issuingCountry = etmpEuPreviousRegistrationDetails.issuedBy
-  private val registrationNumber = etmpEuPreviousRegistrationDetails.registrationNumber
-  private val schemeType = etmpEuPreviousRegistrationDetails.schemeType
-  private val intermediaryNumber = etmpEuPreviousRegistrationDetails.intermediaryNumber
-
-
   "EtmpPreviousEuRegistrationDetails" - {
 
     "must deserialise/serialise to and from EtmpPreviousEuRegistrationDetails" - {
@@ -19,17 +13,17 @@ class EtmpPreviousEuRegistrationDetailsSpec extends BaseSpec {
       "when all optional values are present" in {
 
         val json = Json.obj(
-          "issuedBy" -> issuingCountry,
-          "registrationNumber" -> registrationNumber,
-          "schemeType" -> schemeType,
-          "intermediaryNumber" ->intermediaryNumber
+          "issuedBy" -> etmpEuPreviousRegistrationDetails.issuedBy,
+          "registrationNumber" -> etmpEuPreviousRegistrationDetails.registrationNumber,
+          "schemeType" -> etmpEuPreviousRegistrationDetails.schemeType,
+          "intermediaryNumber" -> etmpEuPreviousRegistrationDetails.intermediaryNumber
         )
 
         val expectedResult = EtmpPreviousEuRegistrationDetails(
-          issuedBy = issuingCountry,
-          registrationNumber = registrationNumber,
-          schemeType = schemeType,
-          intermediaryNumber = intermediaryNumber
+          issuedBy = etmpEuPreviousRegistrationDetails.issuedBy,
+          registrationNumber = etmpEuPreviousRegistrationDetails.registrationNumber,
+          schemeType = etmpEuPreviousRegistrationDetails.schemeType,
+          intermediaryNumber = etmpEuPreviousRegistrationDetails.intermediaryNumber
         )
 
         Json.toJson(expectedResult) mustBe json
@@ -39,15 +33,15 @@ class EtmpPreviousEuRegistrationDetailsSpec extends BaseSpec {
       "when all optional values are absent" in {
 
         val json = Json.obj(
-          "issuedBy" -> issuingCountry,
-          "registrationNumber" -> registrationNumber,
-          "schemeType" -> schemeType
+          "issuedBy" -> etmpEuPreviousRegistrationDetails.issuedBy,
+          "registrationNumber" -> etmpEuPreviousRegistrationDetails.registrationNumber,
+          "schemeType" -> etmpEuPreviousRegistrationDetails.schemeType
         )
 
         val expectedResult = EtmpPreviousEuRegistrationDetails(
-          issuedBy = issuingCountry,
-          registrationNumber = registrationNumber,
-          schemeType = schemeType,
+          issuedBy = etmpEuPreviousRegistrationDetails.issuedBy,
+          registrationNumber = etmpEuPreviousRegistrationDetails.registrationNumber,
+          schemeType = etmpEuPreviousRegistrationDetails.schemeType,
           intermediaryNumber = None
         )
 

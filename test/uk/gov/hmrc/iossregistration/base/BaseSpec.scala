@@ -49,6 +49,7 @@ trait BaseSpec
   protected val vrn: Vrn = Vrn("123456789")
 
   protected val iossNumber: String = "IM9001234567"
+  protected val intermediaryNumber: String = "IN9007654321"
 
   val stubClock: Clock = Clock.fixed(LocalDate.now.atStartOfDay(ZoneId.systemDefault).toInstant, ZoneId.systemDefault)
 
