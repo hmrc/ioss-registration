@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.iossregistration.models.etmp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.{__, Json, Reads, Writes}
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.{Json, Reads, Writes, __}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpDisplaySchemeDetails.displayReads
 
 case class EtmpDisplayRegistration(
+                                    customerIdentification: EtmpCustomerIdentificationNew,
                                     tradingNames: Seq[EtmpTradingName],
                                     schemeDetails: EtmpDisplaySchemeDetails,
                                     bankDetails: Option[EtmpBankDetails],
@@ -34,7 +35,8 @@ object EtmpDisplayRegistration {
 
   implicit val reads: Reads[EtmpDisplayRegistration] =
     (
-      (__ \ "tradingNames").readNullable[Seq[EtmpTradingName]].map(_.getOrElse(List.empty)) and
+      (__ \ "customerIdentification").read[EtmpCustomerIdentificationNew] and
+        (__ \ "tradingNames").readNullable[Seq[EtmpTradingName]].map(_.getOrElse(List.empty)) and
         (__ \ "schemeDetails").read[EtmpDisplaySchemeDetails] and
         (__ \ "bankDetails").readNullable[EtmpBankDetails] and
         (__ \ "exclusions").readNullable[Seq[EtmpExclusion]].map(_.getOrElse(List.empty)) and
