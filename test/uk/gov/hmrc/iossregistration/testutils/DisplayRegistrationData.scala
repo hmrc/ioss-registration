@@ -2,11 +2,12 @@ package uk.gov.hmrc.iossregistration.testutils
 
 import org.scalacheck.Gen
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import play.api.libs.json.{__, OWrites}
+import play.api.libs.json.{OWrites, __}
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.models.binders.Format.dateTimeFormatter
-import uk.gov.hmrc.iossregistration.models.etmp._
+import uk.gov.hmrc.iossregistration.models.etmp.*
 import uk.gov.hmrc.iossregistration.models.Iban
+import uk.gov.hmrc.iossregistration.testutils.RegistrationData.arbitraryEtmpCustomerIdentificationNew
 
 import java.time.{LocalDate, LocalDateTime}
 
@@ -16,6 +17,7 @@ object DisplayRegistrationData extends BaseSpec {
 
   val arbitraryDisplayRegistration: EtmpDisplayRegistration =
     EtmpDisplayRegistration(
+      customerIdentification = arbitraryEtmpCustomerIdentificationNew.arbitrary.sample.value,
       tradingNames = Gen.listOfN(3, arbitraryEtmpTradingName.arbitrary).sample.value,
       schemeDetails = arbitraryEtmpDisplaySchemeDetails.arbitrary.sample.value,
       bankDetails = Some(arbitraryEtmpBankDetails.arbitrary.sample.value),
@@ -25,6 +27,7 @@ object DisplayRegistrationData extends BaseSpec {
 
   val optionalDisplayRegistration: EtmpDisplayRegistration =
     EtmpDisplayRegistration(
+      customerIdentification = arbitraryEtmpCustomerIdentificationNew.arbitrary.sample.value,
       tradingNames = Seq.empty,
       schemeDetails = EtmpDisplaySchemeDetails(
         commencementDate = LocalDate.of(2023, 1, 1).format(dateTimeFormatter),

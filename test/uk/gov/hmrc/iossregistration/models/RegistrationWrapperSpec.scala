@@ -23,6 +23,7 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
   )
 
   private val etmpDisplayRegistration = EtmpDisplayRegistration(
+    customerIdentification = arbitraryEtmpCustomerIdentificationNew.arbitrary.sample.value,
     tradingNames = Seq(EtmpTradingName("Test Trading Name")),
     schemeDetails = EtmpDisplaySchemeDetails(
       commencementDate = "2022-01-01",
@@ -44,15 +45,15 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
     exclusions = Seq.empty,
     adminUse = EtmpAdminUse(Some(LocalDateTime.now(stubClock)))
   )
-  
+
   "RegistrationWrapper" - {
-    
+
     "serialize correctly" in {
 
-      val registrationWrapper = RegistrationWrapper(vatCustomerInfo, etmpDisplayRegistration)
-      
+      val registrationWrapper = RegistrationWrapper(Some(vatCustomerInfo), etmpDisplayRegistration)
+
       val json: JsValue = Json.toJson(registrationWrapper)
-      
+
       val expectedJson = Json.parse(
         s"""
            |{
@@ -69,6 +70,10 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
            |    "overseasIndicator": false
            |  },
            |  "registration": {
+           |  "customerIdentification": {
+           |  "idType":"VRN",
+           |  "idValue":"${etmpDisplayRegistration.customerIdentification.idValue}"
+           |  },
            |    "tradingNames": [
            |      {
            |        "tradingName": "Test Trading Name"
@@ -97,7 +102,7 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
            |}
            |""".stripMargin
       )
-      
+
       json mustBe expectedJson
     }
   }
@@ -115,7 +120,7 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
       overseasIndicator = false
     )
 
-    val expectedRegistrationWrapper = RegistrationWrapper(expectedVatCustomerInfo, etmpDisplayRegistration)
+    val expectedRegistrationWrapper = RegistrationWrapper(Some(expectedVatCustomerInfo), etmpDisplayRegistration)
 
     val json = Json.parse(
       s"""
@@ -144,6 +149,10 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
          |    }
          |  },
          |  "registration": {
+         |    "customerIdentification": {
+         |      "idType":"VRN",
+         |      "idValue":"${etmpDisplayRegistration.customerIdentification.idValue}"
+         |     },
          |    "tradingNames": [
          |      {
          |        "tradingName": "Test Trading Name"
