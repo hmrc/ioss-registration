@@ -41,6 +41,7 @@ object EtmpDisplayRegistration {
         (__ \ "tradingNames").readNullable[Seq[EtmpTradingName]].map(_.getOrElse(List.empty)) and
         (__ \ "schemeDetails").read[EtmpDisplaySchemeDetails] and
         (__ \ "bankDetails").readNullable[EtmpBankDetails] and
+        (__ \ "otherAddress").readNullable[EtmpOtherAddress] and
         (__ \ "exclusions").readNullable[Seq[EtmpExclusion]].map(_.getOrElse(List.empty)) and
         (__ \ "adminUse").read[EtmpAdminUse]
       )(EtmpDisplayRegistration.apply _)
