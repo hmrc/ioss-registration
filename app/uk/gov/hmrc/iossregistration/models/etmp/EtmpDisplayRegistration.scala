@@ -19,12 +19,14 @@ package uk.gov.hmrc.iossregistration.models.etmp
 import play.api.libs.functional.syntax.*
 import play.api.libs.json.{Json, Reads, Writes, __}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpDisplaySchemeDetails.displayReads
+import uk.gov.hmrc.iossregistration.models.etmp.intermediary.EtmpOtherAddress
 
 case class EtmpDisplayRegistration(
                                     customerIdentification: EtmpCustomerIdentification,
                                     tradingNames: Seq[EtmpTradingName],
                                     schemeDetails: EtmpDisplaySchemeDetails,
-                                    bankDetails: Option[EtmpBankDetails], 
+                                    bankDetails: Option[EtmpBankDetails],
+                                    otherAddress: Option[EtmpOtherAddress],
                                     exclusions: Seq[EtmpExclusion],
                                     adminUse: EtmpAdminUse
                                   )

@@ -72,7 +72,7 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
            |  "registration": {
            |  "customerIdentification": {
            |  "idType":"VRN",
-           |  "idValue":"${etmpDisplayRegistration.customerIdentification.idValue}"
+           |  "idValue":"TemporaryVRN"
            |  },
            |    "tradingNames": [
            |      {
@@ -151,7 +151,7 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
          |  "registration": {
          |    "customerIdentification": {
          |      "idType":"VRN",
-         |      "idValue":"${etmpDisplayRegistration.customerIdentification.idValue}"
+         |      "idValue":"TemporaryVRN"
          |     },
          |    "tradingNames": [
          |      {
