@@ -44,15 +44,14 @@ class RegistrationService @Inject()(
       etmpDisplayRegistrationResponse <- registrationConnector.get(iossNumber)
       registrationWrapper <- etmpDisplayRegistrationResponse match
         case Left(etmpDisplayRegistrationError) =>
-          val errorMessage = s"There was an error retrieving etmpDisplayRegistration from ETMP " +
-            s"with errors: ${etmpDisplayRegistrationError.body}."
+          val errorMessage = s"There was an error getting Registration from ETMP: ${etmpDisplayRegistrationError.body}"
           logger.error(errorMessage)
           throw EtmpException(errorMessage)
 
         case Right(etmpDisplayRegistration) =>
 
           etmpDisplayRegistration.customerIdentification match {
-            case EtmpCustomerIdentificationLegacy(vrn) => getVatInfoForRegistration(vrn, etmpDisplayRegistration)
+            case EtmpCustomerIdentificationLegacy(vrnLegacy) => getVatInfoForRegistration(vrn, etmpDisplayRegistration)
             case EtmpCustomerIdentificationNew(idType, idValue) if idType == EtmpIdType.VRN => getVatInfoForRegistration(Vrn(idValue), etmpDisplayRegistration)
             case _ =>  RegistrationWrapper(None, etmpDisplayRegistration).toFuture
           }
@@ -84,8 +83,7 @@ class RegistrationService @Inject()(
       val vatCustomerInfoFutureResponse: Future[VatCustomerInfoResponse] = getVatInfoConnector.getVatCustomerDetails(vrn)
       vatCustomerInfoFutureResponse.flatMap {
         case Left(vatCustomerInfoError) =>
-          val errorMessage = s"There was an error retrieving vatCustomerInfo from ETMP " +
-            s"with errors: ${vatCustomerInfoError.body}."
+          val errorMessage = s"There was an error retrieving the VAT information from ETMP: ${vatCustomerInfoError.body}"
           logger.error(errorMessage)
           throw EtmpException(errorMessage)
 

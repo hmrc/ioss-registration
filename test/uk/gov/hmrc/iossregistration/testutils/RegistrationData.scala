@@ -86,6 +86,7 @@ object RegistrationData extends BaseSpec {
     tradingNames = Seq(arbitrary[EtmpTradingName].sample.value),
     schemeDetails = etmpDisplaySchemeDetails,
     bankDetails = Some(etmpBankDetails),
+    otherAddress = None,
     exclusions = Seq(arbitrary[EtmpExclusion].sample.value),
     adminUse = adminUse
   )
