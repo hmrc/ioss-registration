@@ -8,7 +8,8 @@ import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, RegistrationConnector}
-import uk.gov.hmrc.iossregistration.models.etmp.EtmpEnrolmentResponse
+import uk.gov.hmrc.iossregistration.models.etmp.EtmpIdType.FTR
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpCustomerIdentificationNew, EtmpEnrolmentResponse}
 import uk.gov.hmrc.iossregistration.models.etmp.amend.AmendRegistrationResponse
 import uk.gov.hmrc.iossregistration.models.{DisplayRegistrationNotFound, ErrorResponse, EtmpEnrolmentError, EtmpException, NotFound}
 import uk.gov.hmrc.iossregistration.testutils.RegistrationData.{displayRegistration, etmpRegistrationRequest, registrationWrapper}
@@ -64,15 +65,26 @@ class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
       when(mockGetVatInfoConnector.getVatCustomerDetails(any())(any())) thenReturn Future.successful(Right(vatCustomerInfo))
       registrationService.get(iossNumber, vrn).futureValue mustBe registrationWrapper
       verify(mockRegistrationConnector, times(1)).get(iossNumber)
-      verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(Vrn("123456789"))
+      verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(Vrn(displayRegistration.customerIdentification.asInstanceOf[EtmpCustomerIdentificationNew].idValue))
     }
 
-    "must return Some(registration) when both connectors return right" in {
+    "must return registration wrapper with vat information when both connectors return right" in {
       when(mockRegistrationConnector.get(any())) thenReturn Right(displayRegistration).toFuture
       when(mockGetVatInfoConnector.getVatCustomerDetails(any())(any())) thenReturn Right(vatCustomerInfo).toFuture
       registrationService.get(iossNumber, vrn).futureValue mustBe registrationWrapper
       verify(mockRegistrationConnector, times(1)).get(iossNumber)
-      verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(Vrn("123456789"))
+      verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(Vrn(displayRegistration.customerIdentification.asInstanceOf[EtmpCustomerIdentificationNew].idValue))
+    }
+
+    "must return registration wrapper without vat information when a client does not have vat information" in {
+      val nonVatDisplayReg = displayRegistration
+        .copy(customerIdentification = EtmpCustomerIdentificationNew(FTR, "ForeignTaxRef"))
+      val nonVatRegWrapper = registrationWrapper.copy(vatInfo = None, registration = nonVatDisplayReg)
+
+      when(mockRegistrationConnector.get(any())) thenReturn Right(nonVatDisplayReg).toFuture
+      registrationService.get(iossNumber, vrn).futureValue mustBe nonVatRegWrapper
+      verify(mockRegistrationConnector, times(1)).get(iossNumber)
+      verify(mockGetVatInfoConnector, times(0)).getVatCustomerDetails(Vrn(displayRegistration.customerIdentification.asInstanceOf[EtmpCustomerIdentificationNew].idValue))
     }
 
     "must return an exception when no customer VAT details are found" in {
@@ -82,7 +94,7 @@ class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
         exp => exp mustBe a[Exception]
       }
       verify(mockRegistrationConnector, times(1)).get(iossNumber)
-      verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(Vrn("123456789"))
+      verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(Vrn(displayRegistration.customerIdentification.asInstanceOf[EtmpCustomerIdentificationNew].idValue))
 
     }
 
@@ -93,34 +105,18 @@ class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
       }
       verify(mockRegistrationConnector, times(1)).get(iossNumber)
     }
-
-    "must throw an EtmpException when both connectors return Left errors" in {
-      val displayError = EtmpEnrolmentError("400", "Display error body")
-      val vatInfoError = DisplayRegistrationNotFound("404", "Vat info error body")
-
-      when(mockRegistrationConnector.get(any())) thenReturn Future.successful(Left(displayError))
-      when(mockGetVatInfoConnector.getVatCustomerDetails(any())(any())) thenReturn Future.successful(Left(vatInfoError))
-
-      whenReady(registrationService.get(iossNumber, vrn).failed) { exception =>
-        exception mustBe EtmpException(s"There was an error getting Registration from ETMP: ${displayError.body} and ${vatInfoError.body}")
-      }
-
-      verify(mockRegistrationConnector, times(1)).get(iossNumber)
-      verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(vrn)
-    }
-
+    
     "must throw an EtmpException when the Registration Connector returns Left error" in {
       val displayError = EtmpEnrolmentError("400", "Display error body")
       
       when(mockRegistrationConnector.get(any())) thenReturn Future.successful(Left(displayError))
-      when(mockGetVatInfoConnector.getVatCustomerDetails(any())(any())) thenReturn Future.successful(Right(vatCustomerInfo))
       
       whenReady(registrationService.get(iossNumber, vrn).failed) { exception =>
         exception mustBe EtmpException(s"There was an error getting Registration from ETMP: ${displayError.body}")
       }
 
       verify(mockRegistrationConnector, times(1)).get(iossNumber)
-      verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(vrn)
+      verify(mockGetVatInfoConnector, times(0)).getVatCustomerDetails(Vrn(displayRegistration.customerIdentification.asInstanceOf[EtmpCustomerIdentificationNew].idValue))
     }
 
     "must throw an EtmpException when the VAT Info Connector returns Left error" in {
@@ -131,11 +127,11 @@ class RegistrationServiceSpec extends BaseSpec with BeforeAndAfterEach {
       when(mockGetVatInfoConnector.getVatCustomerDetails(any())(any())) thenReturn Future.successful(Left(vatInfoError))
       
       whenReady(registrationService.get(iossNumber, vrn).failed) { exception =>
-        exception mustBe EtmpException(s"There was an error getting vat info from ETMP: ${vatInfoError.body}")
+        exception mustBe EtmpException(s"There was an error retrieving the VAT information from ETMP: ${vatInfoError.body}")
       }
 
       verify(mockRegistrationConnector, times(1)).get(iossNumber)
-      verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(vrn)
+      verify(mockGetVatInfoConnector, times(1)).getVatCustomerDetails(Vrn(displayRegistration.customerIdentification.asInstanceOf[EtmpCustomerIdentificationNew].idValue))
     }
 
   }

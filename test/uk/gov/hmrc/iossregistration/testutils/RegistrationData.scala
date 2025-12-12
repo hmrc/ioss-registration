@@ -82,15 +82,17 @@ object RegistrationData extends BaseSpec {
   val adminUse: EtmpAdminUse = EtmpAdminUse(Some(LocalDateTime.now))
 
   val displayRegistration: EtmpDisplayRegistration = EtmpDisplayRegistration(
+    customerIdentification = arbitraryEtmpCustomerIdentificationNew.arbitrary.sample.value, 
     tradingNames = Seq(arbitrary[EtmpTradingName].sample.value),
     schemeDetails = etmpDisplaySchemeDetails,
     bankDetails = Some(etmpBankDetails),
+    otherAddress = None,
     exclusions = Seq(arbitrary[EtmpExclusion].sample.value),
     adminUse = adminUse
   )
 
   val registrationWrapper: RegistrationWrapper = RegistrationWrapper(
-    vatInfo = vatCustomerInfo,
+    vatInfo = Some(vatCustomerInfo),
     registration = displayRegistration
   )
 

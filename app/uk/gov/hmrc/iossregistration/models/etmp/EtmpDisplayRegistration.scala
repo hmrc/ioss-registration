@@ -16,14 +16,17 @@
 
 package uk.gov.hmrc.iossregistration.models.etmp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.{__, Json, Reads, Writes}
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.{Json, Reads, Writes, __}
 import uk.gov.hmrc.iossregistration.models.etmp.EtmpDisplaySchemeDetails.displayReads
+import uk.gov.hmrc.iossregistration.models.etmp.intermediary.EtmpOtherAddress
 
 case class EtmpDisplayRegistration(
+                                    customerIdentification: EtmpCustomerIdentification,
                                     tradingNames: Seq[EtmpTradingName],
                                     schemeDetails: EtmpDisplaySchemeDetails,
                                     bankDetails: Option[EtmpBankDetails],
+                                    otherAddress: Option[EtmpOtherAddress],
                                     exclusions: Seq[EtmpExclusion],
                                     adminUse: EtmpAdminUse
                                   )
@@ -34,9 +37,11 @@ object EtmpDisplayRegistration {
 
   implicit val reads: Reads[EtmpDisplayRegistration] =
     (
-      (__ \ "tradingNames").readNullable[Seq[EtmpTradingName]].map(_.getOrElse(List.empty)) and
+      (__ \ "customerIdentification").read[EtmpCustomerIdentification] and
+        (__ \ "tradingNames").readNullable[Seq[EtmpTradingName]].map(_.getOrElse(List.empty)) and
         (__ \ "schemeDetails").read[EtmpDisplaySchemeDetails] and
         (__ \ "bankDetails").readNullable[EtmpBankDetails] and
+        (__ \ "otherAddress").readNullable[EtmpOtherAddress] and
         (__ \ "exclusions").readNullable[Seq[EtmpExclusion]].map(_.getOrElse(List.empty)) and
         (__ \ "adminUse").read[EtmpAdminUse]
       )(EtmpDisplayRegistration.apply _)
