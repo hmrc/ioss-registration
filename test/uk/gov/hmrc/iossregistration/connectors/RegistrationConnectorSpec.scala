@@ -1,21 +1,21 @@
 package uk.gov.hmrc.iossregistration.connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.time.{Seconds, Span}
 import play.api.Application
 import play.api.http.HeaderNames.{AUTHORIZATION, CONTENT_TYPE}
 import play.api.http.MimeTypes
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers.running
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.serviceName
-import uk.gov.hmrc.iossregistration.models._
+import uk.gov.hmrc.iossregistration.models.*
 import uk.gov.hmrc.iossregistration.models.binders.Format.eisDateTimeFormatter
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpErrorDetail}
+import uk.gov.hmrc.iossregistration.models.etmp.{EtmpCustomerIdentificationNew, EtmpEnrolmentErrorResponse, EtmpEnrolmentResponse, EtmpErrorDetail}
 import uk.gov.hmrc.iossregistration.models.etmp.amend.AmendRegistrationResponse
 import uk.gov.hmrc.iossregistration.testutils.DisplayRegistrationData.{arbitraryDisplayRegistration, optionalDisplayRegistration, writesEtmpSchemeDetails}
 import uk.gov.hmrc.iossregistration.testutils.RegistrationData.etmpRegistrationRequest
@@ -71,9 +71,11 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
 
       val responseJson =
         s"""{
+           | "customerIdentification": ${Json.toJson(etmpRegistration.customerIdentification)},
            | "tradingNames": ${Json.toJson(etmpRegistration.tradingNames)},
            | "schemeDetails": ${Json.toJson(etmpRegistration.schemeDetails)(writesEtmpSchemeDetails)},
            | "bankDetails": ${Json.toJson(etmpRegistration.bankDetails)},
+           | "otherAddress": ${Json.toJson(etmpRegistration.otherAddress)},
            | "exclusions": ${Json.toJson(etmpRegistration.exclusions)},
            | "adminUse": ${Json.toJson(etmpRegistration.adminUse)}
            |}""".stripMargin
@@ -100,9 +102,12 @@ class RegistrationConnectorSpec extends BaseSpec with WireMockHelper {
       val app = application
 
       val etmpRegistration = optionalDisplayRegistration
-
+      val testCustomerIdentificationNew = optionalDisplayRegistration.customerIdentification.asInstanceOf[EtmpCustomerIdentificationNew]
+      val testCustomerIdentificationIdValue = testCustomerIdentificationNew.idValue
+      
       val responseJson =
         s"""{
+           | "customerIdentification": {"idType": "VRN", "idValue": "${testCustomerIdentificationIdValue}"},
            | "tradingNames": [],
            | "schemeDetails": {
            |   "commencementDate": "2023-01-01",

@@ -22,7 +22,10 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
     overseasIndicator = false
   )
 
+  private val arbitraryCustomerIdentification = arbitraryEtmpCustomerIdentificationNew.arbitrary.sample.value
+
   private val etmpDisplayRegistration = EtmpDisplayRegistration(
+    customerIdentification = arbitraryCustomerIdentification,
     tradingNames = Seq(EtmpTradingName("Test Trading Name")),
     schemeDetails = EtmpDisplaySchemeDetails(
       commencementDate = "2022-01-01",
@@ -41,26 +44,27 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
       bic = Some(Bic("ABCDEF2A").get),
       iban = Iban("GB33BUKB20201555555555").toOption.get
     )),
+    otherAddress = None,
     exclusions = Seq.empty,
     adminUse = EtmpAdminUse(Some(LocalDateTime.now(stubClock)))
   )
-  
+
   "RegistrationWrapper" - {
-    
+
     "serialize correctly" in {
 
-      val registrationWrapper = RegistrationWrapper(vatCustomerInfo, etmpDisplayRegistration)
-      
+      val registrationWrapper = RegistrationWrapper(Some(vatCustomerInfo), etmpDisplayRegistration)
+
       val json: JsValue = Json.toJson(registrationWrapper)
-      
+
       val expectedJson = Json.parse(
         s"""
            |{
            |  "vatInfo": {
            |    "desAddress": {
            |      "line1": "Line 1",
-           |      "countryCode": "GB",
-           |      "postCode": "AA11 1AA"
+           |      "postCode": "AA11 1AA",
+           |      "countryCode": "GB"
            |    },
            |    "registrationDate": "2022-01-01",
            |    "partOfVatGroup": true,
@@ -69,6 +73,10 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
            |    "overseasIndicator": false
            |  },
            |  "registration": {
+           |  "customerIdentification": {
+           |  "idType":"VRN",
+           |  "idValue":"${arbitraryCustomerIdentification.idValue}"
+           |  },
            |    "tradingNames": [
            |      {
            |        "tradingName": "Test Trading Name"
@@ -97,7 +105,7 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
            |}
            |""".stripMargin
       )
-      
+
       json mustBe expectedJson
     }
   }
@@ -115,7 +123,7 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
       overseasIndicator = false
     )
 
-    val expectedRegistrationWrapper = RegistrationWrapper(expectedVatCustomerInfo, etmpDisplayRegistration)
+    val expectedRegistrationWrapper = RegistrationWrapper(Some(expectedVatCustomerInfo), etmpDisplayRegistration)
 
     val json = Json.parse(
       s"""
@@ -144,6 +152,10 @@ class RegistrationWrapperSpec extends BaseSpec with Matchers {
          |    }
          |  },
          |  "registration": {
+         |    "customerIdentification": {
+         |      "idType":"VRN",
+         |      "idValue":"${arbitraryCustomerIdentification.idValue}"
+         |     },
          |    "tradingNames": [
          |      {
          |        "tradingName": "Test Trading Name"
