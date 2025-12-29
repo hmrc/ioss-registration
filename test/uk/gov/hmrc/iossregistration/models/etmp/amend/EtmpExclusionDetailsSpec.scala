@@ -44,7 +44,7 @@ class EtmpExclusionDetailsSpec extends BaseSpec {
           "partyType" -> partyType,
         )
 
-        val expectedResult = EtmpExclusionDetails(
+        val expectedResult = EtmpExclusionDetailsLegacy(
           revertExclusion = revertExclusion,
           noLongerSupplyGoods = noLongerSupplyGoods,
           partyType = partyType,
@@ -66,7 +66,7 @@ class EtmpExclusionDetailsSpec extends BaseSpec {
           "partyType" -> partyType
         )
 
-        val expectedResult = EtmpExclusionDetails(
+        val expectedResult = EtmpExclusionDetailsLegacy(
           revertExclusion = revertExclusion,
           noLongerSupplyGoods = noLongerSupplyGoods,
           partyType = partyType,
