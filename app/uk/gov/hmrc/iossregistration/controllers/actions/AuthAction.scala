@@ -66,7 +66,7 @@ class AuthActionImpl @Inject()(
 
         for {
           maybeIossNumber <- futureMaybeIossNumber
-          result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber, maybeIntermediary))
+          result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber, maybeIntermediary, enrolments))
         } yield result
 
       case Some(credentials) ~ Some(internalId) ~ enrolments ~ Some(Individual) ~ confidence =>
@@ -76,7 +76,7 @@ class AuthActionImpl @Inject()(
           val futureMaybeIossNumber = findIossFromEnrolments(enrolments, credentials.providerId)
           for {
             maybeIossNumber <- futureMaybeIossNumber
-            result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber, maybeIntermediary))
+            result <- block(AuthorisedRequest(request, credentials, internalId, maybeVrn, maybeIossNumber, maybeIntermediary, enrolments))
           } yield result
         } else {
           throw InsufficientConfidenceLevel("Insufficient confidence level")

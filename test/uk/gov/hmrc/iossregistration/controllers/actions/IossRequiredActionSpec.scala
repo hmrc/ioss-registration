@@ -22,7 +22,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import uk.gov.hmrc.iossregistration.base.BaseSpec
 import uk.gov.hmrc.iossregistration.config.AppConfig
-import uk.gov.hmrc.iossregistration.connectors.IntermediaryRegistrationConnector
+import uk.gov.hmrc.iossregistration.connectors.{IntermediaryRegistrationConnector, RegistrationConnector}
+import uk.gov.hmrc.iossregistration.services.{AccountService, PreviousRegistrationService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -31,7 +32,10 @@ class IossRequiredActionSpec extends BaseSpec {
 
   class Harness() extends IossRequiredAction(
     mock[IntermediaryRegistrationConnector],
+    mock[PreviousRegistrationService],
     mock[AppConfig],
+    mock[AccountService],
+    mock[RegistrationConnector],
     None
   ) {
 
@@ -51,7 +55,8 @@ class IossRequiredActionSpec extends BaseSpec {
           userId,
           vrn,
           None,
-          None
+          None,
+          enrolments
         )).futureValue
 
         result mustBe Left(Unauthorized)
@@ -66,7 +71,8 @@ class IossRequiredActionSpec extends BaseSpec {
           userId,
           vrn,
           Some(iossNumber),
-          None
+          None,
+          enrolments
         )).futureValue
 
         val expectResult = AuthorisedMandatoryIossRequest(request, testCredentials, userId, vrn, iossNumber)
