@@ -33,7 +33,7 @@ class VatRequiredAction @Inject()(implicit val executionContext: ExecutionContex
         logger.info("insufficient enrolments")
         Future.successful(Left(Unauthorized))
       case Some(vrn) =>
-        Future.successful(Right(AuthorisedMandatoryVrnRequest(request.request, request.credentials, request.userId, vrn, request.iossNumber, request.intermediaryNumber)))
+        Future.successful(Right(AuthorisedMandatoryVrnRequest(request.request, request.credentials, request.userId, vrn, request.iossNumber, request.intermediaryNumber, request.enrolments)))
     }
   }
 }

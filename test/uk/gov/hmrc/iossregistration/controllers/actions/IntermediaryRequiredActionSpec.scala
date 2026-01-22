@@ -47,7 +47,8 @@ class IntermediaryRequiredActionSpec extends BaseSpec {
           userId,
           vrn,
           None,
-          None
+          None,
+          enrolments
         )).futureValue
 
         result mustBe Left(Unauthorized)
@@ -62,7 +63,8 @@ class IntermediaryRequiredActionSpec extends BaseSpec {
           userId,
           vrn,
           None,
-          Some(intermediaryNumber)
+          Some(intermediaryNumber),
+          enrolments
         )).futureValue
 
         val expectResult = AuthorisedMandatoryIntermediaryRequest(request, testCredentials, userId, vrn, None, intermediaryNumber)

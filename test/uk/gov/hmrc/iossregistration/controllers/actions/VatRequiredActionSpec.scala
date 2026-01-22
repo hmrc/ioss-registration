@@ -45,7 +45,8 @@ class VatRequiredActionSpec extends BaseSpec {
           userId,
           None,
           None,
-          None
+          None,
+          enrolments
         )).futureValue
 
         result mustBe Left(Unauthorized)
@@ -60,10 +61,11 @@ class VatRequiredActionSpec extends BaseSpec {
           userId,
           Some(vrn),
           None,
-          None
+          None,
+          enrolments
         )).futureValue
 
-        val expectResult = AuthorisedMandatoryVrnRequest(request, testCredentials, userId, vrn, None, None)
+        val expectResult = AuthorisedMandatoryVrnRequest(request, testCredentials, userId, vrn, None, None, enrolments)
 
         result mustBe Right(expectResult)
       }
@@ -80,7 +82,8 @@ class VatRequiredActionSpec extends BaseSpec {
           userId,
           None,
           None,
-          None
+          None,
+          enrolments
         )).futureValue
 
         result mustBe Left(Unauthorized)

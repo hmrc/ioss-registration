@@ -13,8 +13,8 @@ import java.time.LocalDateTime
 
 class EtmpRegistrationRequestAuditModelSpec extends BaseSpec {
 
-  private val request = AuthorisedMandatoryVrnRequest(FakeRequest("GET", "/"), testCredentials, userId, vrn, None, None)
-  private implicit val dataRequest: AuthorisedMandatoryVrnRequest[AnyContent] = AuthorisedMandatoryVrnRequest(request, testCredentials, userId, vrn, None, None)
+  private val request = AuthorisedMandatoryVrnRequest(FakeRequest("GET", "/"), testCredentials, userId, vrn, None, None, enrolments)
+  private implicit val dataRequest: AuthorisedMandatoryVrnRequest[AnyContent] = AuthorisedMandatoryVrnRequest(request, testCredentials, userId, vrn, None, None, enrolments)
 
   private val etmpRegistrationAuditType: EtmpRegistrationAuditType = EtmpRegistrationAuditType.CreateRegistration
   private val submissionResultSuccess: SubmissionResult = SubmissionResult.Success
