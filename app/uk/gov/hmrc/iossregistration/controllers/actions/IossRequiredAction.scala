@@ -62,7 +62,7 @@ class IossRequiredAction(
   private def checkIntermediaryAccessAndFormRequest[A](intermediaryNumber: String, iossNumber: String, request: AuthorisedMandatoryVrnRequest[A])
                                                    (implicit hc: HeaderCarrier) = {
 
-    def buildRegistrationRequest: Future[Either[Result, AuthorisedMandatoryIossRequest[A]]] = {
+    def buildMandatoryIossRequest: Future[Either[Result, AuthorisedMandatoryIossRequest[A]]] = {
       Right(AuthorisedMandatoryIossRequest(request.request, request.credentials, request.userId, request.vrn, iossNumber)).toFuture
     }
 
@@ -77,14 +77,14 @@ class IossRequiredAction(
       val hasDirectAccess = currentRegistration.etmpDisplayRegistration.clientDetails.map(_.clientIossID).contains(iossNumber)
 
       if (hasDirectAccess) {
-        buildRegistrationRequest
+        buildMandatoryIossRequest
       } else {
         val allIntermediaryEnrolments = findIntermediaryNumbersFromEnrolments(request.enrolments)
 
         Future.sequence(allIntermediaryEnrolments.map(isAuthorisedToAccessIossClient))
           .map(_.exists(identity))
           .flatMap {
-            case true => buildRegistrationRequest
+            case true => buildMandatoryIossRequest
             case false =>
               logger.info(s"Intermediary ${intermediaryNumber} doesn't have access to ioss number $iossNumber")
               Left(Unauthorized).toFuture
