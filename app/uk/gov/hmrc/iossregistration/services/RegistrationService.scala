@@ -19,13 +19,13 @@ package uk.gov.hmrc.iossregistration.services
 import uk.gov.hmrc.domain
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, RegistrationConnector}
-import uk.gov.hmrc.iossregistration.connectors.VatCustomerInfoHttpParser.{VatCustomerInfoReads, VatCustomerInfoResponse}
 import uk.gov.hmrc.iossregistration.connectors.RegistrationHttpParser.CreateEtmpRegistrationResponse
+import uk.gov.hmrc.iossregistration.connectors.VatCustomerInfoHttpParser.VatCustomerInfoResponse
+import uk.gov.hmrc.iossregistration.connectors.{GetVatInfoConnector, RegistrationConnector}
 import uk.gov.hmrc.iossregistration.logging.Logging
-import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
-import uk.gov.hmrc.iossregistration.models.etmp.{EtmpCustomerIdentificationLegacy, EtmpCustomerIdentificationNew, EtmpDisplayRegistration, EtmpIdType, EtmpRegistrationRequest}
 import uk.gov.hmrc.iossregistration.models.etmp.amend.{AmendRegistrationResponse, EtmpAmendRegistrationRequest}
+import uk.gov.hmrc.iossregistration.models.etmp.*
+import uk.gov.hmrc.iossregistration.models.{EtmpException, RegistrationWrapper}
 import uk.gov.hmrc.iossregistration.utils.FutureSyntax.FutureOps
 
 import javax.inject.Inject
@@ -79,7 +79,7 @@ class RegistrationService @Inject()(
     }
   }
 
-  def getVatInfoForRegistration(vrn: Vrn, etmpDisplayRegistration: EtmpDisplayRegistration)(implicit headerCarrier: HeaderCarrier): Future[RegistrationWrapper] = {
+  private def getVatInfoForRegistration(vrn: Vrn, etmpDisplayRegistration: EtmpDisplayRegistration)(implicit headerCarrier: HeaderCarrier): Future[RegistrationWrapper] = {
       val vatCustomerInfoFutureResponse: Future[VatCustomerInfoResponse] = getVatInfoConnector.getVatCustomerDetails(vrn)
       vatCustomerInfoFutureResponse.flatMap {
         case Left(vatCustomerInfoError) =>
