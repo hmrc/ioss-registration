@@ -38,7 +38,7 @@ object EtmpDisplaySchemeDetails {
                                               commencementDate: String,
                                               euRegistrationDetails: Option[Seq[EtmpDisplayEuRegistrationDetails]],
                                               previousEURegistrationDetails: Option[Seq[EtmpPreviousEuRegistrationDetails]],
-                                              websites: Seq[EtmpWebsite],
+                                              websites: Option[Seq[EtmpWebsite]],
                                               contactNameOrBusinessAddress: String,
                                               businessTelephoneNumber: String,
                                               businessEmailAddress: String,
@@ -50,7 +50,7 @@ object EtmpDisplaySchemeDetails {
       commencementDate = commencementDate,
       euRegistrationDetails = euRegistrationDetails.fold(Seq.empty[EtmpDisplayEuRegistrationDetails])(a => a),
       previousEURegistrationDetails = previousEURegistrationDetails.fold(Seq.empty[EtmpPreviousEuRegistrationDetails])(a => a),
-      websites = websites,
+      websites = websites.fold(Seq.empty[EtmpWebsite])(a => a),
       contactName = contactNameOrBusinessAddress,
       businessTelephoneNumber = businessTelephoneNumber,
       businessEmailId = businessEmailAddress,
@@ -64,7 +64,7 @@ object EtmpDisplaySchemeDetails {
       (__ \ "commencementDate").read[String] and
         (__ \ "euRegistrationDetails").readNullable[Seq[EtmpDisplayEuRegistrationDetails]] and
         (__ \ "previousEURegistrationDetails").readNullable[Seq[EtmpPreviousEuRegistrationDetails]] and
-        (__ \ "websites").read[Seq[EtmpWebsite]] and
+        (__ \ "websites").readNullable[Seq[EtmpWebsite]] and
         (__ \ "contactDetails" \ "contactNameOrBusinessAddress").read[String] and
         (__ \ "contactDetails" \ "businessTelephoneNumber").read[String] and
         (__ \ "contactDetails" \ "businessEmailAddress").read[String] and
